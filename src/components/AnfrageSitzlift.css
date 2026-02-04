@@ -264,9 +264,9 @@
   letter-spacing: -0.3px;
 }
 
-/* Vermittlungsgarantie Info */
+/* Pflegehilfe+ Info Banner - nicht volle Breite */
 .vermittlungsgarantie-info {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   background-color: #e8f5e9;
@@ -277,6 +277,7 @@
   color: #2e7d32;
   font-size: 14px;
   font-weight: 500;
+  width: fit-content;
 }
 
 .info-icon {
@@ -434,6 +435,10 @@
   gap: 14px;
 }
 
+.klient-section .form-grid {
+  gap: 4px;
+}
+
 .form-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -504,6 +509,155 @@
   cursor: pointer;
 }
 
+/* Klient: 3-Spalten-Layout mit roten Orientierungslinien
+   Spalte 1: Anrede+Akadem. (Zeile 1), E-Mail volle Breite (Zeile 2)
+   Spalte 2: Vorname+Nachname (Zeile 1), Telefonnummer (Zeile 2)
+   Spalte 3: Kommentar über beide Zeilen */
+.klient-two-rows-container {
+  display: grid;
+  grid-template-columns: 320px 500px 320px;
+  grid-template-rows: auto auto;
+  row-gap: 6px;
+  column-gap: 8px;
+  align-items: start;
+  padding: 0;
+}
+
+/* Zeile 1, Spalte 1: Anrede (links) + Akadem. (rechts, 160px) */
+.klient-two-rows-container .klient-col1-row1 {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.klient-col1-row1 .form-group:first-child {
+  flex-shrink: 0;
+}
+
+.klient-col1-row1 .form-group:first-child label {
+  margin-bottom: 4px;
+}
+
+/* Akadem.-Feld: 180px feste Breite, nach links (direkt neben Anrede) */
+.klient-col1-row1 .form-group.klient-akadem-field {
+  flex: 0 0 180px;
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.klient-col1-row1 .form-group.klient-akadem-field label {
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.klient-col1-row1 .form-group.klient-akadem-field input {
+  width: 100%;
+  height: 38px;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+/* Zeile 1, Spalte 2: Vorname (160px) + Nachname (160px) */
+.klient-two-rows-container .klient-col2-row1 {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.klient-col2-row1 .form-group.klient-small-field {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.klient-col2-row1 .form-group.klient-small-field label {
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.klient-col2-row1 .form-group.klient-small-field input {
+  width: 100%;
+  height: 38px;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+/* Spalte 3, beide Zeilen: Kommentar */
+.klient-two-rows-container .form-group.klient-comment-field {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  align-self: stretch;
+}
+
+.klient-two-rows-container .form-group.klient-comment-field label {
+  margin-bottom: 4px;
+}
+
+.klient-two-rows-container .form-group.klient-comment-field textarea {
+  height: 100%;
+  min-height: 130px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+/* Zeile 2, Spalte 1: E-Mail - linksbündig, endet dort wo Akadem. endet (volle Spaltenbreite) */
+.klient-two-rows-container .form-group.klient-email-field {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.klient-two-rows-container .form-group.klient-email-field label {
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.klient-two-rows-container .form-group.klient-email-field input {
+  width: 100%;
+  height: 38px;
+  box-sizing: border-box;
+  padding: 8px 10px;
+}
+
+/* Zeile 2, Spalte 2: Telefonnummer */
+.klient-two-rows-container .form-group.phone-group {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.klient-two-rows-container .form-group.phone-group label {
+  margin-bottom: 4px;
+}
+
+/* Blaues Telefonfeld: volle Breite der Spalte 2 */
+.klient-two-rows-container .form-group.phone-group .phone-input-wrapper .btn-blue {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Fehlermeldung Telefon: Dreieck-Symbol */
+.klient-two-rows-container .form-group.phone-group .error-message::before {
+  content: "▲ ";
+  font-size: 12px;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -528,6 +682,15 @@
   color: #333;
   margin-bottom: 6px;
   display: block;
+}
+
+/* Gleiche Schrift/Größe wie Form-Labels (z. B. „Tools & Informationen“) */
+.field-label-same {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  display: block;
+  margin: 0;
 }
 
 .form-group input,
@@ -798,6 +961,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 100%;
 }
 
 .error-message {
@@ -880,6 +1044,605 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+}
+
+/* Produktauswahl – Reiter für Produkte */
+.produktauswahl-section {
+  margin-top: 16px;
+  margin-bottom: 20px;
+}
+
+/* Produktreiter: klassische Reiter-Optik (Tab-Leiste + Inhalt) */
+.produkt-reiter-container {
+  margin-bottom: 24px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.produkt-reiter-leiste {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0;
+  min-height: 44px;
+  padding: 8px 12px 0;
+  background-color: #e8e8e8;
+  border-bottom: 2px solid #bbb;
+  position: relative;
+}
+
+.produkt-reiter-leiste > * {
+  flex-shrink: 0;
+}
+
+.produkt-reiter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin: 0 2px 0 0;
+  background-color: #d0d0d0;
+  color: #444;
+  border: 1px solid #bbb;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  top: 2px;
+}
+
+.produkt-reiter:hover {
+  background-color: #c5c5c5;
+}
+
+.produkt-reiter.active {
+  background-color: #fff;
+  color: #222;
+  border-color: #bbb;
+  border-bottom: 1px solid #fff;
+  margin-bottom: -2px;
+  padding-bottom: 11px;
+  top: 0;
+  z-index: 1;
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.produkt-reiter-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #4caf50;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.produkt-reiter-label {
+  white-space: nowrap;
+}
+
+.produkt-reiter-remove {
+  margin-left: 4px;
+  padding: 0 2px;
+  font-size: 16px;
+  line-height: 1;
+  color: #666;
+  opacity: 0.9;
+}
+
+.produkt-reiter-remove:hover {
+  color: #333;
+  opacity: 1;
+}
+
+.produkt-reiter-dropdown-wrap {
+  position: relative;
+  margin-left: 0;
+  align-self: center;
+  display: inline-flex;
+}
+
+.produkt-reiter-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  margin: 0 2px 0 0;
+  background-color: #d0d0d0;
+  color: #444;
+  border: 1px solid #bbb;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  top: 2px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.produkt-reiter-dropdown-btn:hover {
+  background-color: #c5c5c5;
+}
+
+.produkt-reiter-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 6px;
+  min-width: 220px;
+  max-height: 280px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+}
+
+.produkt-reiter-dropdown-option {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  text-align: left;
+  border: none;
+  background: none;
+  font-size: 14px;
+  cursor: pointer;
+  color: #333;
+}
+
+.produkt-reiter-dropdown-option:hover:not(:disabled) {
+  background-color: #f0f0f0;
+}
+
+.produkt-reiter-dropdown-option:disabled {
+  color: #999;
+  cursor: default;
+}
+
+/* Inhalt unter den Reitern (verbunden mit aktiver Reiter-Leiste) */
+.produkt-inhalt-bereich {
+  padding: 0;
+  background-color: #fff;
+  border: none;
+  border-top: none;
+  overflow: hidden;
+}
+
+.produkt-inhalt-label {
+  padding: 12px 16px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1565c0;
+  background-color: #f5f9ff;
+  border-bottom: 1px solid #e3f2fd;
+}
+
+.produktkriterien-label {
+  margin-bottom: 10px;
+}
+
+.produkt-tabs-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.produkt-tab {
+  padding: 10px 16px;
+  background-color: #555;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.produkt-tab:hover {
+  background-color: #666;
+}
+
+.produkt-tab.active {
+  background-color: #6b6b6b;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.produkt-tab-remove {
+  margin-left: 4px;
+  padding: 0 2px;
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0.85;
+}
+
+.produkt-tab-remove:hover {
+  opacity: 1;
+}
+
+.produkt-tab-add {
+  background-color: #777 !important;
+  border: 1px dashed rgba(255, 255, 255, 0.4);
+}
+
+.produkt-tab-add:hover {
+  background-color: #888 !important;
+}
+
+.produkt-tab-content {
+  min-height: 80px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+.produkt-inhalt-bereich .produkt-tab-content {
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  padding: 16px;
+  border-radius: 0;
+}
+
+.produkt-inhalt-bereich .produkt-tab-content .form-row:first-child {
+  margin-top: 0;
+}
+
+/* Reiter unter Postleitzahl/Region: Generelle Kriterien, Informationen */
+.reiter-unter-plz {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.reiter-unter-plz-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #e8e8e8;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s ease;
+}
+
+.reiter-unter-plz-header:hover {
+  background-color: #e0e0e0;
+}
+
+.reiter-unter-plz-text {
+  flex: 1;
+}
+
+.reiter-unter-plz-chevron {
+  font-size: 18px;
+  font-weight: 300;
+  color: #555;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.reiter-unter-plz-chevron.expanded {
+  transform: rotate(90deg);
+}
+
+/* Accordions: Generelle Kriterien, Informationen, Produktkriterien */
+.accordion-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.accordion-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.accordion-header {
+  margin-bottom: 0;
+}
+
+.accordion-content {
+  padding: 12px 16px;
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  margin-top: -6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.produktkriterien-content {
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.produktkriterien-content .produktkriterien-cards {
+  padding: 12px 0 0;
+}
+
+/* Produktkriterien: graue Überschrift wie „Informationen“, alle Kriterien fix darunter */
+.produktkriterien-section {
+  margin-top: 16px;
+}
+
+.produktkriterien-header {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+/* Produktkriterien-Karten - jede einzeln umrahmt */
+.produktkriterien-cards {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 0;
+  padding: 0;
+  align-items: flex-start;
+}
+
+.produktkriterien-section .produktkriterien-card,
+.produktkriterien-content .produktkriterien-card {
+  flex: 1 1 auto;
+  max-width: 420px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+
+.produktkriterien-card-header {
+  padding: 12px 16px;
+  background-color: #555;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.produktkriterien-card-body {
+  padding: 20px 16px;
+}
+
+.produktkriterien-group {
+  margin-bottom: 20px;
+}
+
+.produktkriterien-group:last-child {
+  margin-bottom: 0;
+}
+
+.produktkriterien-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.produktkriterien-count {
+  color: #c62828;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.produktkriterien-description {
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+}
+
+.produktkriterien-card-body .form-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.produktkriterien-card-body .form-input-with-dropdown {
+  flex: 1;
+  padding: 8px 32px 8px 10px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #fafafa;
+}
+
+.produktkriterien-card-body .input-dropdown-arrow {
+  position: absolute;
+  right: 10px;
+  font-size: 10px;
+  color: #666;
+  pointer-events: none;
+}
+
+.produktkriterien-card-body .radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.produktkriterien-card-body .radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.produktkriterien-card-body .radio-group input[type="radio"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Checkbox-Gruppen für Produktkriterien */
+.produktkriterien-card-body .checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.produktkriterien-card-body .checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.produktkriterien-card-body .checkbox-group input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Box unter Produktkriterien (außerhalb des Kästchens): nur bei Pflegekurse für Angehörige */
+.versichertennummer-box-unter-produktkriterien {
+  margin-top: 16px;
+}
+
+.produktkriterien-card-versichertennummer {
+  min-height: auto;
+}
+
+.produktkriterien-card-versichertennummer .produktkriterien-card-body {
+  padding: 16px;
+}
+
+.label-with-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  cursor: default;
+}
+
+.info-icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #333;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  font-style: normal;
+  cursor: help;
+}
+
+.versichertennummer-input {
+  width: 75%;
+  max-width: 320px;
+  padding: 8px 10px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #fafafa;
+  box-sizing: border-box;
+}
+
+/* Slider-Gruppen für Produktkriterien */
+.slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.produktkriterien-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #ddd;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.produktkriterien-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #1976d2;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.produktkriterien-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #1976d2;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.produkt-inhalt-bereich .produkt-tab-content .collapsible-section {
+  margin-top: 12px;
+}
+
+.produkt-inhalt-bereich .produkt-tab-content .bottom-actions {
+  margin-top: 20px;
+  padding-top: 20px;
+}
+
+.produkt-tab-placeholder {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
 }
 
 /* Collapsible Sections */
@@ -968,4 +1731,253 @@
   .nav-right {
     flex-wrap: wrap;
   }
+}
+
+/* Telefonnummern-Anzeige */
+.phone-numbers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.phone-number-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  font-size: 13px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: nowrap;
+}
+
+.country-flag-display {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-right: 6px;
+}
+
+.country-flag-icon {
+  display: block;
+  border-radius: 2px;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.1);
+}
+
+.phone-type {
+  font-weight: 600;
+  color: #333;
+  min-width: 60px;
+  flex-shrink: 0;
+}
+
+.phone-number {
+  flex: 1;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.phone-actions {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.phone-call-btn {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+  border-radius: 3px;
+  padding: 3px 6px;
+  font-size: 11px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.phone-call-btn:hover {
+  background-color: #c8e6c9;
+}
+
+.phone-icon {
+  font-size: 12px;
+  transform: rotate(-45deg);
+}
+
+.phone-edit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.phone-edit-btn:hover {
+  background-color: #f5f5f5;
+  border-color: #999;
+}
+
+.edit-icon {
+  font-size: 13px;
+  color: #333;
+}
+
+.phone-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f44336;
+  border: none;
+  border-radius: 3px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.phone-delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+.delete-icon {
+  font-size: 13px;
+  color: white;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  padding: 24px;
+  min-width: 500px;
+  max-width: 90vw;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #212121;
+  margin: 0 0 20px 0;
+}
+
+.modal-form {
+  margin-bottom: 24px;
+}
+
+.modal-form-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.modal-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modal-form-group.phone-number-group {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.phone-type-select {
+  min-width: 120px;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.phone-type-select:focus {
+  outline: none;
+  border-color: #1976d2;
+}
+
+.country-selector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.country-flag {
+  font-size: 18px;
+}
+
+.country-code-select {
+  border: none;
+  background: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+}
+
+.phone-number-input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.phone-number-input:focus {
+  outline: none;
+  border-color: #1976d2;
+}
+
+.phone-number-input.error {
+  border-color: #f44336;
+}
+
+.modal-error-message {
+  color: #f44336;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
