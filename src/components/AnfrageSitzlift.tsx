@@ -159,16 +159,24 @@ const SelectField: React.FC<SelectFieldProps> = ({
 // Gesprächsguidance-Komponente
 interface GuidanceTip {
   title: string;
-  question: string;
+  question?: string;
   followUp?: string;
   tip?: string;
+}
+
+interface GuidanceGroup {
+  title: string;
+  items?: string[];
+  entries?: { title: string; text: string }[];
+  collapsible?: boolean;
 }
 
 interface GuidanceSection {
   id: string;
   title: string;
   icon: string;
-  tips: GuidanceTip[];
+  tips?: GuidanceTip[];
+  groups?: GuidanceGroup[];
 }
 
 const guidanceData: GuidanceSection[] = [
@@ -198,57 +206,209 @@ const guidanceData: GuidanceSection[] = [
   },
   {
     id: 'senior',
-    title: 'Senior',
+    title: 'Bedarfsermittlung',
     icon: '👴',
-    tips: [
+    groups: [
       {
-        title: 'Beziehung',
-        question: 'In welcher Beziehung stehen Sie zu dem Senior?',
-        followUp: 'Sind Sie der Sohn, die Tochter, der Ehepartner?',
-        tip: 'Die Beziehung hilft, die Situation besser einzuschätzen.'
+        title: 'Bedarfsermittlung',
+        items: [
+          'Wie sieht denn die Pflegesituation aktuell bei Ihnen aus?',
+          'Welcher Pflegegrad liegt aktuell vor und gab es zuletzt eine Veränderung?',
+          'Welche Sturzgefahren gibt es aktuell im Wohnbereich, die den Alltag erschweren?',
+          'Welche Hilfsmittel oder Pflegeprodukte werden aktuell genutzt?'
+        ]
       },
       {
-        title: 'Pflegegrad',
-        question: 'Welchen Pflegegrad hat der Senior aktuell?',
-        followUp: 'Wurde bereits eine Erhöhung des Pflegegrades beantragt?',
-        tip: 'Falls unbekannt, nach Pflegegradbescheid fragen.'
+        title: 'Vorwandbehandlung',
+        collapsible: true,
+        entries: [
+          {
+            title: 'Hat sich erledigt',
+            text: 'Das freut mich zu hören. Inwiefern hat es sich erledigt? Wie wird die Pflege aktuell sichergestellt?'
+          },
+          {
+            title: 'Keine Zeit',
+            text: 'Danke für Ihre Offenheit. Ich verstehe, dass Ihre Zeit knapp ist. Lassen Sie uns gerade deshalb einen kurzen Moment Zeit nehmen, damit wir sicher gehen können, dass die pflegerische Versorgung Ihrer Angehörigen effizient genutzt ist. Was kostet Ihnen im Moment am meisten Zeit?'
+          },
+          {
+            title: 'Keine Erinnerung',
+            text: 'Wir sind eine kostenfreie Pflegeberatung. Wir beraten sie neutral, kostenfrei und effizient und helfen Ihnen damit die pflegerische Versorgung sicher zu stellen. Wie sieht denn die Pflegesituation aus?'
+          },
+          {
+            title: 'Kein Interesse',
+            text: 'Danke für Ihre Offenheit. Ich verstehe, dass Ihre Zeit knapp ist. Lassen Sie uns gerade deshalb einen kurzen Moment Zeit nehmen, damit wir sicher gehen können, dass die pflegerische Versorgung Ihrer Angehörigen effizient genutzt ist. Was kostet Ihnen im Moment am meisten Zeit? Danke für Ihre Offenheit. Wir haben die Erfahrung gemacht, dass viele unserer Klienten nicht wissen, was Ihnen mit einem Pflegegrad alles zusteht. Nutzen Sie schon alle Budgets?'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'weiterleitung',
+    title: 'Weiterleitung',
+    icon: '➡️',
+    groups: [
+      {
+        title: 'Vorwandbehandlung',
+        collapsible: true,
+        entries: [
+          {
+            title: 'Hat sich erledigt',
+            text: 'Das freut mich zu hören. Inwiefern hat es sich erledigt? Wie wird die Pflege aktuell sichergestellt?'
+          },
+          {
+            title: 'Keine Zeit',
+            text: 'Danke für Ihre Offenheit. Ich verstehe, dass Ihre Zeit knapp ist. Lassen Sie uns gerade deshalb einen kurzen Moment Zeit nehmen, damit wir sicher gehen können, dass die pflegerische Versorgung Ihrer Angehörigen effizient genutzt ist. Was kostet Ihnen im Moment am meisten Zeit?'
+          },
+          {
+            title: 'Keine Erinnerung',
+            text: 'Wir sind eine kostenfreie Pflegeberatung. Wir beraten sie neutral, kostenfrei und effizient und helfen Ihnen damit die pflegerische Versorgung sicher zu stellen. Wie sieht denn die Pflegesituation aus?'
+          },
+          {
+            title: 'Kein Interesse',
+            text: 'Danke für Ihre Offenheit. Ich verstehe, dass Ihre Zeit knapp ist. Lassen Sie uns gerade deshalb einen kurzen Moment Zeit nehmen, damit wir sicher gehen können, dass die pflegerische Versorgung Ihrer Angehörigen effizient genutzt ist. Was kostet Ihnen im Moment am meisten Zeit? Danke für Ihre Offenheit. Wir haben die Erfahrung gemacht, dass viele unserer Klienten nicht wissen, was Ihnen mit einem Pflegegrad alles zusteht. Nutzen Sie schon alle Budgets?'
+          }
+        ]
       },
       {
-        title: 'Medizinischer Hintergrund',
-        question: 'Gibt es relevante medizinische Einschränkungen?',
-        followUp: 'Zum Beispiel: Körperliche Einschränkungen, Altersschwäche, Demenz?',
-        tip: 'Mehrere Optionen können zutreffen - alle relevanten nennen lassen.'
+        title: 'Einwandbehandlung',
+        entries: [
+          {
+            title: 'Zu teuer',
+            text: 'Das verstehe ich gut, die Kosten sind für viele ein wichtiger Punkt. Genau deshalb ist es sinnvoll, die Zuschüsse der Pflegekasse zu nutzen und mehrere unverbindliche Angebote zu vergleichen, damit Sie eine bezahlbare Lösung finden. Wie klingt das für Sie, erst einmal kostenfrei Angebote einzuholen und in Ruhe zu vergleichen?'
+          },
+          {
+            title: 'Zu früh',
+            text: 'Das kann ich gut nachvollziehen, viele sagen das, solange noch alles einigermaßen gut läuft. Genau deshalb ist Vorsorge so wichtig. Denn falls plötzlich etwas passiert, hat man oft keine Zeit mehr, um ruhig zu vergleichen und schnell zu reagieren. Deswegen wäre jetzt das Einholen von Angeboten für eine gute Vorsorge wichtig. Einmal angenommen, es passiert unerwartet etwas, wäre es beruhigend für Sie zu wissen, dass alles schon vorbereitet ist?'
+          },
+          {
+            title: 'Zeit zum Nachdenken',
+            text: 'Das ist absolut verständlich, niemand möchte vorschnell entscheiden. Genau deshalb geht es ja nicht um eine Entscheidung, sondern erst einmal um unverbindliche Angebote, die Ihnen Vergleichbarkeit und Sicherheit geben. Wäre das ein guter erster Schritt für Sie?'
+          },
+          {
+            title: 'Senior möchte nicht',
+            text: 'Das kann ich gut verstehen, das erleben wir sehr häufig. Genau deshalb ist es oft hilfreich, erst einmal unverbindliche Angebote und fachliche Beratung einzuholen, damit Sie die richtigen Argumente an der Hand haben, um die betroffene Person zu überzeugen. Glauben Sie auch, dass zusätzliche Informationen und Vergleichsangebote von Experten dabei helfen könnte?'
+          },
+          {
+            title: 'Lokaler Anbieter',
+            text: 'Das verstehe ich gut, der Wunsch nach einem lokalen Anbieter ist völlig nachvollziehbar. Gerade deshalb lohnt sich ein unverbindlicher Vergleich, damit Sie sehen, ob ein größerer Anbieter Ihnen vielleicht bessere Konditionen oder mehr Leistungen bieten kann. Wie klingt das für Sie, erst einmal kostenfrei zu vergleichen und danach ganz in Ruhe zu entscheiden, welcher Anbieter für Sie der richtige ist?'
+          }
+        ]
       },
       {
-        title: 'Mobilität',
-        question: 'Wie ist die Mobilität des Seniors einzuschätzen?',
-        followUp: 'Kann er/sie noch Treppen steigen? Benötigt er/sie Gehhilfen?',
-        tip: 'Wichtig für die Produktauswahl - genau nachfragen.'
+        title: 'Cross-Selling',
+        entries: [
+          {
+            title: 'Einstieg',
+            text: '[Anrede] [Nachname], wir haben die Erfahrung gemacht, dass viele unserer Klienten nicht wissen, welche Unterstützung Ihnen mit einem Pflegegrad zusteht und welche Möglichkeiten sich dafür eröffnen. Lassen Sie uns hierfür noch kurz Zeit nehmen.'
+          },
+          {
+            title: 'Sitzlift & Badewanne zur Dusch',
+            text: 'Nutzen Sie schon die 4.180€, die es Ihnen ermöglicht Ihr zu Hause barrierefrei zu gestalten, entweder durch einen Treppenlift oder ein barrierefreies Bad?'
+          },
+          {
+            title: 'Hausnotruf',
+            text: 'Haben Sie bereits den kostenlosen Hausnotruf, der die Sicherheit in den eigenen vier Wänden sicherstellt?'
+          },
+          {
+            title: 'Pfelgehilfsmittel',
+            text: 'Beziehen Sie schon die kostenfreien Pflegehilfsmittel wie Bettschutzeinlagen, Einmalhandschuhe oder Desinfektionsmittel?'
+          },
+          {
+            title: 'Haushaltshilfe',
+            text: 'Erhalten Sie bereits hauswirtschaftliche Unterstützung, die sie durch den Entlastungsbetrag in Höhe von 132€ im Monat kostenfrei erhalten?'
+          },
+          {
+            title: 'Hörtest',
+            text: 'Kennen Sie bereits den kostenlosen Hörtest zu Hause? So können Sie prüfen, wie gut Ihr Hören noch ist und frühzeitig Vorsorge treffen?'
+          }
+        ]
       },
       {
-        title: 'Barrierefreiheit',
-        question: 'Wie ist die Wohnsituation hinsichtlich Barrierefreiheit?',
-        followUp: 'Gibt es einen Aufzug? Ist die Wohnung rollstuhlgerecht?',
-        tip: 'Mehrere Aspekte können relevant sein - alle erfragen.'
-      },
-      {
-        title: 'Wohnsituation',
-        question: 'Wo wohnt der Senior aktuell?',
-        followUp: 'Eigene Wohnung, bei Angehörigen, im Pflegeheim?',
-        tip: 'Wichtig für die Planung der Installation.'
-      },
-      {
-        title: 'Aktuelle Versorgung',
-        question: 'Wie wird der Senior aktuell versorgt?',
-        followUp: 'Pflegedienst, Angehörige, Tagespflege?',
-        tip: 'Mehrere Versorgungsformen können parallel bestehen.'
+        title: 'Abschluss',
+        items: [
+          'Vielen Dank. Dann haben wir nun alle wichtigen Informationen zusammen, damit ich Ihnen für "Sitzlift" die passenden Ansprechpartner an die Hand geben kann.'
+        ]
       }
     ]
   }
 ];
 
-const Gespraechsguidance: React.FC<{ activeSection: string }> = ({ activeSection }) => {
-  const currentGuidance = guidanceData.find(g => g.id === activeSection) || guidanceData[0];
+const Gespraechsguidance: React.FC<{
+  activeSection: string;
+  klientAnrede: string;
+  klientNachname: string;
+  isWeiterleitenMode: boolean;
+  isFirstProductComplete?: boolean;
+}> = ({
+  activeSection,
+  klientAnrede,
+  klientNachname,
+  isWeiterleitenMode,
+  isFirstProductComplete = false
+}) => {
+  const groupOrder = [
+    'Vorwandbehandlung',
+    'Bedarfsermittlung',
+    'Einwandbehandlung',
+    'Cross-Selling',
+    'Abschluss'
+  ];
+  const allGroups = guidanceData.flatMap((section) => section.groups ?? []);
+  const defaultVisibleGroups = groupOrder
+    .map((title) => allGroups.find((group) => group.title === title))
+    .filter((group): group is GuidanceGroup => Boolean(group));
+  const weiterleitenModeGroups: GuidanceGroup[] = [
+    {
+      title: 'Abschluss',
+      items: [
+        'Vielen Dank. Ich habe einmal die Kapazitäten unseres Pflegenetzwerks geprüft und werde nun für Sie den Kontakt zu den Anbietern Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Diese werden sich in den nächsten Minuten oder Stunden telefonisch bei Ihnen melden. Deshalb ist wichtig, dass Sie telefonisch erreichbar bleiben.'
+      ]
+    },
+    {
+      title: 'Verabschiedung',
+      items: [
+        'Sie bekommen jetzt noch eine E-Mail von mir, da steht alles Wichtige auch noch einmal drin. Wenn noch etwas sein sollte, melden Sie sich gerne. Ansonsten werden wir sie in zwei Wochen noch einmal anrufen und Fragen, ob die Unterstützung hilfreich war.'
+      ]
+    }
+  ];
+  const visibleGroups = isWeiterleitenMode ? weiterleitenModeGroups : defaultVisibleGroups;
+  const vorwandbehandlungIndex = visibleGroups.findIndex((g) => g.title === 'Vorwandbehandlung');
+  const [openGroupIndex, setOpenGroupIndex] = useState<number | null>(
+    vorwandbehandlungIndex >= 0 ? vorwandbehandlungIndex : null
+  );
+
+  // Gelbe Box (Abschluss) hat Vorrang; dann erstes Produkt voll → Cross-Selling; dann Maus über Bereiche
+  useEffect(() => {
+    if (isWeiterleitenMode) return;
+    if (activeSection === 'abschluss') {
+      const index = visibleGroups.findIndex((g) => g.title === 'Abschluss');
+      setOpenGroupIndex(index >= 0 ? index : null);
+    } else if (isFirstProductComplete) {
+      const index = visibleGroups.findIndex((g) => g.title === 'Cross-Selling');
+      setOpenGroupIndex(index >= 0 ? index : null);
+    } else if (activeSection === 'senior') {
+      const index = visibleGroups.findIndex((g) => g.title === 'Bedarfsermittlung');
+      setOpenGroupIndex(index >= 0 ? index : null);
+    } else if (activeSection === 'weiterleitung') {
+      const index = visibleGroups.findIndex((g) => g.title === 'Einwandbehandlung');
+      setOpenGroupIndex(index >= 0 ? index : null);
+    } else {
+      // Zu Beginn und bei Klient: „Vorwandbehandlung“ ausgeklappt
+      const index = visibleGroups.findIndex((g) => g.title === 'Vorwandbehandlung');
+      setOpenGroupIndex(index >= 0 ? index : null);
+    }
+  }, [activeSection, isWeiterleitenMode, isFirstProductComplete]);
+
+  const handleSummaryClick = (index: number) => {
+    setOpenGroupIndex((prev) => (prev === index ? null : index));
+  };
+
+  const replaceKlientPlaceholders = (text: string) =>
+    text
+      .replace('[Anrede]', klientAnrede || '')
+      .replace('[Nachname]', klientNachname || '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
 
   return (
     <div className="guidance-sidebar">
@@ -257,28 +417,42 @@ const Gespraechsguidance: React.FC<{ activeSection: string }> = ({ activeSection
         <h3>Gesprächsguidance</h3>
       </div>
       <div className="guidance-content">
-        <div className="guidance-section-header">
-          <span className="section-icon">{currentGuidance.icon}</span>
-          <h4>{currentGuidance.title}</h4>
-        </div>
         <div className="guidance-tips">
-          {currentGuidance.tips.map((tip, index) => (
+          {visibleGroups.map((group, index) => (
             <div key={index} className="guidance-tip">
-              <div className="tip-title">{tip.title}</div>
-              <div className="tip-question">
-                <strong>Frage:</strong> {tip.question}
-              </div>
-              {tip.followUp && (
-                <div className="tip-followup">
-                  <strong>Nachfrage:</strong> {tip.followUp}
-                </div>
-              )}
-              {tip.tip && (
-                <div className="tip-hint">
-                  <span className="hint-icon">💡</span>
-                  {tip.tip}
-                </div>
-              )}
+              <details
+                className="guidance-group-collapsible"
+                open={openGroupIndex === index}
+              >
+                <summary
+                  className="tip-title guidance-collapsible-summary"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSummaryClick(index);
+                  }}
+                >
+                  {group.title}
+                </summary>
+                {group.items && group.items.length > 0 && (
+                  <div className="guidance-group-items guidance-collapsible-content">
+                    {group.items.map((item, itemIndex) => (
+                      <div key={itemIndex} className="guidance-group-item">
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {group.entries && group.entries.length > 0 && (
+                  <div className="guidance-group-entries guidance-collapsible-content">
+                    {group.entries.map((entry, entryIndex) => (
+                      <div key={entryIndex} className="guidance-group-entry">
+                        <div className="guidance-group-entry-title">{entry.title}</div>
+                        <div className="guidance-group-entry-text">{replaceKlientPlaceholders(entry.text)}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </details>
             </div>
           ))}
         </div>
@@ -328,6 +502,7 @@ const AnfrageSitzlift: React.FC = () => {
   }
   const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([]);
   const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
+  const [isWeiterleitenModalOpen, setIsWeiterleitenModalOpen] = useState(false);
   const [editingPhoneId, setEditingPhoneId] = useState<string | null>(null);
   const [phoneModalData, setPhoneModalData] = useState({
     type: 'Mobil',
@@ -447,6 +622,40 @@ const AnfrageSitzlift: React.FC = () => {
   const [produktkriterienExpanded, setProduktkriterienExpanded] = useState(true); // Standardmäßig ausgeklappt
   const [activeProduktkriterienTab, setActiveProduktkriterienTab] = useState<'nachfrage' | 'einsatzdetails' | 'zeitpunkt'>('nachfrage');
 
+  // Produktkriterien erstes Produkt (Sitzlift) – für „Cross-Selling“ öffnen wenn alle ausgefüllt
+  const [sitzliftKriterien, setSitzliftKriterien] = useState<{
+    einverstaendnisSenior: string;
+    pflegegradSitzlift: string;
+    hausart: string;
+    immobilie: string;
+    einverstaendnisVermieter: string;
+    treppenform: string;
+    etagen: string;
+    treppenbreite: string;
+    koerpergewicht: string;
+    zustand: string[];
+    budgetrahmen: string;
+    vorOrtTermin: string[];
+    bedarfSitzlift: string;
+  }>({
+    einverstaendnisSenior: '',
+    pflegegradSitzlift: '',
+    hausart: '',
+    immobilie: '',
+    einverstaendnisVermieter: '',
+    treppenform: '',
+    etagen: '',
+    treppenbreite: '110',
+    koerpergewicht: '60',
+    zustand: [],
+    budgetrahmen: '12000',
+    vorOrtTermin: [],
+    bedarfSitzlift: '',
+  });
+
+  const handleSitzliftKriterienChange = (name: string, value: string | string[]) => {
+    setSitzliftKriterien((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -615,7 +824,28 @@ const AnfrageSitzlift: React.FC = () => {
       {/* Main Content Area - verschoben nach rechts */}
       <div className="main-content-wrapper">
         {/* Gesprächsguidance Sidebar */}
-        <Gespraechsguidance activeSection={formData.activeGuidanceSection} />
+        <Gespraechsguidance
+          activeSection={formData.activeGuidanceSection}
+          klientAnrede={formData.anrede}
+          klientNachname={formData.nachname}
+          isWeiterleitenMode={isWeiterleitenModalOpen}
+          isFirstProductComplete={
+            produktTabs[0]?.id === 'sitzlift' &&
+            !!sitzliftKriterien.einverstaendnisSenior &&
+            !!sitzliftKriterien.pflegegradSitzlift &&
+            !!sitzliftKriterien.hausart &&
+            !!sitzliftKriterien.immobilie &&
+            !!sitzliftKriterien.einverstaendnisVermieter &&
+            !!sitzliftKriterien.treppenform &&
+            !!sitzliftKriterien.etagen &&
+            !!sitzliftKriterien.treppenbreite &&
+            !!sitzliftKriterien.koerpergewicht &&
+            !!sitzliftKriterien.budgetrahmen &&
+            !!sitzliftKriterien.bedarfSitzlift &&
+            sitzliftKriterien.zustand.length > 0 &&
+            sitzliftKriterien.vorOrtTermin.length > 0
+          }
+        />
 
         {/* Main Content */}
         <div className="main-content">
@@ -653,51 +883,39 @@ const AnfrageSitzlift: React.FC = () => {
             <span>Pflegehilfe+ gebucht</span>
           </div>
 
-          {/* Klient/Interessent Section - jetzt oben */}
-          <div 
+          {/* Klient / Interessent - Persönliche Daten (oberhalb Senior) */}
+          <div
+            id="klient-persoenliche-daten"
             className="section klient-section"
             onMouseEnter={() => setFormData(prev => ({ ...prev, activeGuidanceSection: 'klient' }))}
           >
             <div className="section-header green">
-              <h2>Klient / Interessent</h2>
+              <h2>Klient / Interessent – Persönliche Daten</h2>
               <div className="section-actions">
-                <button className="icon-btn">🔄</button>
-                <button className="icon-btn">🏠</button>
+                <button type="button" className="icon-btn">🔄</button>
+                <button type="button" className="icon-btn">🏠</button>
               </div>
             </div>
             <div className="form-grid">
-              <div className="klient-two-rows-container">
-                {/* Zeile 1, Spalte 1: Anrede + Akadem. */}
+              <div className="klient-persoenlich-container">
                 <div className="klient-col1-row1">
                   <div className="form-group">
                     <label>Anrede</label>
                     <div className="radio-group">
                       <label>
-                        <input 
-                          type="radio" 
-                          name="anrede" 
-                          value="Frau" 
-                          checked={formData.anrede === 'Frau'}
-                          onChange={handleChange}
-                        />
+                        <input type="radio" name="anrede" value="Frau" checked={formData.anrede === 'Frau'} onChange={handleChange} />
                         Frau
                       </label>
                       <label>
-                        <input 
-                          type="radio" 
-                          name="anrede" 
-                          value="Herr" 
-                          checked={formData.anrede === 'Herr'}
-                          onChange={handleChange}
-                        />
+                        <input type="radio" name="anrede" value="Herr" checked={formData.anrede === 'Herr'} onChange={handleChange} />
                         Herr
                       </label>
                     </div>
                   </div>
                   <div className="form-group klient-akadem-field">
                     <label>Akadem.</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       name="akademGrad"
                       value={formData.akademGrad}
                       onChange={handleChange}
@@ -705,100 +923,25 @@ const AnfrageSitzlift: React.FC = () => {
                     />
                   </div>
                 </div>
-                {/* Zeile 1, Spalte 2: Vorname + Nachname */}
                 <div className="klient-col2-row1">
                   <div className="form-group klient-small-field">
                     <label>Vorname</label>
-                    <input 
-                      type="text" 
-                      name="vorname"
-                      value={formData.vorname}
-                      onChange={handleChange}
-                      placeholder="Vorname angeben"
-                    />
+                    <input type="text" name="vorname" value={formData.vorname} onChange={handleChange} placeholder="Vorname angeben" />
                   </div>
                   <div className="form-group klient-small-field">
                     <label>Nachname</label>
-                    <input 
-                      type="text" 
-                      name="nachname"
-                      value={formData.nachname}
-                      onChange={handleChange}
-                      placeholder="Nachname angeben"
-                    />
+                    <input type="text" name="nachname" value={formData.nachname} onChange={handleChange} placeholder="Nachname angeben" />
                   </div>
                 </div>
-                {/* Spalte 3, beide Zeilen: Kommentar */}
                 <div className="form-group klient-comment-field">
                   <label>Interner Kommentar (Klient)</label>
-                  <textarea 
+                  <input
+                    type="text"
                     name="internerKommentar"
                     value={formData.internerKommentar}
                     onChange={handleChange}
                     placeholder="Internes bitte hier eintragen"
-                    rows={4}
                   />
-                </div>
-                {/* Zeile 2, Spalte 1: E-Mail (volle Breite der Spalte) */}
-                <div className="form-group klient-email-field">
-                  <label>E-Mail</label>
-                  <input 
-                    type="email" 
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="E-Mail angeben"
-                  />
-                </div>
-                {/* Zeile 2, Spalte 2: Telefonnummer */}
-                <div className="form-group phone-group">
-                  <label>Telefonnummer</label>
-                  <div className="phone-input-wrapper">
-                    <button type="button" className="btn-blue" onClick={() => openPhoneModal()}>+ Neue Nummer</button>
-                    {phoneNumbers.length === 0 && (
-                      <span className="error-message">Eine Telefonnummer ist erforderlich.</span>
-                    )}
-                    {phoneNumbers.length > 0 && (
-                      <div className="phone-numbers-list">
-                        {phoneNumbers.map(phone => (
-                          <div key={phone.id} className="phone-number-item">
-                            {getCountryFlag(phone.countryCode) && (
-                              <span className="country-flag-display">{getCountryFlag(phone.countryCode)}</span>
-                            )}
-                            <span className="phone-type">{phone.type}:</span>
-                            <span className="phone-number">{phone.countryCode} {phone.number}</span>
-                            <div className="phone-actions">
-                              <button 
-                                type="button"
-                                className="phone-call-btn"
-                                onClick={() => callPhoneNumber(phone)}
-                                title="Anrufen"
-                              >
-                                <span className="phone-icon">📞</span>
-                                <span>Anrufen</span>
-                              </button>
-                              <button 
-                                type="button"
-                                className="phone-edit-btn"
-                                onClick={() => openPhoneModal(phone.id)}
-                                title="Bearbeiten"
-                              >
-                                <span className="edit-icon">⚙️</span>
-                              </button>
-                              <button 
-                                type="button"
-                                className="phone-delete-btn"
-                                onClick={() => deletePhoneNumber(phone.id)}
-                                title="Löschen"
-                              >
-                                <span className="delete-icon">🗑️</span>
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
                 </div>
               </div>
             </div>
@@ -819,7 +962,7 @@ const AnfrageSitzlift: React.FC = () => {
                   name="beziehung"
                   value={formData.beziehung}
                   onChange={handleSelectChange}
-                  label="💬 Beziehung"
+                  label="Beziehung"
                   placeholder="Auswählen"
                   multiple={false}
                   options={[
@@ -839,7 +982,7 @@ const AnfrageSitzlift: React.FC = () => {
                     name="pflegegrad"
                     value={formData.pflegegrad}
                     onChange={handleSelectChange}
-                    label="💬 Pflegegrad/-stufe"
+                    label="Pflegegrad/-stufe"
                     placeholder="Auswählen"
                     multiple={false}
                     options={[
@@ -864,7 +1007,7 @@ const AnfrageSitzlift: React.FC = () => {
                   name="medizinischerHintergrund"
                   value={formData.medizinischerHintergrund}
                   onChange={handleSelectChange}
-                  label="💬 Medizinischer Hintergrund"
+                  label="Medizinischer Hintergrund"
                   placeholder="Auswählen"
                   multiple={true}
                   options={[
@@ -883,7 +1026,7 @@ const AnfrageSitzlift: React.FC = () => {
                   name="mobilitaet"
                   value={formData.mobilitaet}
                   onChange={handleSelectChange}
-                  label="💬 Mobilität"
+                  label="Mobilität"
                   placeholder="Auswählen"
                   multiple={false}
                   options={[
@@ -903,7 +1046,7 @@ const AnfrageSitzlift: React.FC = () => {
                   name="barrierefreiheit"
                   value={formData.barrierefreiheit}
                   onChange={handleSelectChange}
-                  label="💬 Barrierefreiheit"
+                  label="Barrierefreiheit"
                   placeholder="Auswählen"
                   multiple={true}
                   options={[
@@ -918,7 +1061,7 @@ const AnfrageSitzlift: React.FC = () => {
                   name="wohnsituation"
                   value={formData.wohnsituation}
                   onChange={handleSelectChange}
-                  label="💬 Wohnsituation"
+                  label="Wohnsituation"
                   placeholder="Auswählen"
                   multiple={true}
                   options={[
@@ -935,7 +1078,7 @@ const AnfrageSitzlift: React.FC = () => {
                   name="aktuelleVersorgung"
                   value={formData.aktuelleVersorgung}
                   onChange={handleSelectChange}
-                  label="💬 Aktuelle Versorgung"
+                  label="Aktuelle Versorgung"
                   placeholder="Auswählen"
                   multiple={true}
                   options={[
@@ -984,7 +1127,7 @@ const AnfrageSitzlift: React.FC = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>💬 Vorname des Seniors</label>
+                  <label>Vorname des Seniors</label>
                   <input 
                     type="text" 
                     name="seniorVorname"
@@ -994,7 +1137,7 @@ const AnfrageSitzlift: React.FC = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>💬 Nachname des Seniors</label>
+                  <label>Nachname des Seniors</label>
                   <input 
                     type="text" 
                     name="seniorNachname"
@@ -1004,7 +1147,7 @@ const AnfrageSitzlift: React.FC = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>💬 Alter</label>
+                  <label>Alter</label>
                   <input 
                     type="text" 
                     name="alter"
@@ -1018,7 +1161,10 @@ const AnfrageSitzlift: React.FC = () => {
           </div>
 
           {/* Weiterleitung Section (grüne Überschrift, enthält Tools, PLZ, Collapsible, Actions) */}
-          <div className="section weiterleitung-section">
+          <div 
+            className="section weiterleitung-section"
+            onMouseEnter={() => setFormData(prev => ({ ...prev, activeGuidanceSection: 'weiterleitung' }))}
+          >
             <div className="section-header green">
               <h2>Weiterleitung</h2>
             </div>
@@ -1028,7 +1174,7 @@ const AnfrageSitzlift: React.FC = () => {
                   name="toolsUndInformationen"
                   value={formData.toolsUndInformationen}
                   onChange={handleSelectChange}
-                  label="💬 Tools & Informationen (nur für Deutschland)"
+                  label="Tools & Informationen (nur für Deutschland)"
                   placeholder="Auswählen"
                   multiple={true}
                   options={[
@@ -1039,7 +1185,7 @@ const AnfrageSitzlift: React.FC = () => {
               </div>
 
               <div className="form-row">
-                <label className="field-label-same">Produktempfehlung</label>
+                <label className="field-label-same">Produkte</label>
               </div>
 
               {/* Reiter-Container: Tab-Leiste + Inhalt als klassische Reiter */}
@@ -1240,8 +1386,8 @@ const AnfrageSitzlift: React.FC = () => {
                                       <span className="produktkriterien-count">0</span>
                                     </div>
                                     <div className="radio-group">
-                                      <label><input type="radio" name="einverstaendnisSenior" value="vorhanden" /> Liegt vor (10)</label>
-                                      <label><input type="radio" name="einverstaendnisSenior" value="nicht_vorhanden" /> Liegt nicht vor (0)</label>
+                                      <label><input type="radio" name="einverstaendnisSenior" value="vorhanden" checked={sitzliftKriterien.einverstaendnisSenior === 'vorhanden'} onChange={(e) => handleSitzliftKriterienChange('einverstaendnisSenior', e.target.value)} /> Liegt vor (10)</label>
+                                      <label><input type="radio" name="einverstaendnisSenior" value="nicht_vorhanden" checked={sitzliftKriterien.einverstaendnisSenior === 'nicht_vorhanden'} onChange={(e) => handleSitzliftKriterienChange('einverstaendnisSenior', e.target.value)} /> Liegt nicht vor (0)</label>
                                     </div>
                                   </div>
                                   <div className="produktkriterien-group">
@@ -1250,9 +1396,9 @@ const AnfrageSitzlift: React.FC = () => {
                                       <span className="produktkriterien-count">0</span>
                                     </div>
                                     <div className="radio-group">
-                                      <label><input type="radio" name="pflegegradSitzlift" value="vorhanden" /> Vorhanden (10)</label>
-                                      <label><input type="radio" name="pflegegradSitzlift" value="beantragt" /> Beantragt (10)</label>
-                                      <label><input type="radio" name="pflegegradSitzlift" value="nicht_vorhanden" /> Nicht vorhanden (10)</label>
+                                      <label><input type="radio" name="pflegegradSitzlift" value="vorhanden" checked={sitzliftKriterien.pflegegradSitzlift === 'vorhanden'} onChange={(e) => handleSitzliftKriterienChange('pflegegradSitzlift', e.target.value)} /> Vorhanden (10)</label>
+                                      <label><input type="radio" name="pflegegradSitzlift" value="beantragt" checked={sitzliftKriterien.pflegegradSitzlift === 'beantragt'} onChange={(e) => handleSitzliftKriterienChange('pflegegradSitzlift', e.target.value)} /> Beantragt (10)</label>
+                                      <label><input type="radio" name="pflegegradSitzlift" value="nicht_vorhanden" checked={sitzliftKriterien.pflegegradSitzlift === 'nicht_vorhanden'} onChange={(e) => handleSitzliftKriterienChange('pflegegradSitzlift', e.target.value)} /> Nicht vorhanden (10)</label>
                                     </div>
                                   </div>
                                   <div className="produktkriterien-group">
@@ -1261,11 +1407,11 @@ const AnfrageSitzlift: React.FC = () => {
                                       <span className="produktkriterien-count">0</span>
                                     </div>
                                     <div className="radio-group">
-                                      <label><input type="radio" name="hausart" value="einfamilienhaus" /> Einfamilienhaus (19)</label>
-                                      <label><input type="radio" name="hausart" value="zweifamilienhaus" /> Zweifamilienhaus (18)</label>
-                                      <label><input type="radio" name="hausart" value="mehrfamilienhaus" /> Mehrfamilienhaus (0)</label>
-                                      <label><input type="radio" name="hausart" value="maisonette" /> Maisonette-Wohnung (10)</label>
-                                      <label><input type="radio" name="hausart" value="gewerbe" /> Gewerbe (0)</label>
+                                      <label><input type="radio" name="hausart" value="einfamilienhaus" checked={sitzliftKriterien.hausart === 'einfamilienhaus'} onChange={(e) => handleSitzliftKriterienChange('hausart', e.target.value)} /> Einfamilienhaus (19)</label>
+                                      <label><input type="radio" name="hausart" value="zweifamilienhaus" checked={sitzliftKriterien.hausart === 'zweifamilienhaus'} onChange={(e) => handleSitzliftKriterienChange('hausart', e.target.value)} /> Zweifamilienhaus (18)</label>
+                                      <label><input type="radio" name="hausart" value="mehrfamilienhaus" checked={sitzliftKriterien.hausart === 'mehrfamilienhaus'} onChange={(e) => handleSitzliftKriterienChange('hausart', e.target.value)} /> Mehrfamilienhaus (0)</label>
+                                      <label><input type="radio" name="hausart" value="maisonette" checked={sitzliftKriterien.hausart === 'maisonette'} onChange={(e) => handleSitzliftKriterienChange('hausart', e.target.value)} /> Maisonette-Wohnung (10)</label>
+                                      <label><input type="radio" name="hausart" value="gewerbe" checked={sitzliftKriterien.hausart === 'gewerbe'} onChange={(e) => handleSitzliftKriterienChange('hausart', e.target.value)} /> Gewerbe (0)</label>
                                     </div>
                                   </div>
                                   <div className="produktkriterien-group">
@@ -1274,8 +1420,8 @@ const AnfrageSitzlift: React.FC = () => {
                                       <span className="produktkriterien-count">0</span>
                                     </div>
                                     <div className="radio-group">
-                                      <label><input type="radio" name="immobilie" value="eigentum" /> Eigentum (10)</label>
-                                      <label><input type="radio" name="immobilie" value="miete" /> Miete (14)</label>
+                                      <label><input type="radio" name="immobilie" value="eigentum" checked={sitzliftKriterien.immobilie === 'eigentum'} onChange={(e) => handleSitzliftKriterienChange('immobilie', e.target.value)} /> Eigentum (10)</label>
+                                      <label><input type="radio" name="immobilie" value="miete" checked={sitzliftKriterien.immobilie === 'miete'} onChange={(e) => handleSitzliftKriterienChange('immobilie', e.target.value)} /> Miete (14)</label>
                                     </div>
                                   </div>
                                   <div className="produktkriterien-group">
@@ -1284,9 +1430,9 @@ const AnfrageSitzlift: React.FC = () => {
                                       <span className="produktkriterien-count">0</span>
                                     </div>
                                     <div className="radio-group">
-                                      <label><input type="radio" name="einverstaendnisVermieter" value="vorhanden" /> Vorhanden/Eigentümer (10)</label>
-                                      <label><input type="radio" name="einverstaendnisVermieter" value="angefragt" /> Angefragt/In Klärung (5)</label>
-                                      <label><input type="radio" name="einverstaendnisVermieter" value="nicht_vorhanden" /> Nicht vorhanden (3)</label>
+                                      <label><input type="radio" name="einverstaendnisVermieter" value="vorhanden" checked={sitzliftKriterien.einverstaendnisVermieter === 'vorhanden'} onChange={(e) => handleSitzliftKriterienChange('einverstaendnisVermieter', e.target.value)} /> Vorhanden/Eigentümer (10)</label>
+                                      <label><input type="radio" name="einverstaendnisVermieter" value="angefragt" checked={sitzliftKriterien.einverstaendnisVermieter === 'angefragt'} onChange={(e) => handleSitzliftKriterienChange('einverstaendnisVermieter', e.target.value)} /> Angefragt/In Klärung (5)</label>
+                                      <label><input type="radio" name="einverstaendnisVermieter" value="nicht_vorhanden" checked={sitzliftKriterien.einverstaendnisVermieter === 'nicht_vorhanden'} onChange={(e) => handleSitzliftKriterienChange('einverstaendnisVermieter', e.target.value)} /> Nicht vorhanden (3)</label>
                                     </div>
                                   </div>
                                 </div>
@@ -1302,10 +1448,10 @@ const AnfrageSitzlift: React.FC = () => {
                                       <span className="produktkriterien-count">0</span>
                                     </div>
                                     <div className="radio-group">
-                                      <label><input type="radio" name="treppenform" value="gerade_innen" /> Gerade Treppe im Innenbereich (18)</label>
-                                      <label><input type="radio" name="treppenform" value="gerade_aussen" /> Gerade Treppe im Außenbereich (18)</label>
-                                      <label><input type="radio" name="treppenform" value="kurvig_innen" /> Kurvige Treppe im Innenbereich (18)</label>
-                                      <label><input type="radio" name="treppenform" value="kurvig_aussen" /> Kurvige Treppe im Außenbereich (16)</label>
+                                      <label><input type="radio" name="treppenform" value="gerade_innen" checked={sitzliftKriterien.treppenform === 'gerade_innen'} onChange={(e) => handleSitzliftKriterienChange('treppenform', e.target.value)} /> Gerade Treppe im Innenbereich (18)</label>
+                                      <label><input type="radio" name="treppenform" value="gerade_aussen" checked={sitzliftKriterien.treppenform === 'gerade_aussen'} onChange={(e) => handleSitzliftKriterienChange('treppenform', e.target.value)} /> Gerade Treppe im Außenbereich (18)</label>
+                                      <label><input type="radio" name="treppenform" value="kurvig_innen" checked={sitzliftKriterien.treppenform === 'kurvig_innen'} onChange={(e) => handleSitzliftKriterienChange('treppenform', e.target.value)} /> Kurvige Treppe im Innenbereich (18)</label>
+                                      <label><input type="radio" name="treppenform" value="kurvig_aussen" checked={sitzliftKriterien.treppenform === 'kurvig_aussen'} onChange={(e) => handleSitzliftKriterienChange('treppenform', e.target.value)} /> Kurvige Treppe im Außenbereich (16)</label>
                                     </div>
                                   </div>
                                   <div className="produktkriterien-group">
@@ -1314,10 +1460,10 @@ const AnfrageSitzlift: React.FC = () => {
                                       <span className="produktkriterien-count">0</span>
                                     </div>
                                     <div className="radio-group">
-                                      <label><input type="radio" name="etagen" value="1" /> 1 (10)</label>
-                                      <label><input type="radio" name="etagen" value="2" /> 2 (18)</label>
-                                      <label><input type="radio" name="etagen" value="3" /> 3 (18)</label>
-                                      <label><input type="radio" name="etagen" value="4" /> 4 (18)</label>
+                                      <label><input type="radio" name="etagen" value="1" checked={sitzliftKriterien.etagen === '1'} onChange={(e) => handleSitzliftKriterienChange('etagen', e.target.value)} /> 1 (10)</label>
+                                      <label><input type="radio" name="etagen" value="2" checked={sitzliftKriterien.etagen === '2'} onChange={(e) => handleSitzliftKriterienChange('etagen', e.target.value)} /> 2 (18)</label>
+                                      <label><input type="radio" name="etagen" value="3" checked={sitzliftKriterien.etagen === '3'} onChange={(e) => handleSitzliftKriterienChange('etagen', e.target.value)} /> 3 (18)</label>
+                                      <label><input type="radio" name="etagen" value="4" checked={sitzliftKriterien.etagen === '4'} onChange={(e) => handleSitzliftKriterienChange('etagen', e.target.value)} /> 4 (18)</label>
                                     </div>
                                     <div style={{ fontSize: '12px', color: '#666', marginTop: '4px', fontStyle: 'italic' }}>
                                       Ab 2 Etagen: NUR kurvig und innen möglich
@@ -1334,7 +1480,8 @@ const AnfrageSitzlift: React.FC = () => {
                                         name="treppenbreite" 
                                         min="70" 
                                         max="150" 
-                                        defaultValue="110"
+                                        value={sitzliftKriterien.treppenbreite}
+                                        onChange={(e) => handleSitzliftKriterienChange('treppenbreite', e.target.value)}
                                         className="produktkriterien-slider"
                                       />
                                       <div className="slider-labels">
@@ -1354,7 +1501,8 @@ const AnfrageSitzlift: React.FC = () => {
                                         name="koerpergewicht" 
                                         min="10" 
                                         max="200" 
-                                        defaultValue="60"
+                                        value={sitzliftKriterien.koerpergewicht}
+                                        onChange={(e) => handleSitzliftKriterienChange('koerpergewicht', e.target.value)}
                                         className="produktkriterien-slider"
                                       />
                                       <div className="slider-labels">
@@ -1369,9 +1517,9 @@ const AnfrageSitzlift: React.FC = () => {
                                       <span className="produktkriterien-count">0</span>
                                     </div>
                                     <div className="checkbox-group">
-                                      <label><input type="checkbox" name="zustand" value="neu" /> Neu (10)</label>
-                                      <label><input type="checkbox" name="zustand" value="gebraucht" /> Gebraucht (8)</label>
-                                      <label><input type="checkbox" name="zustand" value="miete" /> Miete (0)</label>
+                                      <label><input type="checkbox" name="zustand" value="neu" checked={sitzliftKriterien.zustand.includes('neu')} onChange={(e) => { const v = e.target.value; handleSitzliftKriterienChange('zustand', sitzliftKriterien.zustand.includes(v) ? sitzliftKriterien.zustand.filter((x) => x !== v) : [...sitzliftKriterien.zustand, v]); }} /> Neu (10)</label>
+                                      <label><input type="checkbox" name="zustand" value="gebraucht" checked={sitzliftKriterien.zustand.includes('gebraucht')} onChange={(e) => { const v = e.target.value; handleSitzliftKriterienChange('zustand', sitzliftKriterien.zustand.includes(v) ? sitzliftKriterien.zustand.filter((x) => x !== v) : [...sitzliftKriterien.zustand, v]); }} /> Gebraucht (8)</label>
+                                      <label><input type="checkbox" name="zustand" value="miete" checked={sitzliftKriterien.zustand.includes('miete')} onChange={(e) => { const v = e.target.value; handleSitzliftKriterienChange('zustand', sitzliftKriterien.zustand.includes(v) ? sitzliftKriterien.zustand.filter((x) => x !== v) : [...sitzliftKriterien.zustand, v]); }} /> Miete (0)</label>
                                     </div>
                                   </div>
                                   <div className="produktkriterien-group">
@@ -1386,7 +1534,8 @@ const AnfrageSitzlift: React.FC = () => {
                                         min="4000" 
                                         max="25000" 
                                         step="1000"
-                                        defaultValue="12000"
+                                        value={sitzliftKriterien.budgetrahmen}
+                                        onChange={(e) => handleSitzliftKriterienChange('budgetrahmen', e.target.value)}
                                         className="produktkriterien-slider"
                                       />
                                       <div className="slider-labels">
@@ -1408,9 +1557,9 @@ const AnfrageSitzlift: React.FC = () => {
                                       <span className="produktkriterien-count">0</span>
                                     </div>
                                     <div className="checkbox-group">
-                                      <label><input type="checkbox" name="vorOrtTermin" value="vormittags" /> Ja - Vormittags (10)</label>
-                                      <label><input type="checkbox" name="vorOrtTermin" value="nachmittags" /> Ja - Nachmittags (10)</label>
-                                      <label><input type="checkbox" name="vorOrtTermin" value="nein" /> Nein (3)</label>
+                                      <label><input type="checkbox" name="vorOrtTermin" value="vormittags" checked={sitzliftKriterien.vorOrtTermin.includes('vormittags')} onChange={(e) => { const v = e.target.value; handleSitzliftKriterienChange('vorOrtTermin', sitzliftKriterien.vorOrtTermin.includes(v) ? sitzliftKriterien.vorOrtTermin.filter((x) => x !== v) : [...sitzliftKriterien.vorOrtTermin, v]); }} /> Ja - Vormittags (10)</label>
+                                      <label><input type="checkbox" name="vorOrtTermin" value="nachmittags" checked={sitzliftKriterien.vorOrtTermin.includes('nachmittags')} onChange={(e) => { const v = e.target.value; handleSitzliftKriterienChange('vorOrtTermin', sitzliftKriterien.vorOrtTermin.includes(v) ? sitzliftKriterien.vorOrtTermin.filter((x) => x !== v) : [...sitzliftKriterien.vorOrtTermin, v]); }} /> Ja - Nachmittags (10)</label>
+                                      <label><input type="checkbox" name="vorOrtTermin" value="nein" checked={sitzliftKriterien.vorOrtTermin.includes('nein')} onChange={(e) => { const v = e.target.value; handleSitzliftKriterienChange('vorOrtTermin', sitzliftKriterien.vorOrtTermin.includes(v) ? sitzliftKriterien.vorOrtTermin.filter((x) => x !== v) : [...sitzliftKriterien.vorOrtTermin, v]); }} /> Nein (3)</label>
                                     </div>
                                   </div>
                                   <div className="produktkriterien-group">
@@ -1419,9 +1568,9 @@ const AnfrageSitzlift: React.FC = () => {
                                       <span className="produktkriterien-count">0</span>
                                     </div>
                                     <div className="radio-group">
-                                      <label><input type="radio" name="bedarfSitzlift" value="schnell" /> Schnellstmöglich (10)</label>
-                                      <label><input type="radio" name="bedarfSitzlift" value="wochen" /> In Wochen (7)</label>
-                                      <label><input type="radio" name="bedarfSitzlift" value="monate" /> In Monaten (1)</label>
+                                      <label><input type="radio" name="bedarfSitzlift" value="schnell" checked={sitzliftKriterien.bedarfSitzlift === 'schnell'} onChange={(e) => handleSitzliftKriterienChange('bedarfSitzlift', e.target.value)} /> Schnellstmöglich (10)</label>
+                                      <label><input type="radio" name="bedarfSitzlift" value="wochen" checked={sitzliftKriterien.bedarfSitzlift === 'wochen'} onChange={(e) => handleSitzliftKriterienChange('bedarfSitzlift', e.target.value)} /> In Wochen (7)</label>
+                                      <label><input type="radio" name="bedarfSitzlift" value="monate" checked={sitzliftKriterien.bedarfSitzlift === 'monate'} onChange={(e) => handleSitzliftKriterienChange('bedarfSitzlift', e.target.value)} /> In Monaten (1)</label>
                                     </div>
                                   </div>
                                 </div>
@@ -1539,14 +1688,71 @@ const AnfrageSitzlift: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Bottom Actions (pro Produkt) */}
-                    <div className="bottom-actions">
-                      <button className="btn-grey">Speichern</button>
-                      <button className="btn-green">Speichern & Weiter</button>
-                      <div className="responsible-person">
-                        Verantwortlicher: hannah.venohr@pflegehilfe.de
-                      </div>
+                    <div className="responsible-person">
+                      Verantwortlicher: hannah.venohr@pflegehilfe.de
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Klient / Interessent - Kontaktinformationen */}
+          <div
+            className="section klient-section"
+            onMouseEnter={() => setFormData(prev => ({ ...prev, activeGuidanceSection: 'klient' }))}
+          >
+            <div className="section-header green">
+              <h2>Klient / Interessent – Kontaktinformationen</h2>
+              <div className="section-actions">
+                <button type="button" className="icon-btn">🔄</button>
+                <button type="button" className="icon-btn">🏠</button>
+              </div>
+            </div>
+            <div className="form-grid">
+              <div className="klient-kontakt-container">
+                <div className="form-group klient-email-field">
+                  <label>E-Mail</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="E-Mail angeben"
+                  />
+                </div>
+                <div className="form-group phone-group">
+                  <label>Telefonnummer</label>
+                  <div className="phone-input-wrapper">
+                    <button type="button" className="btn-blue" onClick={() => openPhoneModal()}>+ Neue Nummer</button>
+                    {phoneNumbers.length === 0 && (
+                      <span className="error-message">Eine Telefonnummer ist erforderlich.</span>
+                    )}
+                    {phoneNumbers.length > 0 && (
+                      <div className="phone-numbers-list">
+                        {phoneNumbers.map(phone => (
+                          <div key={phone.id} className="phone-number-item">
+                            {getCountryFlag(phone.countryCode) && (
+                              <span className="country-flag-display">{getCountryFlag(phone.countryCode)}</span>
+                            )}
+                            <span className="phone-type">{phone.type}:</span>
+                            <span className="phone-number">{phone.countryCode} {phone.number}</span>
+                            <div className="phone-actions">
+                              <button type="button" className="phone-call-btn" onClick={() => callPhoneNumber(phone)} title="Anrufen">
+                                <span className="phone-icon">📞</span>
+                                <span>Anrufen</span>
+                              </button>
+                              <button type="button" className="phone-edit-btn" onClick={() => openPhoneModal(phone.id)} title="Bearbeiten">
+                                <span className="edit-icon">⚙️</span>
+                              </button>
+                              <button type="button" className="phone-delete-btn" onClick={() => deletePhoneNumber(phone.id)} title="Löschen">
+                                <span className="delete-icon">🗑️</span>
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1554,6 +1760,112 @@ const AnfrageSitzlift: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <div
+        className="floating-save-box"
+        onMouseEnter={() => setFormData((prev) => ({ ...prev, activeGuidanceSection: 'abschluss' }))}
+      >
+        <button
+          type="button"
+          className="floating-save-klient"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          title="Zu Klient / Interessent – Persönliche Daten scrollen"
+        >
+          <span className="floating-save-klient-label">Klient:</span>
+          <span className="floating-save-klient-value">
+            {[formData.anrede, formData.vorname, formData.nachname].filter(Boolean).join(' ') || 'Unbekannt'}
+          </span>
+        </button>
+        <button className="btn-grey">Speichern</button>
+        <button className="btn-green" onClick={() => setIsWeiterleitenModalOpen(true)}>Anfrage weiterleiten</button>
+      </div>
+
+      {/* Anfrage weiterleiten Modal */}
+      {isWeiterleitenModalOpen && (
+        <div className="modal-overlay modal-overlay-right-pane" onClick={() => setIsWeiterleitenModalOpen(false)}>
+          <div className="modal-content weiterleiten-modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-title">Anfrage abschicken</h2>
+
+            <div className="weiterleiten-grid">
+              <div className="weiterleiten-column-title">Sitzlift</div>
+              <div className="weiterleiten-anbieter-card selected">
+                <div className="anbieter-head">
+                  <span className="anbieter-name">Sonilift GmbH</span>
+                  <span className="anbieter-check">✓</span>
+                </div>
+                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
+              </div>
+              <div className="weiterleiten-anbieter-card selected">
+                <div className="anbieter-head">
+                  <span className="anbieter-name">SANA Treppenlifte</span>
+                  <span className="anbieter-check">✓</span>
+                </div>
+                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
+              </div>
+              <div className="weiterleiten-anbieter-card selected">
+                <div className="anbieter-head">
+                  <span className="anbieter-name">Expertlift GmbH</span>
+                  <span className="anbieter-check">✓</span>
+                </div>
+                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
+              </div>
+              <div className="weiterleiten-anbieter-card selected">
+                <div className="anbieter-head">
+                  <span className="anbieter-name">Fairlifi Treppenlifte GmbH</span>
+                  <span className="anbieter-check">✓</span>
+                </div>
+                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
+              </div>
+            </div>
+
+            <div className="weiterleiten-tools-row">
+              <div className="weiterleiten-column-title">Tools & Informationen</div>
+              <div className="weiterleiten-tool-item selected">Pflegegrad-Rechner</div>
+              <div className="weiterleiten-tool-item selected">Pflegezuschuesse & -Leistungen</div>
+            </div>
+            <div className="weiterleiten-tools-hint">
+              Die Auswahl wird dem Klienten via E-Mail zugesendet.
+            </div>
+
+            <div className="weiterleiten-separator" />
+
+            <div className="weiterleiten-bottom-grid">
+              <div className="weiterleiten-options-block">
+                <div className="weiterleiten-options-title">Beste telefonische Erreichbarkeit</div>
+                <div className="weiterleiten-options">
+                  <label><input type="checkbox" /> Ganztägig</label>
+                  <label><input type="checkbox" /> Vormittags</label>
+                  <label><input type="checkbox" /> Nachmittags</label>
+                  <label><input type="checkbox" /> Abends</label>
+                </div>
+                <label className="weiterleiten-consent">
+                  <input type="checkbox" /> Zustimmung zur Kontaktweitergabe & -aufnahme durch die genannten Anbieter
+                </label>
+              </div>
+
+              <div className="weiterleiten-followup-block">
+                <div className="weiterleiten-followup-title">
+                  <span>Nachbetreuung am</span>
+                  <label><input type="checkbox" /> Uhrzeit</label>
+                </div>
+                <div className="weiterleiten-followup-fields">
+                  <input type="text" defaultValue="04.03.26" />
+                  <input type="text" defaultValue="16:18" />
+                </div>
+              </div>
+            </div>
+
+            <div className="weiterleiten-footer">
+              <div className="weiterleiten-note">Super - die umsatzstärkste Anbieterauswahl wurde ausgewählt!</div>
+              <div className="weiterleiten-actions">
+                <button className="weiterleiten-text-btn" onClick={() => setIsWeiterleitenModalOpen(false)}>Abschicken</button>
+                <button className="btn-blue" onClick={() => setIsWeiterleitenModalOpen(false)}>Abschicken & Neue Anfrage</button>
+                <button className="btn-orange" onClick={() => setIsWeiterleitenModalOpen(false)}>Abbrechen</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Telefonnummer Modal */}
       {isPhoneModalOpen && (
