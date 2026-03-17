@@ -334,17 +334,15 @@ const guidanceData: GuidanceSection[] = [
 ];
 
 const Gespraechsguidance: React.FC<{
-  activeSection: string;
+  klientDisplayName: string;
   klientAnrede: string;
   klientNachname: string;
   isWeiterleitenMode: boolean;
-  isFirstProductComplete?: boolean;
 }> = ({
-  activeSection,
+  klientDisplayName,
   klientAnrede,
   klientNachname,
-  isWeiterleitenMode,
-  isFirstProductComplete = false
+  isWeiterleitenMode
 }) => {
   const groupOrder = [
     'Vorwandbehandlung',
@@ -372,37 +370,6 @@ const Gespraechsguidance: React.FC<{
     }
   ];
   const visibleGroups = isWeiterleitenMode ? weiterleitenModeGroups : defaultVisibleGroups;
-  const vorwandbehandlungIndex = visibleGroups.findIndex((g) => g.title === 'Vorwandbehandlung');
-  const [openGroupIndex, setOpenGroupIndex] = useState<number | null>(
-    vorwandbehandlungIndex >= 0 ? vorwandbehandlungIndex : null
-  );
-
-  // Gelbe Box (Abschluss) hat Vorrang; dann erstes Produkt voll → Cross-Selling; dann Maus über Bereiche
-  useEffect(() => {
-    if (isWeiterleitenMode) return;
-    if (activeSection === 'abschluss') {
-      const index = visibleGroups.findIndex((g) => g.title === 'Abschluss');
-      setOpenGroupIndex(index >= 0 ? index : null);
-    } else if (isFirstProductComplete) {
-      const index = visibleGroups.findIndex((g) => g.title === 'Cross-Selling');
-      setOpenGroupIndex(index >= 0 ? index : null);
-    } else if (activeSection === 'senior') {
-      const index = visibleGroups.findIndex((g) => g.title === 'Bedarfsermittlung');
-      setOpenGroupIndex(index >= 0 ? index : null);
-    } else if (activeSection === 'weiterleitung') {
-      const index = visibleGroups.findIndex((g) => g.title === 'Einwandbehandlung');
-      setOpenGroupIndex(index >= 0 ? index : null);
-    } else {
-      // Zu Beginn und bei Klient: „Vorwandbehandlung“ ausgeklappt
-      const index = visibleGroups.findIndex((g) => g.title === 'Vorwandbehandlung');
-      setOpenGroupIndex(index >= 0 ? index : null);
-    }
-  }, [activeSection, isWeiterleitenMode, isFirstProductComplete]);
-
-  const handleSummaryClick = (index: number) => {
-    setOpenGroupIndex((prev) => (prev === index ? null : index));
-  };
-
   const replaceKlientPlaceholders = (text: string) =>
     text
       .replace('[Anrede]', klientAnrede || '')
@@ -410,25 +377,45 @@ const Gespraechsguidance: React.FC<{
       .replace(/\s{2,}/g, ' ')
       .trim();
 
+  const vorwandbehandlungIndex = visibleGroups.findIndex((g) => g.title === 'Vorwandbehandlung');
+  const [openGroupIndex, setOpenGroupIndex] = useState<number | null>(
+    vorwandbehandlungIndex >= 0 ? vorwandbehandlungIndex : null
+  );
+  const [openEntryKey, setOpenEntryKey] = useState<string | null>(null);
+
+  const handleGroupSummaryClick = (index: number) => {
+    setOpenGroupIndex((prev) => (prev === index ? null : index));
+    setOpenEntryKey(null);
+  };
+
+  const handleEntrySummaryClick = (groupIndex: number, entryIndex: number) => {
+    const key = `${groupIndex}-${entryIndex}`;
+    setOpenEntryKey((prev) => (prev === key ? null : key));
+  };
+
   return (
     <div className="guidance-sidebar">
+      <div className="guidance-klient-line">
+        <span className="guidance-klient-label">Klient:</span>
+        <span className="guidance-klient-name">{klientDisplayName}</span>
+      </div>
       <div className="guidance-header">
         <span className="guidance-icon">💡</span>
-        <h3>Gesprächsguidance</h3>
+        <h3>Gesprächshilfen</h3>
       </div>
       <div className="guidance-content">
         <div className="guidance-tips">
-          {visibleGroups.map((group, index) => (
-            <div key={index} className="guidance-tip">
+          {visibleGroups.map((group, groupIndex) => (
+            <div key={groupIndex} className="guidance-tip">
               <details
                 className="guidance-group-collapsible"
-                open={openGroupIndex === index}
+                open={openGroupIndex === groupIndex}
               >
                 <summary
                   className="tip-title guidance-collapsible-summary"
                   onClick={(e) => {
                     e.preventDefault();
-                    handleSummaryClick(index);
+                    handleGroupSummaryClick(groupIndex);
                   }}
                 >
                   {group.title}
@@ -445,10 +432,24 @@ const Gespraechsguidance: React.FC<{
                 {group.entries && group.entries.length > 0 && (
                   <div className="guidance-group-entries guidance-collapsible-content">
                     {group.entries.map((entry, entryIndex) => (
-                      <div key={entryIndex} className="guidance-group-entry">
-                        <div className="guidance-group-entry-title">{entry.title}</div>
-                        <div className="guidance-group-entry-text">{replaceKlientPlaceholders(entry.text)}</div>
-                      </div>
+                      <details
+                        key={entryIndex}
+                        className="guidance-entry-collapsible"
+                        open={openEntryKey === `${groupIndex}-${entryIndex}`}
+                      >
+                        <summary
+                          className="guidance-entry-summary"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleEntrySummaryClick(groupIndex, entryIndex);
+                          }}
+                        >
+                          {entry.title}
+                        </summary>
+                        <div className="guidance-group-entry-text">
+                          {replaceKlientPlaceholders(entry.text)}
+                        </div>
+                      </details>
                     ))}
                   </div>
                 )}
@@ -466,10 +467,10 @@ const AnfrageSitzlift: React.FC = () => {
     // Active section for guidance
     activeGuidanceSection: 'klient',
     // Klient/Interessent Felder (jetzt oben)
-    anrede: 'Herr',
+    anrede: 'Frau',
     akademGrad: '',
-    vorname: 'test',
-    nachname: 'test',
+    vorname: 'Hannah',
+    nachname: 'Venohr',
     email: 'demo@test.de',
     telefon: '',
     internerKommentar: '',
@@ -500,9 +501,13 @@ const AnfrageSitzlift: React.FC = () => {
     number: string;
     countryCode: string;
   }
-  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([]);
+  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([
+    { id: 'phone-1', type: 'Mobil', number: '01512 3456789', countryCode: '+49' }
+  ]);
   const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
   const [isWeiterleitenModalOpen, setIsWeiterleitenModalOpen] = useState(false);
+  const [erreichbarkeit, setErreichbarkeit] = useState({ ganztägig: false, vormittags: false, nachmittags: false, abends: false });
+  const [zustimmungKontaktweitergabe, setZustimmungKontaktweitergabe] = useState(false);
   const [editingPhoneId, setEditingPhoneId] = useState<string | null>(null);
   const [phoneModalData, setPhoneModalData] = useState({
     type: 'Mobil',
@@ -510,7 +515,7 @@ const AnfrageSitzlift: React.FC = () => {
     countryCode: '+49'
   });
   const [phoneValidationError, setPhoneValidationError] = useState('');
-  const nextPhoneIdRef = useRef(1);
+  const nextPhoneIdRef = useRef(2);
 
   // Produktauswahl: Reiter unter "Produktempfehlung", UI wie im Screenshot (Name, "X von Y AN", ×)
   const [produktTabs, setProduktTabs] = useState<{ id: string; label: string; count: number; maxAN: number }[]>([
@@ -825,26 +830,10 @@ const AnfrageSitzlift: React.FC = () => {
       <div className="main-content-wrapper">
         {/* Gesprächsguidance Sidebar */}
         <Gespraechsguidance
-          activeSection={formData.activeGuidanceSection}
+          klientDisplayName={[formData.anrede, formData.vorname, formData.nachname].filter(Boolean).join(' ') || 'Unbekannt'}
           klientAnrede={formData.anrede}
           klientNachname={formData.nachname}
           isWeiterleitenMode={isWeiterleitenModalOpen}
-          isFirstProductComplete={
-            produktTabs[0]?.id === 'sitzlift' &&
-            !!sitzliftKriterien.einverstaendnisSenior &&
-            !!sitzliftKriterien.pflegegradSitzlift &&
-            !!sitzliftKriterien.hausart &&
-            !!sitzliftKriterien.immobilie &&
-            !!sitzliftKriterien.einverstaendnisVermieter &&
-            !!sitzliftKriterien.treppenform &&
-            !!sitzliftKriterien.etagen &&
-            !!sitzliftKriterien.treppenbreite &&
-            !!sitzliftKriterien.koerpergewicht &&
-            !!sitzliftKriterien.budgetrahmen &&
-            !!sitzliftKriterien.bedarfSitzlift &&
-            sitzliftKriterien.zustand.length > 0 &&
-            sitzliftKriterien.vorOrtTermin.length > 0
-          }
         />
 
         {/* Main Content */}
@@ -883,14 +872,14 @@ const AnfrageSitzlift: React.FC = () => {
             <span>Pflegehilfe+ gebucht</span>
           </div>
 
-          {/* Klient / Interessent - Persönliche Daten (oberhalb Senior) */}
+          {/* Klient / Interessent (Persönliche Daten + Kontakt in zweiter Zeile) */}
           <div
             id="klient-persoenliche-daten"
             className="section klient-section"
             onMouseEnter={() => setFormData(prev => ({ ...prev, activeGuidanceSection: 'klient' }))}
           >
             <div className="section-header green">
-              <h2>Klient / Interessent – Persönliche Daten</h2>
+              <h2>Klient / Interessent</h2>
               <div className="section-actions">
                 <button type="button" className="icon-btn">🔄</button>
                 <button type="button" className="icon-btn">🏠</button>
@@ -942,6 +931,53 @@ const AnfrageSitzlift: React.FC = () => {
                     onChange={handleChange}
                     placeholder="Internes bitte hier eintragen"
                   />
+                </div>
+                {/* Zweite Zeile: Kontaktinformationen */}
+                <div className="klient-row2-kontakt">
+                  <div className="form-group klient-email-field">
+                    <label>E-Mail</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="E-Mail angeben"
+                    />
+                  </div>
+                  <div className="form-group phone-group">
+                    <label>Telefonnummer</label>
+                    <div className="phone-input-wrapper">
+                      <button type="button" className="btn-blue" onClick={() => openPhoneModal()}>+ Neue Nummer</button>
+                      {phoneNumbers.length === 0 && (
+                        <span className="error-message">Eine Telefonnummer ist erforderlich.</span>
+                      )}
+                      {phoneNumbers.length > 0 && (
+                        <div className="phone-numbers-list">
+                          {phoneNumbers.map(phone => (
+                            <div key={phone.id} className="phone-number-item">
+                              {getCountryFlag(phone.countryCode) && (
+                                <span className="country-flag-display">{getCountryFlag(phone.countryCode)}</span>
+                              )}
+                              <span className="phone-type">{phone.type}:</span>
+                              <span className="phone-number">{phone.countryCode} {phone.number}</span>
+                              <div className="phone-actions">
+                                <button type="button" className="phone-call-btn" onClick={() => callPhoneNumber(phone)} title="Anrufen">
+                                  <span className="phone-icon">📞</span>
+                                  <span>Anrufen</span>
+                                </button>
+                                <button type="button" className="phone-edit-btn" onClick={() => openPhoneModal(phone.id)} title="Bearbeiten">
+                                  <span className="edit-icon">⚙️</span>
+                                </button>
+                                <button type="button" className="phone-delete-btn" onClick={() => deletePhoneNumber(phone.id)} title="Löschen">
+                                  <span className="delete-icon">🗑️</span>
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1697,67 +1733,6 @@ const AnfrageSitzlift: React.FC = () => {
             </div>
           </div>
 
-          {/* Klient / Interessent - Kontaktinformationen */}
-          <div
-            className="section klient-section"
-            onMouseEnter={() => setFormData(prev => ({ ...prev, activeGuidanceSection: 'klient' }))}
-          >
-            <div className="section-header green">
-              <h2>Klient / Interessent – Kontaktinformationen</h2>
-              <div className="section-actions">
-                <button type="button" className="icon-btn">🔄</button>
-                <button type="button" className="icon-btn">🏠</button>
-              </div>
-            </div>
-            <div className="form-grid">
-              <div className="klient-kontakt-container">
-                <div className="form-group klient-email-field">
-                  <label>E-Mail</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="E-Mail angeben"
-                  />
-                </div>
-                <div className="form-group phone-group">
-                  <label>Telefonnummer</label>
-                  <div className="phone-input-wrapper">
-                    <button type="button" className="btn-blue" onClick={() => openPhoneModal()}>+ Neue Nummer</button>
-                    {phoneNumbers.length === 0 && (
-                      <span className="error-message">Eine Telefonnummer ist erforderlich.</span>
-                    )}
-                    {phoneNumbers.length > 0 && (
-                      <div className="phone-numbers-list">
-                        {phoneNumbers.map(phone => (
-                          <div key={phone.id} className="phone-number-item">
-                            {getCountryFlag(phone.countryCode) && (
-                              <span className="country-flag-display">{getCountryFlag(phone.countryCode)}</span>
-                            )}
-                            <span className="phone-type">{phone.type}:</span>
-                            <span className="phone-number">{phone.countryCode} {phone.number}</span>
-                            <div className="phone-actions">
-                              <button type="button" className="phone-call-btn" onClick={() => callPhoneNumber(phone)} title="Anrufen">
-                                <span className="phone-icon">📞</span>
-                                <span>Anrufen</span>
-                              </button>
-                              <button type="button" className="phone-edit-btn" onClick={() => openPhoneModal(phone.id)} title="Bearbeiten">
-                                <span className="edit-icon">⚙️</span>
-                              </button>
-                              <button type="button" className="phone-delete-btn" onClick={() => deletePhoneNumber(phone.id)} title="Löschen">
-                                <span className="delete-icon">🗑️</span>
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1765,17 +1740,6 @@ const AnfrageSitzlift: React.FC = () => {
         className="floating-save-box"
         onMouseEnter={() => setFormData((prev) => ({ ...prev, activeGuidanceSection: 'abschluss' }))}
       >
-        <button
-          type="button"
-          className="floating-save-klient"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          title="Zu Klient / Interessent – Persönliche Daten scrollen"
-        >
-          <span className="floating-save-klient-label">Klient:</span>
-          <span className="floating-save-klient-value">
-            {[formData.anrede, formData.vorname, formData.nachname].filter(Boolean).join(' ') || 'Unbekannt'}
-          </span>
-        </button>
         <button className="btn-grey">Speichern</button>
         <button className="btn-green" onClick={() => setIsWeiterleitenModalOpen(true)}>Anfrage weiterleiten</button>
       </div>
@@ -1829,20 +1793,91 @@ const AnfrageSitzlift: React.FC = () => {
 
             <div className="weiterleiten-separator" />
 
-            <div className="weiterleiten-bottom-grid">
-              <div className="weiterleiten-options-block">
+            <div className="weiterleiten-klient-block">
+              <div className="weiterleiten-klient-title">Klient / Interessent</div>
+              <div className="weiterleiten-klient-felder">
+                <div className="weiterleiten-klient-labels">
+                  <span className="weiterleiten-klient-label">Anrede</span>
+                  <span className="weiterleiten-klient-label">Vorname</span>
+                  <span className="weiterleiten-klient-label">Nachname</span>
+                  <span className="weiterleiten-klient-label">E-Mail</span>
+                </div>
+                <div className="weiterleiten-klient-inputs">
+                  <div className="weiterleiten-klient-cell">
+                    <div className="radio-group">
+                      <label><input type="radio" name="weiterleiten-anrede" value="Frau" checked={formData.anrede === 'Frau'} onChange={(e) => setFormData(prev => ({ ...prev, anrede: e.target.value }))} /> Frau</label>
+                      <label><input type="radio" name="weiterleiten-anrede" value="Herr" checked={formData.anrede === 'Herr'} onChange={(e) => setFormData(prev => ({ ...prev, anrede: e.target.value }))} /> Herr</label>
+                    </div>
+                  </div>
+                  <div className="weiterleiten-klient-cell">
+                    <input type="text" value={formData.vorname} onChange={(e) => setFormData(prev => ({ ...prev, vorname: e.target.value }))} placeholder="Vorname" />
+                  </div>
+                  <div className="weiterleiten-klient-cell">
+                    <input type="text" value={formData.nachname} onChange={(e) => setFormData(prev => ({ ...prev, nachname: e.target.value }))} placeholder="Nachname" />
+                  </div>
+                  <div className="weiterleiten-klient-cell">
+                    <input type="email" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} placeholder="E-Mail" />
+                  </div>
+                </div>
+              </div>
+              <div className="weiterleiten-klient-erreichbarkeit">
                 <div className="weiterleiten-options-title">Beste telefonische Erreichbarkeit</div>
                 <div className="weiterleiten-options">
-                  <label><input type="checkbox" /> Ganztägig</label>
-                  <label><input type="checkbox" /> Vormittags</label>
-                  <label><input type="checkbox" /> Nachmittags</label>
-                  <label><input type="checkbox" /> Abends</label>
+                  <label className={!erreichbarkeit.ganztägig ? 'weiterleiten-option-unchecked' : ''}>
+                    <input
+                      type="checkbox"
+                      checked={erreichbarkeit.ganztägig}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setErreichbarkeit((prev) => ({
+                          ...prev,
+                          ganztägig: checked,
+                          ...(checked ? { vormittags: true, nachmittags: true, abends: true } : {})
+                        }));
+                      }}
+                    />
+                    Ganztägig
+                  </label>
+                  <span className="weiterleiten-option-separator" aria-hidden="true" />
+                  <label className={!erreichbarkeit.vormittags ? 'weiterleiten-option-unchecked' : ''}>
+                    <input
+                      type="checkbox"
+                      checked={erreichbarkeit.vormittags}
+                      onChange={(e) => setErreichbarkeit((prev) => ({ ...prev, vormittags: e.target.checked }))}
+                    />
+                    Vormittags
+                  </label>
+                  <label className={!erreichbarkeit.nachmittags ? 'weiterleiten-option-unchecked' : ''}>
+                    <input
+                      type="checkbox"
+                      checked={erreichbarkeit.nachmittags}
+                      onChange={(e) => setErreichbarkeit((prev) => ({ ...prev, nachmittags: e.target.checked }))}
+                    />
+                    Nachmittags
+                  </label>
+                  <label className={!erreichbarkeit.abends ? 'weiterleiten-option-unchecked' : ''}>
+                    <input
+                      type="checkbox"
+                      checked={erreichbarkeit.abends}
+                      onChange={(e) => setErreichbarkeit((prev) => ({ ...prev, abends: e.target.checked }))}
+                    />
+                    Abends
+                  </label>
                 </div>
-                <label className="weiterleiten-consent">
-                  <input type="checkbox" /> Zustimmung zur Kontaktweitergabe & -aufnahme durch die genannten Anbieter
+              </div>
+              <div className="weiterleiten-klient-zustimmung">
+                <label className={`weiterleiten-consent ${!zustimmungKontaktweitergabe ? 'weiterleiten-option-unchecked' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={zustimmungKontaktweitergabe}
+                    onChange={(e) => setZustimmungKontaktweitergabe(e.target.checked)}
+                  />
+                  Zustimmung zur Kontaktweitergabe & -aufnahme durch die genannten Anbieter
                 </label>
               </div>
+            </div>
 
+            <div className="weiterleiten-bottom-grid">
               <div className="weiterleiten-followup-block">
                 <div className="weiterleiten-followup-title">
                   <span>Nachbetreuung am</span>
