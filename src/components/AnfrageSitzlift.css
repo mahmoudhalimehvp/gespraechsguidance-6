@@ -3118,6 +3118,48 @@
   gap: 10px;
 }
 
+.klient-loeschen-admin-hinweise {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.klient-loeschen-admin-block .newsletter-wahl-checkbox {
+  margin-bottom: 0;
+}
+
+.klient-loeschen-admin-block .btn-red,
+.klient-loeschen-admin-block .btn-blue {
+  align-self: flex-start;
+  margin-top: 18px;
+}
+
+.klient-loeschen-admin-hinweise .btn-red:disabled,
+.klient-loeschen-admin-hinweise .btn-blue:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.klient-loeschen-admin-block--duplikat {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  border-left-color: #2563eb;
+  color: #1e3a8a;
+}
+
+.klient-loeschen-admin-block--duplikat .newsletter-admin-abmelden-text strong {
+  color: #1e3a8a;
+}
+
+.klient-loeschen-admin-block--duplikat .newsletter-admin-abmelden-checkbox {
+  color: #1e40af;
+}
+
+.klient-loeschen-admin-block--duplikat .newsletter-admin-abmelden-checkbox input {
+  accent-color: #2563eb;
+}
+
 .klient-loeschen-action-btn {
   border-radius: 4px;
 }

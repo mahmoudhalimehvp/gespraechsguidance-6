@@ -521,6 +521,10 @@ const AnfrageSitzlift: React.FC = () => {
   const [isWeiterleitenModalOpen, setIsWeiterleitenModalOpen] = useState(false);
   const [isSchliessenModalOpen, setIsSchliessenModalOpen] = useState(false);
   const [isKlientLoeschenModalOpen, setIsKlientLoeschenModalOpen] = useState(false);
+  /** Nur Demo: Klient-löschen-Modal Berater-Ansicht vs. Admin-Ansicht */
+  const [klientLoeschenDemoModus, setKlientLoeschenDemoModus] = useState<'berater' | 'admin'>('berater');
+  const [klientLoeschenAdminKlientBestaetigt, setKlientLoeschenAdminKlientBestaetigt] = useState(false);
+  const [klientLoeschenAdminDuplikatBestaetigt, setKlientLoeschenAdminDuplikatBestaetigt] = useState(false);
   const [isAnrufEinstellungenModalOpen, setIsAnrufEinstellungenModalOpen] = useState(false);
   const [isNewsletterEinstellungenModalOpen, setIsNewsletterEinstellungenModalOpen] = useState(false);
   /** Nur Demo/Preview: Ansicht im Newsletter-Modal (Standard / Admin) */
@@ -675,6 +679,12 @@ const AnfrageSitzlift: React.FC = () => {
       setAnrufAdminTelefonieAbmeldungBestaetigt(false);
     }
   }, [isAnrufEinstellungenModalOpen, anrufDemoModus]);
+
+  useEffect(() => {
+    if (!isKlientLoeschenModalOpen) return;
+    setKlientLoeschenAdminKlientBestaetigt(false);
+    setKlientLoeschenAdminDuplikatBestaetigt(false);
+  }, [isKlientLoeschenModalOpen, klientLoeschenDemoModus]);
 
   useEffect(() => {
     return () => {
@@ -2388,7 +2398,28 @@ const AnfrageSitzlift: React.FC = () => {
       {isKlientLoeschenModalOpen && (
         <div className="modal-overlay" onClick={() => setIsKlientLoeschenModalOpen(false)}>
           <div className="modal-content klient-loeschen-modal" onClick={(e) => e.stopPropagation()}>
-            <h2 className="klient-loeschen-title">Klienten löschen?</h2>
+            <div className="einstellungen-modal-kopfzeile">
+              <h2 className="klient-loeschen-title einstellungen-modal-title">Klienten löschen?</h2>
+              <div className="einstellungen-demo-segment" title="Darstellung wechseln (nur Demo)">
+                <span className="einstellungen-demo-toggle-label">Demo</span>
+                <div className="einstellungen-demo-segment-buttons" role="group" aria-label="Demo-Ansicht Klient löschen">
+                  <button
+                    type="button"
+                    className={klientLoeschenDemoModus === 'berater' ? 'is-active' : ''}
+                    onClick={() => setKlientLoeschenDemoModus('berater')}
+                  >
+                    Berater
+                  </button>
+                  <button
+                    type="button"
+                    className={klientLoeschenDemoModus === 'admin' ? 'is-active' : ''}
+                    onClick={() => setKlientLoeschenDemoModus('admin')}
+                  >
+                    Admin
+                  </button>
+                </div>
+              </div>
+            </div>
 
             <div className="klient-loeschen-grund">
               <span className="klient-loeschen-grund-label">Grund</span>
@@ -2416,6 +2447,63 @@ const AnfrageSitzlift: React.FC = () => {
             </p>
 
             <div className="klient-loeschen-grund-line klient-loeschen-footer-line" aria-hidden="true" />
+
+            {klientLoeschenDemoModus === 'admin' && (
+              <div className="klient-loeschen-admin-hinweise">
+                <div className="newsletter-admin-abmelden klient-loeschen-admin-block">
+                  <p className="newsletter-admin-abmelden-text">
+                    <strong>Admin:</strong> Endgültige Löschung der Klientendaten und zugehöriger Anfragen im CRM (wird
+                    protokolliert).
+                  </p>
+                  <label className="newsletter-wahl-checkbox newsletter-admin-abmelden-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={klientLoeschenAdminKlientBestaetigt}
+                      onChange={(e) => setKlientLoeschenAdminKlientBestaetigt(e.target.checked)}
+                    />
+                    <span>Ich bestätige die endgültige Löschung dieses Klienten.</span>
+                  </label>
+                  <button
+                    type="button"
+                    className="btn-red klient-loeschen-action-btn"
+                    disabled={!klientLoeschenAdminKlientBestaetigt}
+                    onClick={() => {
+                      showAppToast('email');
+                      setIsKlientLoeschenModalOpen(false);
+                      setCrmMainView('dashboard');
+                    }}
+                  >
+                    Klient löschen
+                  </button>
+                </div>
+                <div className="newsletter-admin-abmelden klient-loeschen-admin-block klient-loeschen-admin-block--duplikat">
+                  <p className="newsletter-admin-abmelden-text">
+                    <strong>Admin:</strong> Endgültige Löschung nur dieser Dublette (Hauptklient bleibt erhalten) (wird
+                    protokolliert).
+                  </p>
+                  <label className="newsletter-wahl-checkbox newsletter-admin-abmelden-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={klientLoeschenAdminDuplikatBestaetigt}
+                      onChange={(e) => setKlientLoeschenAdminDuplikatBestaetigt(e.target.checked)}
+                    />
+                    <span>Ich bestätige die Löschung dieser Dublette.</span>
+                  </label>
+                  <button
+                    type="button"
+                    className="btn-blue klient-loeschen-action-btn"
+                    disabled={!klientLoeschenAdminDuplikatBestaetigt}
+                    onClick={() => {
+                      showAppToast('email');
+                      setIsKlientLoeschenModalOpen(false);
+                      setCrmMainView('dashboard');
+                    }}
+                  >
+                    Dublette löschen
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="klient-loeschen-actions">
               <button
