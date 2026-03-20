@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './AnfrageSitzlift.css';
+import { isCrmAdminUser } from '../config/crmAdmin';
+import Dashboard from './Dashboard';
 
 // SelectField Component für Single- und Multiselect
 interface SelectFieldProps {
@@ -462,6 +464,17 @@ const Gespraechsguidance: React.FC<{
   );
 };
 
+/** Wochentage wie auf der Landingpage [Kontaktpräferenzen](https://visionary-marigold-e3945d.netlify.app/) (Schritt 3) */
+const ANRUF_LANDING_WOCHENTAGE: { id: string; label: string }[] = [
+  { id: 'mo', label: 'Mo' },
+  { id: 'di', label: 'Di' },
+  { id: 'mi', label: 'Mi' },
+  { id: 'do', label: 'Do' },
+  { id: 'fr', label: 'Fr' },
+  { id: 'sa', label: 'Sa' },
+  { id: 'so', label: 'So' },
+];
+
 const AnfrageSitzlift: React.FC = () => {
   const [formData, setFormData] = useState({
     // Active section for guidance
@@ -506,8 +519,47 @@ const AnfrageSitzlift: React.FC = () => {
   ]);
   const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
   const [isWeiterleitenModalOpen, setIsWeiterleitenModalOpen] = useState(false);
+  const [isSchliessenModalOpen, setIsSchliessenModalOpen] = useState(false);
+  const [isKlientLoeschenModalOpen, setIsKlientLoeschenModalOpen] = useState(false);
+  const [isAnrufEinstellungenModalOpen, setIsAnrufEinstellungenModalOpen] = useState(false);
+  const [isNewsletterEinstellungenModalOpen, setIsNewsletterEinstellungenModalOpen] = useState(false);
+  /** Nur Demo/Preview: Ansicht im Newsletter-Modal (Standard / Admin) */
+  const [newsletterDemoModus, setNewsletterDemoModus] = useState<'angemeldet' | 'nicht-angemeldet' | 'admin'>('angemeldet');
+  /** Newsletter: Zustimmung „Newsletter erhalten“ (Demo, zunächst nicht angehakt) */
+  const [newsletterWunschErhalten, setNewsletterWunschErhalten] = useState(false);
+  /** Newsletter Admin-Abmeldung: Bestätigung per Checkbox vor Speichern */
+  const [newsletterAdminAbmeldungBestaetigt, setNewsletterAdminAbmeldungBestaetigt] = useState(false);
+  /** Nur Demo/Preview: Ansicht im Anruf-Modal (Standard / Admin) */
+  const [anrufDemoModus, setAnrufDemoModus] = useState<'telefonie-aktiv' | 'abgemeldet' | 'admin'>('telefonie-aktiv');
+  /** Telefonie abgemeldet: Wunsch wieder anzumelden (Demo, Checkbox vor Speichern) */
+  const [anrufWunschTelefonieAnmelden, setAnrufWunschTelefonieAnmelden] = useState(false);
+  /** Telefonie Admin-Abmeldung: Bestätigung per Checkbox vor Speichern */
+  const [anrufAdminTelefonieAbmeldungBestaetigt, setAnrufAdminTelefonieAbmeldungBestaetigt] = useState(false);
+  /** Landingpage Schritt 3 – Anruf-Einstellungen (nur echte CRM-Admins, Demo-Zustand) */
+  const [anrufLandingEinstellungen, setAnrufLandingEinstellungen] = useState({
+    regelmaessigkeit: 'regelmaessig' as 'regelmaessig' | 'halbjaehrlich' | 'jaehrlich',
+    pausierung: 'keine' as 'keine' | '3monate' | '6monate',
+    anrufzeit: 'keine' as 'keine' | 'vormittags' | 'nachmittags' | 'abends',
+    wochentage: [] as string[],
+    telefonnummer: '',
+  });
+  const [isAktionenDropdownOpen, setIsAktionenDropdownOpen] = useState(false);
+  /** Oberfläche: Dashboard vs. Anfrage-Detail (Klienten) */
+  const [crmMainView, setCrmMainView] = useState<'dashboard' | 'anfrage'>('anfrage');
+  const aktionenDropdownRef = useRef<HTMLDivElement>(null);
+  const appToastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [appToast, setAppToast] = useState<{
+    variant: 'copy' | 'email';
+    tick: number;
+    message?: string;
+  } | null>(null);
+  const [schliessenTyp, setSchliessenTyp] = useState<'kein-akut' | 'info-mail'>('info-mail');
+  const [schliessenNachgespraechZustimmung, setSchliessenNachgespraechZustimmung] = useState(false);
+  const [schliessenNachbetreuungDatum, setSchliessenNachbetreuungDatum] = useState('30.03.26');
+  const [schliessenNachbetreuungZeit, setSchliessenNachbetreuungZeit] = useState('14:10');
   const [erreichbarkeit, setErreichbarkeit] = useState({ ganztägig: false, vormittags: false, nachmittags: false, abends: false });
   const [zustimmungKontaktweitergabe, setZustimmungKontaktweitergabe] = useState(false);
+  const [zustimmungNachgespraechBeratung, setZustimmungNachgespraechBeratung] = useState(false);
   const [editingPhoneId, setEditingPhoneId] = useState<string | null>(null);
   const [phoneModalData, setPhoneModalData] = useState({
     type: 'Mobil',
@@ -595,6 +647,49 @@ const AnfrageSitzlift: React.FC = () => {
     if (produktDropdownOpen) document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [produktDropdownOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (aktionenDropdownRef.current && !aktionenDropdownRef.current.contains(e.target as Node)) {
+        setIsAktionenDropdownOpen(false);
+      }
+    };
+    if (isAktionenDropdownOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isAktionenDropdownOpen]);
+
+  useEffect(() => {
+    if (isNewsletterEinstellungenModalOpen && newsletterDemoModus === 'nicht-angemeldet') {
+      setNewsletterWunschErhalten(false);
+    }
+    if (isNewsletterEinstellungenModalOpen && newsletterDemoModus === 'admin') {
+      setNewsletterAdminAbmeldungBestaetigt(false);
+    }
+  }, [isNewsletterEinstellungenModalOpen, newsletterDemoModus]);
+
+  useEffect(() => {
+    if (isAnrufEinstellungenModalOpen && anrufDemoModus === 'abgemeldet') {
+      setAnrufWunschTelefonieAnmelden(false);
+    }
+    if (isAnrufEinstellungenModalOpen && anrufDemoModus === 'admin') {
+      setAnrufAdminTelefonieAbmeldungBestaetigt(false);
+    }
+  }, [isAnrufEinstellungenModalOpen, anrufDemoModus]);
+
+  useEffect(() => {
+    return () => {
+      if (appToastTimerRef.current) clearTimeout(appToastTimerRef.current);
+    };
+  }, []);
+
+  const showAppToast = (variant: 'copy' | 'email', message?: string) => {
+    if (appToastTimerRef.current) clearTimeout(appToastTimerRef.current);
+    setAppToast({ variant, tick: Date.now(), message });
+    appToastTimerRef.current = setTimeout(() => {
+      setAppToast(null);
+      appToastTimerRef.current = null;
+    }, 2800);
+  };
 
   const addProduktTab = (value?: string, label?: string, maxAN?: number) => {
     if (value !== undefined && label !== undefined && maxAN !== undefined) {
@@ -706,6 +801,57 @@ const AnfrageSitzlift: React.FC = () => {
     setPhoneValidationError('');
   };
 
+  const handleNewsletterEinstellungenSpeichern = () => {
+    if (!newsletterWunschErhalten) return;
+    setNewsletterDemoModus('angemeldet');
+    setIsNewsletterEinstellungenModalOpen(false);
+    showAppToast('email');
+  };
+
+  const handleNewsletterAdminAbmeldungSpeichern = () => {
+    if (!newsletterAdminAbmeldungBestaetigt) return;
+    setNewsletterDemoModus('nicht-angemeldet');
+    setIsNewsletterEinstellungenModalOpen(false);
+    showAppToast('email');
+  };
+
+  const handleAnrufEinstellungenSpeichernTelefonieAnmelden = () => {
+    if (!anrufWunschTelefonieAnmelden) return;
+    setAnrufDemoModus('telefonie-aktiv');
+    setIsAnrufEinstellungenModalOpen(false);
+    showAppToast('email');
+  };
+
+  const handleAnrufEinstellungenSpeichernAdminAbmeldung = () => {
+    if (!anrufAdminTelefonieAbmeldungBestaetigt) return;
+    setAnrufDemoModus('abgemeldet');
+    setIsAnrufEinstellungenModalOpen(false);
+    showAppToast('email');
+  };
+
+  const handleAnrufLandingEinstellungenZuruecksetzen = () => {
+    setAnrufLandingEinstellungen({
+      regelmaessigkeit: 'regelmaessig',
+      pausierung: 'keine',
+      anrufzeit: 'keine',
+      wochentage: [],
+      telefonnummer: '',
+    });
+  };
+
+  const handleAnrufLandingEinstellungenSpeichern = () => {
+    /* Demo: später Persistenz / API an Landingpage-Klienten */
+    showAppToast('email', 'Die Anruf-Einstellungen wurden gespeichert.');
+  };
+
+  const toggleAnrufLandingWochentag = (tag: string) => {
+    setAnrufLandingEinstellungen((prev) => {
+      const has = prev.wochentage.includes(tag);
+      const wochentage = has ? prev.wochentage.filter((t) => t !== tag) : [...prev.wochentage, tag];
+      return { ...prev, wochentage };
+    });
+  };
+
   const validatePhoneNumber = (number: string): boolean => {
     // Entferne Leerzeichen und Sonderzeichen für Validierung
     const cleaned = number.replace(/\s+/g, '').replace(/[-\/]/g, '');
@@ -800,6 +946,14 @@ const AnfrageSitzlift: React.FC = () => {
     return flagMap[countryCode] || null;
   };
 
+  const weiterleitenAbschickenEnabled =
+    zustimmungKontaktweitergabe &&
+    zustimmungNachgespraechBeratung &&
+    (erreichbarkeit.ganztägig ||
+      erreichbarkeit.vormittags ||
+      erreichbarkeit.nachmittags ||
+      erreichbarkeit.abends);
+
   return (
     <div className="anfrage-container">
       {/* Top Navigation */}
@@ -809,16 +963,49 @@ const AnfrageSitzlift: React.FC = () => {
             <span className="logo-icon">🏠</span>
             <span>Pflegehilfe CRM</span>
           </div>
+        </div>
+        <div className="nav-center">
           <div className="nav-links">
-            <a href="#">Dashboard</a>
-            <a href="#">Klienten</a>
-            <a href="#">Anbieter</a>
+            <a
+              href="#"
+              className={crmMainView === 'dashboard' ? 'nav-link-active' : ''}
+              onClick={(e) => {
+                e.preventDefault();
+                setCrmMainView('dashboard');
+              }}
+            >
+              Dashboard
+            </a>
+            <a
+              href="#"
+              className={crmMainView === 'anfrage' ? 'nav-link-active' : ''}
+              onClick={(e) => {
+                e.preventDefault();
+                setCrmMainView('anfrage');
+              }}
+            >
+              Klienten
+            </a>
+            <a href="#" onClick={(e) => e.preventDefault()}>
+              Anbieter
+            </a>
+          </div>
+          <div className="nav-actions">
+            <button type="button" className="nav-btn green">
+              Neue Anfrage →
+            </button>
+            <button type="button" className="nav-btn green">
+              Neue Aufgabe →
+            </button>
+            <button type="button" className="nav-btn green">
+              Neue Aufgabe →
+            </button>
+            <button type="button" className="nav-btn blue">
+              Neuer Sozialdienst →
+            </button>
           </div>
         </div>
         <div className="nav-right">
-          <button className="nav-btn green">Neue Anfrage →</button>
-          <button className="nav-btn green">Neue Aufgabe →</button>
-          <button className="nav-btn green">Neuer Sozialdienst →</button>
           <div className="user-menu">
             <span>Hallo Hannah Venohr</span>
             <span className="dropdown-arrow">▼</span>
@@ -826,18 +1013,75 @@ const AnfrageSitzlift: React.FC = () => {
         </div>
       </nav>
 
-      {/* Main Content Area - verschoben nach rechts */}
-      <div className="main-content-wrapper">
-        {/* Gesprächsguidance Sidebar */}
-        <Gespraechsguidance
-          klientDisplayName={[formData.anrede, formData.vorname, formData.nachname].filter(Boolean).join(' ') || 'Unbekannt'}
-          klientAnrede={formData.anrede}
-          klientNachname={formData.nachname}
-          isWeiterleitenMode={isWeiterleitenModalOpen}
-        />
+      <div className={`crm-shell${crmMainView === 'dashboard' ? ' crm-shell--with-sidebar' : ''}`}>
+        {crmMainView === 'dashboard' && (
+          <aside className="crm-sidebar" aria-label="Hauptnavigation">
+            <nav className="crm-sidebar-nav">
+              <button
+                type="button"
+                className="crm-sidebar-item is-active"
+                onClick={() => setCrmMainView('dashboard')}
+              >
+                <span className="crm-sidebar-icon" aria-hidden="true">
+                  ▤
+                </span>
+                Dashboard
+              </button>
+              <button type="button" className="crm-sidebar-item" onClick={() => setCrmMainView('anfrage')}>
+                <span className="crm-sidebar-icon" aria-hidden="true">
+                  ＋
+                </span>
+                Neuer Klient
+              </button>
+              <button type="button" className="crm-sidebar-item" onClick={(e) => e.preventDefault()}>
+                <span className="crm-sidebar-icon" aria-hidden="true">
+                  ⌕
+                </span>
+                Klient suchen
+              </button>
+              <button type="button" className="crm-sidebar-item" onClick={(e) => e.preventDefault()}>
+                <span className="crm-sidebar-icon" aria-hidden="true">
+                  ⌕
+                </span>
+                Anbieter suchen
+              </button>
+              <button type="button" className="crm-sidebar-item" onClick={(e) => e.preventDefault()}>
+                <span className="crm-sidebar-icon" aria-hidden="true">
+                  ☰
+                </span>
+                Offene Anfragen
+              </button>
+              <button type="button" className="crm-sidebar-item" onClick={(e) => e.preventDefault()}>
+                <span className="crm-sidebar-icon" aria-hidden="true">
+                  ⏱
+                </span>
+                Nachbetreuung
+              </button>
+            </nav>
+            <footer className="crm-sidebar-footer">
+              <p>© 2016 – Pflegehilfe CRM v2.0</p>
+              <p>Verantwortlich: Michael Haas</p>
+            </footer>
+          </aside>
+        )}
 
-        {/* Main Content */}
-        <div className="main-content">
+        {crmMainView === 'dashboard' ? (
+          <div className="crm-main crm-main--dashboard">
+            <Dashboard userDisplayName="Hannah Venohr" />
+          </div>
+        ) : (
+          <div className="crm-main crm-main--anfrage">
+            <div className="main-content-wrapper">
+              <Gespraechsguidance
+                klientDisplayName={
+                  [formData.anrede, formData.vorname, formData.nachname].filter(Boolean).join(' ') || 'Unbekannt'
+                }
+                klientAnrede={formData.anrede}
+                klientNachname={formData.nachname}
+                isWeiterleitenMode={isWeiterleitenModalOpen || isSchliessenModalOpen}
+              />
+
+              <div className="main-content">
           {/* Header */}
           <div className="content-header">
             <h1>Anfrage zu Sitzlift in Erstellt: 19. Januar 2026 13:54</h1>
@@ -846,19 +1090,121 @@ const AnfrageSitzlift: React.FC = () => {
                 <span className="icon star-icon">★</span>
                 <span>Bewertung</span>
               </button>
-              <button className="btn-red">
-                <span className="icon">🗑️</span>
-                <span>Klienten löschen</span>
-              </button>
-              <button className="btn-dropdown">
-                <span>Aktionen</span>
-                <span className="dropdown-arrow">▼</span>
-              </button>
+              <div className="aktionen-dropdown-wrap" ref={aktionenDropdownRef}>
+                <button
+                  type="button"
+                  className="btn-dropdown"
+                  aria-haspopup="menu"
+                  aria-expanded={isAktionenDropdownOpen}
+                  onClick={() => setIsAktionenDropdownOpen((o) => !o)}
+                >
+                  <span>Aktionen</span>
+                  <span className="dropdown-arrow">▼</span>
+                </button>
+                {isAktionenDropdownOpen && (
+                  <div className="aktionen-dropdown-menu" role="menu">
+                    <div className="aktionen-dropdown-section" role="none">
+                      <button
+                        type="button"
+                        className="aktionen-dropdown-item aktionen-dropdown-item--danger"
+                        role="menuitem"
+                        onClick={() => {
+                          setIsAktionenDropdownOpen(false);
+                          setIsKlientLoeschenModalOpen(true);
+                        }}
+                      >
+                        <span className="aktionen-dropdown-icon" aria-hidden="true">🗑️</span>
+                        Klienten löschen
+                      </button>
+                    </div>
+                    <div className="aktionen-dropdown-divider" role="separator" />
+                    <div className="aktionen-dropdown-section" role="none">
+                      <button
+                        type="button"
+                        className="aktionen-dropdown-item"
+                        role="menuitem"
+                        onClick={() => {
+                          setIsAktionenDropdownOpen(false);
+                          setIsNewsletterEinstellungenModalOpen(true);
+                        }}
+                      >
+                        <span className="aktionen-dropdown-icon" aria-hidden="true">📰</span>
+                        Newsletter-Einstellungen
+                      </button>
+                      <button
+                        type="button"
+                        className="aktionen-dropdown-item"
+                        role="menuitem"
+                        onClick={() => {
+                          setIsAktionenDropdownOpen(false);
+                          setIsAnrufEinstellungenModalOpen(true);
+                        }}
+                      >
+                        <span className="aktionen-dropdown-icon" aria-hidden="true">📰</span>
+                        Anruf-Einstellungen
+                      </button>
+                    </div>
+                    <div className="aktionen-dropdown-divider" role="separator" />
+                    <div className="aktionen-dropdown-section" role="none">
+                      <button type="button" className="aktionen-dropdown-item" role="menuitem" onClick={() => setIsAktionenDropdownOpen(false)}>
+                        <span className="aktionen-dropdown-icon" aria-hidden="true">📞</span>
+                        Telefonnummer suchen
+                      </button>
+                    </div>
+                    <div className="aktionen-dropdown-divider" role="separator" />
+                    <div className="aktionen-dropdown-section" role="none">
+                      <button type="button" className="aktionen-dropdown-item" role="menuitem" onClick={() => setIsAktionenDropdownOpen(false)}>
+                        <span className="aktionen-dropdown-icon" aria-hidden="true">📊</span>
+                        Terminhistorie
+                      </button>
+                      <button type="button" className="aktionen-dropdown-item" role="menuitem" onClick={() => setIsAktionenDropdownOpen(false)}>
+                        <span className="aktionen-dropdown-icon" aria-hidden="true">🔀</span>
+                        Historie
+                      </button>
+                    </div>
+                    <div className="aktionen-dropdown-divider" role="separator" />
+                    <div className="aktionen-dropdown-section" role="none">
+                      <button
+                        type="button"
+                        className="aktionen-dropdown-item"
+                        role="menuitem"
+                        onClick={() => {
+                          void navigator.clipboard
+                            .writeText(`${window.location.origin}${window.location.pathname}`)
+                            .then(() => {
+                              showAppToast('copy');
+                              setIsAktionenDropdownOpen(false);
+                            })
+                            .catch(() => {
+                              setIsAktionenDropdownOpen(false);
+                            });
+                        }}
+                      >
+                        <span className="aktionen-dropdown-icon" aria-hidden="true">📋</span>
+                        CRM-Link kopieren
+                      </button>
+                      <button type="button" className="aktionen-dropdown-item" role="menuitem" onClick={() => setIsAktionenDropdownOpen(false)}>
+                        <span className="aktionen-dropdown-icon" aria-hidden="true">✅</span>
+                        Adresse validieren
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
               <button className="btn-green">
                 <span className="icon">+</span>
                 <span>Senior hinzufügen</span>
               </button>
-              <button className="btn-orange">Schließen</button>
+              <button
+                type="button"
+                className="btn-orange"
+                onClick={() => {
+                  setIsWeiterleitenModalOpen(false);
+                  setIsSchliessenModalOpen(true);
+                }}
+              >
+                Schließen
+              </button>
               <button className="btn-blue">
                 <span>Freigeben</span>
                 <span className="icon">→</span>
@@ -1735,14 +2081,28 @@ const AnfrageSitzlift: React.FC = () => {
 
         </div>
       </div>
+    </div>
+  )}
+</div>
 
-      <div
-        className="floating-save-box"
-        onMouseEnter={() => setFormData((prev) => ({ ...prev, activeGuidanceSection: 'abschluss' }))}
-      >
-        <button className="btn-grey">Speichern</button>
-        <button className="btn-green" onClick={() => setIsWeiterleitenModalOpen(true)}>Anfrage weiterleiten</button>
-      </div>
+      {crmMainView === 'anfrage' && (
+        <div
+          className="floating-save-box"
+          onMouseEnter={() => setFormData((prev) => ({ ...prev, activeGuidanceSection: 'abschluss' }))}
+        >
+          <button className="btn-grey">Speichern</button>
+          <button
+            type="button"
+            className="btn-green"
+            onClick={() => {
+              setIsSchliessenModalOpen(false);
+              setIsWeiterleitenModalOpen(true);
+            }}
+          >
+            Anfrage weiterleiten
+          </button>
+        </div>
+      )}
 
       {/* Anfrage weiterleiten Modal */}
       {isWeiterleitenModalOpen && (
@@ -1780,15 +2140,23 @@ const AnfrageSitzlift: React.FC = () => {
                 </div>
                 <div className="anbieter-status">Kriterien Check erfolgreich!</div>
               </div>
-            </div>
 
-            <div className="weiterleiten-tools-row">
-              <div className="weiterleiten-column-title">Tools & Informationen</div>
-              <div className="weiterleiten-tool-item selected">Pflegegrad-Rechner</div>
-              <div className="weiterleiten-tool-item selected">Pflegezuschuesse & -Leistungen</div>
-            </div>
-            <div className="weiterleiten-tools-hint">
-              Die Auswahl wird dem Klienten via E-Mail zugesendet.
+              <div className="weiterleiten-column-title weiterleiten-column-title--tools">
+                <span className="weiterleiten-tools-heading">Tools &amp; Informationen</span>
+                <p className="weiterleiten-tools-subhint">Die Auswahl wird dem Klienten via E-Mail zugesendet.</p>
+              </div>
+              <div className="weiterleiten-anbieter-card selected weiterleiten-tool-card">
+                <div className="anbieter-head">
+                  <span className="anbieter-name">Pflegegrad-Rechner</span>
+                  <span className="anbieter-check">✓</span>
+                </div>
+              </div>
+              <div className="weiterleiten-anbieter-card selected weiterleiten-tool-card">
+                <div className="anbieter-head">
+                  <span className="anbieter-name">Pflegezuschüsse &amp; -Leistungen</span>
+                  <span className="anbieter-check">✓</span>
+                </div>
+              </div>
             </div>
 
             <div className="weiterleiten-separator" />
@@ -1872,31 +2240,689 @@ const AnfrageSitzlift: React.FC = () => {
                     checked={zustimmungKontaktweitergabe}
                     onChange={(e) => setZustimmungKontaktweitergabe(e.target.checked)}
                   />
-                  Zustimmung zur Kontaktweitergabe & -aufnahme durch die genannten Anbieter
+                  Ihre Kontaktdaten werden an die genannten Anbieter übermittelt, die sich dann bei Ihnen melden.
+                </label>
+                <label className={`weiterleiten-consent ${!zustimmungNachgespraechBeratung ? 'weiterleiten-option-unchecked' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={zustimmungNachgespraechBeratung}
+                    onChange={(e) => setZustimmungNachgespraechBeratung(e.target.checked)}
+                  />
+                  Wir werden uns in den nächsten Wochen bei Ihnen melden, um ein Nachgespräch sowie eine weitere Beratung anzubieten.
                 </label>
               </div>
             </div>
 
             <div className="weiterleiten-bottom-grid">
               <div className="weiterleiten-followup-block">
-                <div className="weiterleiten-followup-title">
-                  <span>Nachbetreuung am</span>
-                  <label><input type="checkbox" /> Uhrzeit</label>
-                </div>
-                <div className="weiterleiten-followup-fields">
-                  <input type="text" defaultValue="04.03.26" />
-                  <input type="text" defaultValue="16:18" />
+                <div className="weiterleiten-followup-fields weiterleiten-followup-stacked">
+                  <div className="weiterleiten-followup-field">
+                    <div className="weiterleiten-followup-field-label">Nachbetreuung am</div>
+                    <input type="text" defaultValue="04.03.26" aria-label="Nachbetreuung am" />
+                  </div>
+                  <div className="weiterleiten-followup-field">
+                    <div className="weiterleiten-followup-field-label">Uhrzeit</div>
+                    <input type="text" defaultValue="16:18" aria-label="Uhrzeit" />
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="weiterleiten-footer">
-              <div className="weiterleiten-note">Super - die umsatzstärkste Anbieterauswahl wurde ausgewählt!</div>
-              <div className="weiterleiten-actions">
-                <button className="weiterleiten-text-btn" onClick={() => setIsWeiterleitenModalOpen(false)}>Abschicken</button>
-                <button className="btn-blue" onClick={() => setIsWeiterleitenModalOpen(false)}>Abschicken & Neue Anfrage</button>
-                <button className="btn-orange" onClick={() => setIsWeiterleitenModalOpen(false)}>Abbrechen</button>
+            <div className="weiterleiten-footer weiterleiten-footer--stacked">
+              <div className="weiterleiten-footer-trailing">
+                <div className="weiterleiten-note">Super - die umsatzstärkste Anbieterauswahl wurde ausgewählt!</div>
+                <div className="weiterleiten-actions">
+                  <button
+                    type="button"
+                    className="btn-blue"
+                    disabled={!weiterleitenAbschickenEnabled}
+                    onClick={() => {
+                      showAppToast('email');
+                      setIsWeiterleitenModalOpen(false);
+                    }}
+                  >
+                    Abschicken
+                  </button>
+                  <button type="button" className="btn-orange" onClick={() => setIsWeiterleitenModalOpen(false)}>
+                    Abbrechen
+                  </button>
+                </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Anfrage schließen Modal */}
+      {isSchliessenModalOpen && (
+        <div className="modal-overlay modal-overlay-right-pane" onClick={() => setIsSchliessenModalOpen(false)}>
+          <div className="modal-content weiterleiten-modal schliessen-modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-title modal-title-schliessen">Anfrage schließen</h2>
+
+            <div className="schliessen-typ-row" role="group" aria-label="Abschlussart">
+              <button
+                type="button"
+                className={`schliessen-typ-btn ${schliessenTyp === 'kein-akut' ? 'selected' : ''}`}
+                onClick={() => setSchliessenTyp('kein-akut')}
+              >
+                <span className="schliessen-typ-label">Kein akuter Bedarf</span>
+              </button>
+              <button
+                type="button"
+                className={`schliessen-typ-btn ${schliessenTyp === 'info-mail' ? 'selected' : ''}`}
+                onClick={() => setSchliessenTyp('info-mail')}
+              >
+                <span className="schliessen-typ-label">Allgemeine Informationsmail</span>
+              </button>
+            </div>
+
+            <div className="schliessen-main-grid">
+              <div className="weiterleiten-klient-block schliessen-klient-block">
+                <div className="weiterleiten-klient-zustimmung schliessen-nachgespraech-only">
+                  <label className={`weiterleiten-consent ${!schliessenNachgespraechZustimmung ? 'weiterleiten-option-unchecked' : ''}`}>
+                    <input
+                      type="checkbox"
+                      checked={schliessenNachgespraechZustimmung}
+                      onChange={(e) => setSchliessenNachgespraechZustimmung(e.target.checked)}
+                    />
+                    Wir werden uns in den nächsten Wochen bei Ihnen melden, um ein Nachgespräch sowie eine weitere Beratung anzubieten.
+                  </label>
+                </div>
+              </div>
+
+              <div className="schliessen-followup-col">
+                <div className="schliessen-followup-block">
+                  <div className="weiterleiten-followup-fields schliessen-followup-fields weiterleiten-followup-stacked">
+                    <div className="weiterleiten-followup-field">
+                      <div className="weiterleiten-followup-field-label">Nachbetreuung am</div>
+                      <input
+                        type="text"
+                        value={schliessenNachbetreuungDatum}
+                        onChange={(e) => setSchliessenNachbetreuungDatum(e.target.value)}
+                        aria-label="Nachbetreuung am"
+                      />
+                    </div>
+                    <div className="weiterleiten-followup-field">
+                      <div className="weiterleiten-followup-field-label">Uhrzeit</div>
+                      <div className="schliessen-time-field">
+                        <input
+                          type="text"
+                          value={schliessenNachbetreuungZeit}
+                          onChange={(e) => setSchliessenNachbetreuungZeit(e.target.value)}
+                          aria-label="Uhrzeit"
+                        />
+                        <span className="schliessen-time-icon" aria-hidden="true">
+                          🕐
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="weiterleiten-footer schliessen-footer">
+              <div className="schliessen-footer-spacer" />
+              <div className="weiterleiten-actions schliessen-footer-actions">
+                <button
+                  type="button"
+                  className="btn-blue"
+                  disabled={!schliessenNachgespraechZustimmung}
+                  onClick={() => {
+                    showAppToast('email');
+                    setIsSchliessenModalOpen(false);
+                  }}
+                >
+                  Abschicken
+                </button>
+                <button type="button" className="btn-orange" onClick={() => setIsSchliessenModalOpen(false)}>
+                  Abbrechen
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Klienten löschen Modal */}
+      {isKlientLoeschenModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsKlientLoeschenModalOpen(false)}>
+          <div className="modal-content klient-loeschen-modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="klient-loeschen-title">Klienten löschen?</h2>
+
+            <div className="klient-loeschen-grund">
+              <span className="klient-loeschen-grund-label">Grund</span>
+              <div className="klient-loeschen-grund-line" aria-hidden="true" />
+            </div>
+
+            <div className="klient-loeschen-sections">
+              <div className="klient-loeschen-row">
+                <div className="klient-loeschen-row-label">Klient fordert Löschung seiner Daten:</div>
+                <div className="klient-loeschen-row-body">
+                  Der Klient muss die <strong>vollständige Datenlöschung bestätigen.</strong> Sende dem Klienten dazu die{' '}
+                  <strong>E-Mail zur Datenlöschung.</strong> Weise den Klienten darauf hin, den Anweisungen in der E-Mail zu folgen, um die Löschung abzuschließen.
+                </div>
+              </div>
+              <div className="klient-loeschen-row">
+                <div className="klient-loeschen-row-label">Dublette löschen:</div>
+                <div className="klient-loeschen-row-body">
+                  Wenn es sich bei diesem Klienten um eine <strong>Dublette</strong> handelt, <strong>kopiere den Link</strong> & leite ihn an deinen <strong>Teamleiter</strong> weiter. Dieser wird die Dublette umgehend löschen.
+                </div>
+              </div>
+            </div>
+
+            <p className="klient-loeschen-hinweis">
+              <strong>Hinweis:</strong> Die Anfrage wird mit Versenden der E-Mail bzw. kopieren des Links geschlossen.
+            </p>
+
+            <div className="klient-loeschen-grund-line klient-loeschen-footer-line" aria-hidden="true" />
+
+            <div className="klient-loeschen-actions">
+              <button
+                type="button"
+                className="btn-red klient-loeschen-action-btn"
+                onClick={() => {
+                  showAppToast('email');
+                  setIsKlientLoeschenModalOpen(false);
+                  setCrmMainView('dashboard');
+                }}
+              >
+                E-Mail zur Datenlöschung auslösen
+              </button>
+              <button
+                type="button"
+                className="btn-blue klient-loeschen-action-btn"
+                onClick={() => {
+                  void navigator.clipboard
+                    .writeText(`${window.location.origin}${window.location.pathname}`)
+                    .then(() => {
+                      showAppToast('copy');
+                      setIsKlientLoeschenModalOpen(false);
+                      setCrmMainView('dashboard');
+                    })
+                    .catch(() => {
+                      setIsKlientLoeschenModalOpen(false);
+                      setCrmMainView('dashboard');
+                    });
+                }}
+              >
+                Link der Dublette kopieren
+              </button>
+              <button
+                type="button"
+                className="btn-orange klient-loeschen-action-btn"
+                onClick={() => setIsKlientLoeschenModalOpen(false)}
+              >
+                Schließen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Newsletter-Einstellungen Modal */}
+      {isNewsletterEinstellungenModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsNewsletterEinstellungenModalOpen(false)}>
+          <div className="modal-content klient-loeschen-modal newsletter-einstellungen-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="einstellungen-modal-kopfzeile">
+              <h2 className="klient-loeschen-title einstellungen-modal-title">Newsletter-Einstellungen</h2>
+              <div className="einstellungen-demo-segment" title="Darstellung wechseln (nur Demo)">
+                <span className="einstellungen-demo-toggle-label">Demo</span>
+                <div className="einstellungen-demo-segment-buttons" role="group" aria-label="Demo-Ansicht Newsletter">
+                  <button
+                    type="button"
+                    className={newsletterDemoModus === 'angemeldet' ? 'is-active' : ''}
+                    onClick={() => setNewsletterDemoModus('angemeldet')}
+                  >
+                    angemeldet
+                  </button>
+                  <button
+                    type="button"
+                    className={newsletterDemoModus === 'nicht-angemeldet' ? 'is-active' : ''}
+                    onClick={() => setNewsletterDemoModus('nicht-angemeldet')}
+                  >
+                    nicht angemeldet
+                  </button>
+                  <button
+                    type="button"
+                    className={newsletterDemoModus === 'admin' ? 'is-active' : ''}
+                    onClick={() => setNewsletterDemoModus('admin')}
+                  >
+                    Admin
+                  </button>
+                </div>
+              </div>
+            </div>
+            <p className="einstellungen-status-kopf">
+              {(newsletterDemoModus === 'angemeldet' || newsletterDemoModus === 'admin') && (
+                <>
+                  Der Klient ist aktuell <strong>zum Newsletter</strong> angemeldet.
+                </>
+              )}
+              {newsletterDemoModus === 'nicht-angemeldet' && (
+                <>
+                  Der Klient ist aktuell <strong>nicht zum Newsletter</strong> angemeldet.
+                </>
+              )}
+            </p>
+
+            {newsletterDemoModus === 'nicht-angemeldet' ? (
+              <div className="newsletter-einfach-block" onClick={(e) => e.stopPropagation()}>
+                <label className="newsletter-wahl-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={newsletterWunschErhalten}
+                    onChange={(e) => setNewsletterWunschErhalten(e.target.checked)}
+                  />
+                  <span>Klient möchte Newsletter erhalten</span>
+                </label>
+              </div>
+            ) : (
+              <div className="klient-loeschen-sections">
+                <div className="klient-loeschen-row">
+                  <div className="klient-loeschen-row-label">
+                    {(newsletterDemoModus === 'angemeldet' || newsletterDemoModus === 'admin') &&
+                      'Klient möchte vom Newsletter abgemeldet werden:'}
+                  </div>
+                  <div className="klient-loeschen-row-body">
+                    {(newsletterDemoModus === 'angemeldet' || newsletterDemoModus === 'admin') && (
+                      <>
+                        Weise den Klienten darauf hin, dass er sich über den <strong>Abmeldelink im Newsletter</strong> vom Newsletter abmelden kann.
+                      </>
+                    )}
+                  </div>
+                </div>
+                {newsletterDemoModus === 'admin' && (
+                  <div className="newsletter-admin-abmelden" onClick={(e) => e.stopPropagation()}>
+                    <p className="newsletter-admin-abmelden-text">
+                      <strong>Admin:</strong> Bei berechtigtem Anlass kann der Klient hier direkt vom Newsletter abgemeldet werden (wird protokolliert).
+                    </p>
+                    <label className="newsletter-wahl-checkbox newsletter-admin-abmelden-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={newsletterAdminAbmeldungBestaetigt}
+                        onChange={(e) => setNewsletterAdminAbmeldungBestaetigt(e.target.checked)}
+                      />
+                      <span>Ich bestätige die Abmeldung des Klienten vom Newsletter.</span>
+                    </label>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="klient-loeschen-grund-line klient-loeschen-footer-line" aria-hidden="true" />
+
+            <div className="klient-loeschen-actions">
+              {(newsletterDemoModus === 'nicht-angemeldet' || newsletterDemoModus === 'admin') && (
+                <button
+                  type="button"
+                  className="btn-blue klient-loeschen-action-btn"
+                  disabled={
+                    newsletterDemoModus === 'nicht-angemeldet'
+                      ? !newsletterWunschErhalten
+                      : !newsletterAdminAbmeldungBestaetigt
+                  }
+                  onClick={
+                    newsletterDemoModus === 'nicht-angemeldet'
+                      ? handleNewsletterEinstellungenSpeichern
+                      : handleNewsletterAdminAbmeldungSpeichern
+                  }
+                >
+                  Speichern
+                </button>
+              )}
+              <button
+                type="button"
+                className="btn-orange klient-loeschen-action-btn"
+                onClick={() => setIsNewsletterEinstellungenModalOpen(false)}
+              >
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Anruf-Einstellungen Modal */}
+      {isAnrufEinstellungenModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsAnrufEinstellungenModalOpen(false)}>
+          <div
+            className={`modal-content klient-loeschen-modal anruf-einstellungen-modal${
+              anrufDemoModus === 'admin' ? ' anruf-einstellungen-modal--wide' : ''
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="einstellungen-modal-kopfzeile">
+              <h2 className="klient-loeschen-title einstellungen-modal-title">Anruf-Einstellungen</h2>
+              <div className="einstellungen-demo-segment" title="Darstellung wechseln (nur Demo)">
+                <span className="einstellungen-demo-toggle-label">Demo</span>
+                <div className="einstellungen-demo-segment-buttons" role="group" aria-label="Demo-Ansicht Telefonie">
+                  <button
+                    type="button"
+                    className={anrufDemoModus === 'telefonie-aktiv' ? 'is-active' : ''}
+                    onClick={() => setAnrufDemoModus('telefonie-aktiv')}
+                  >
+                    Telefonie aktiv
+                  </button>
+                  <button
+                    type="button"
+                    className={anrufDemoModus === 'abgemeldet' ? 'is-active' : ''}
+                    onClick={() => setAnrufDemoModus('abgemeldet')}
+                  >
+                    abgemeldet
+                  </button>
+                  <button
+                    type="button"
+                    className={anrufDemoModus === 'admin' ? 'is-active' : ''}
+                    onClick={() => setAnrufDemoModus('admin')}
+                  >
+                    Admin
+                  </button>
+                </div>
+              </div>
+            </div>
+            <p className="einstellungen-status-kopf">
+              {(anrufDemoModus === 'telefonie-aktiv' || anrufDemoModus === 'admin') && (
+                <>
+                  Der Klient ist aktuell <strong>zur Telefonie</strong> angemeldet.
+                </>
+              )}
+              {anrufDemoModus === 'abgemeldet' && (
+                <>
+                  Der Klient ist aktuell <strong>von der Telefonie abgemeldet</strong> und wird nicht angerufen.
+                </>
+              )}
+            </p>
+
+            {anrufDemoModus === 'abgemeldet' ? (
+              <div className="newsletter-einfach-block" onClick={(e) => e.stopPropagation()}>
+                <label className="newsletter-wahl-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={anrufWunschTelefonieAnmelden}
+                    onChange={(e) => setAnrufWunschTelefonieAnmelden(e.target.checked)}
+                  />
+                  <span>Klient möchte wieder zur Telefonie angemeldet werden</span>
+                </label>
+              </div>
+            ) : (
+              <div className="klient-loeschen-sections">
+                <div className="klient-loeschen-row">
+                  <div className="klient-loeschen-row-label">
+                    {(anrufDemoModus === 'telefonie-aktiv' || anrufDemoModus === 'admin') &&
+                      'Klient möchte nicht mehr angerufen werden:'}
+                  </div>
+                  <div className="klient-loeschen-row-body">
+                    {(anrufDemoModus === 'telefonie-aktiv' || anrufDemoModus === 'admin') && (
+                      <>
+                        Der Klient kann seine <strong>Anrufeinstellungen</strong> über eine <strong>Landingpage</strong>{' '}
+                        anpassen. Bitte E-Mail mit Link zur Landingpage versenden.
+                      </>
+                    )}
+                  </div>
+                </div>
+                {isCrmAdminUser() && anrufDemoModus === 'admin' && (
+                  <div className="anruf-admin-lp-panel" onClick={(e) => e.stopPropagation()}>
+                    <h3 className="anruf-admin-lp-panel-title">
+                      Ihre Anruf-Einstellungen <span className="anruf-admin-lp-badge">Admin</span>
+                    </h3>
+                    <p className="anruf-admin-lp-lead">
+                      Entspricht Schritt 3 der Kontaktpräferenzen-Landingpage – nur für berechtigte CRM-Admins
+                      bearbeitbar.
+                    </p>
+
+                    <fieldset className="anruf-admin-lp-fieldset">
+                      <legend className="anruf-admin-lp-legend">Regelmäßigkeit unserer Anrufe</legend>
+                      <div className="anruf-admin-lp-radio-col">
+                        <label className="anruf-admin-lp-radio">
+                          <input
+                            type="radio"
+                            name="anruf-lp-reg"
+                            checked={anrufLandingEinstellungen.regelmaessigkeit === 'regelmaessig'}
+                            onChange={() =>
+                              setAnrufLandingEinstellungen((p) => ({ ...p, regelmaessigkeit: 'regelmaessig' }))
+                            }
+                          />
+                          <span>Wie bisher (regelmäßig)</span>
+                        </label>
+                        <label className="anruf-admin-lp-radio">
+                          <input
+                            type="radio"
+                            name="anruf-lp-reg"
+                            checked={anrufLandingEinstellungen.regelmaessigkeit === 'halbjaehrlich'}
+                            onChange={() =>
+                              setAnrufLandingEinstellungen((p) => ({ ...p, regelmaessigkeit: 'halbjaehrlich' }))
+                            }
+                          />
+                          <span>Nur einmal halbjährlich</span>
+                        </label>
+                        <label className="anruf-admin-lp-radio">
+                          <input
+                            type="radio"
+                            name="anruf-lp-reg"
+                            checked={anrufLandingEinstellungen.regelmaessigkeit === 'jaehrlich'}
+                            onChange={() =>
+                              setAnrufLandingEinstellungen((p) => ({ ...p, regelmaessigkeit: 'jaehrlich' }))
+                            }
+                          />
+                          <span>Nur einmal jährlich</span>
+                        </label>
+                      </div>
+                    </fieldset>
+
+                    <fieldset className="anruf-admin-lp-fieldset">
+                      <legend className="anruf-admin-lp-legend">Pausierung</legend>
+                      <p className="anruf-admin-lp-hint">
+                        Während der Pause erhalten Sie keine Anrufe. Danach melden wir uns wieder bei Ihnen.
+                      </p>
+                      <div className="anruf-admin-lp-radio-col">
+                        <label className="anruf-admin-lp-radio">
+                          <input
+                            type="radio"
+                            name="anruf-lp-pause"
+                            checked={anrufLandingEinstellungen.pausierung === 'keine'}
+                            onChange={() =>
+                              setAnrufLandingEinstellungen((p) => ({ ...p, pausierung: 'keine' }))
+                            }
+                          />
+                          <span>Keine Pausierung</span>
+                        </label>
+                        <label className="anruf-admin-lp-radio">
+                          <input
+                            type="radio"
+                            name="anruf-lp-pause"
+                            checked={anrufLandingEinstellungen.pausierung === '3monate'}
+                            onChange={() =>
+                              setAnrufLandingEinstellungen((p) => ({ ...p, pausierung: '3monate' }))
+                            }
+                          />
+                          <span>Anrufe für 3 Monate pausieren</span>
+                        </label>
+                        <label className="anruf-admin-lp-radio">
+                          <input
+                            type="radio"
+                            name="anruf-lp-pause"
+                            checked={anrufLandingEinstellungen.pausierung === '6monate'}
+                            onChange={() =>
+                              setAnrufLandingEinstellungen((p) => ({ ...p, pausierung: '6monate' }))
+                            }
+                          />
+                          <span>Anrufe für 6 Monate pausieren</span>
+                        </label>
+                      </div>
+                    </fieldset>
+
+                    <fieldset className="anruf-admin-lp-fieldset">
+                      <legend className="anruf-admin-lp-legend">Bevorzugte Anrufzeit</legend>
+                      <p className="anruf-admin-lp-hint">Wir rufen Sie nur in diesem Zeitraum an.</p>
+                      <div className="anruf-admin-lp-radio-col">
+                        <label className="anruf-admin-lp-radio">
+                          <input
+                            type="radio"
+                            name="anruf-lp-zeit"
+                            checked={anrufLandingEinstellungen.anrufzeit === 'keine'}
+                            onChange={() =>
+                              setAnrufLandingEinstellungen((p) => ({ ...p, anrufzeit: 'keine' }))
+                            }
+                          />
+                          <span>Keine Präferenz</span>
+                        </label>
+                        <label className="anruf-admin-lp-radio">
+                          <input
+                            type="radio"
+                            name="anruf-lp-zeit"
+                            checked={anrufLandingEinstellungen.anrufzeit === 'vormittags'}
+                            onChange={() =>
+                              setAnrufLandingEinstellungen((p) => ({ ...p, anrufzeit: 'vormittags' }))
+                            }
+                          />
+                          <span>Vormittags</span>
+                        </label>
+                        <label className="anruf-admin-lp-radio">
+                          <input
+                            type="radio"
+                            name="anruf-lp-zeit"
+                            checked={anrufLandingEinstellungen.anrufzeit === 'nachmittags'}
+                            onChange={() =>
+                              setAnrufLandingEinstellungen((p) => ({ ...p, anrufzeit: 'nachmittags' }))
+                            }
+                          />
+                          <span>Nachmittags</span>
+                        </label>
+                        <label className="anruf-admin-lp-radio">
+                          <input
+                            type="radio"
+                            name="anruf-lp-zeit"
+                            checked={anrufLandingEinstellungen.anrufzeit === 'abends'}
+                            onChange={() =>
+                              setAnrufLandingEinstellungen((p) => ({ ...p, anrufzeit: 'abends' }))
+                            }
+                          />
+                          <span>Abends</span>
+                        </label>
+                      </div>
+                    </fieldset>
+
+                    <fieldset className="anruf-admin-lp-fieldset">
+                      <legend className="anruf-admin-lp-legend">Anrufe nur an folgenden Wochentagen</legend>
+                      <p className="anruf-admin-lp-hint">
+                        Nur an den angekreuzten Tagen anrufen. Keine Auswahl = Anrufe an allen Tagen möglich.
+                      </p>
+                      <div className="anruf-admin-lp-wochentage">
+                        {ANRUF_LANDING_WOCHENTAGE.map(({ id, label }) => (
+                          <label key={id} className="anruf-admin-lp-tag">
+                            <input
+                              type="checkbox"
+                              checked={anrufLandingEinstellungen.wochentage.includes(id)}
+                              onChange={() => toggleAnrufLandingWochentag(id)}
+                            />
+                            <span>{label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </fieldset>
+
+                    <div className="anruf-admin-lp-fieldset anruf-admin-lp-fieldset--flat">
+                      <label className="anruf-admin-lp-legend anruf-admin-lp-legend--block" htmlFor="anruf-lp-tel">
+                        Nur unter dieser Telefonnummer anrufen
+                      </label>
+                      <p className="anruf-admin-lp-hint">
+                        Wenn ausgefüllt, rufen wir Sie nur unter dieser Nummer an.
+                      </p>
+                      <input
+                        id="anruf-lp-tel"
+                        type="tel"
+                        className="anruf-admin-lp-input"
+                        placeholder="z. B. 0151 23456789"
+                        value={anrufLandingEinstellungen.telefonnummer}
+                        onChange={(e) =>
+                          setAnrufLandingEinstellungen((p) => ({ ...p, telefonnummer: e.target.value }))
+                        }
+                      />
+                    </div>
+
+                    <div className="anruf-admin-lp-panel-actions">
+                      <button
+                        type="button"
+                        className="btn-grey klient-loeschen-action-btn"
+                        onClick={handleAnrufLandingEinstellungenZuruecksetzen}
+                      >
+                        Alle Einstellungen auf Standard zurücksetzen
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-blue klient-loeschen-action-btn"
+                        onClick={handleAnrufLandingEinstellungenSpeichern}
+                      >
+                        Einstellungen speichern
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {anrufDemoModus === 'admin' && (
+                  <div className="newsletter-admin-abmelden" onClick={(e) => e.stopPropagation()}>
+                    <p className="newsletter-admin-abmelden-text">
+                      <strong>Admin:</strong> Bei berechtigtem Anlass kann der Klient hier direkt von der Telefonie abgemeldet werden (wird protokolliert).
+                    </p>
+                    <label className="newsletter-wahl-checkbox newsletter-admin-abmelden-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={anrufAdminTelefonieAbmeldungBestaetigt}
+                        onChange={(e) => setAnrufAdminTelefonieAbmeldungBestaetigt(e.target.checked)}
+                      />
+                      <span>Ich bestätige die Abmeldung des Klienten von der Telefonie.</span>
+                    </label>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {anrufDemoModus === 'telefonie-aktiv' && (
+              <p className="klient-loeschen-hinweis">
+                <strong>Hinweis:</strong> Die Anfrage wird mit Versenden der E-Mail geschlossen.
+              </p>
+            )}
+
+            <div className="klient-loeschen-grund-line klient-loeschen-footer-line" aria-hidden="true" />
+
+            <div className="klient-loeschen-actions">
+              {anrufDemoModus === 'telefonie-aktiv' && (
+                <button
+                  type="button"
+                  className="btn-blue klient-loeschen-action-btn"
+                  onClick={() => {
+                    showAppToast('email');
+                    setIsAnrufEinstellungenModalOpen(false);
+                  }}
+                >
+                  E-Mail mit Link zur Landingpage versenden
+                </button>
+              )}
+              {(anrufDemoModus === 'abgemeldet' || anrufDemoModus === 'admin') && (
+                <button
+                  type="button"
+                  className="btn-blue klient-loeschen-action-btn"
+                  disabled={
+                    anrufDemoModus === 'abgemeldet'
+                      ? !anrufWunschTelefonieAnmelden
+                      : !anrufAdminTelefonieAbmeldungBestaetigt
+                  }
+                  onClick={
+                    anrufDemoModus === 'abgemeldet'
+                      ? handleAnrufEinstellungenSpeichernTelefonieAnmelden
+                      : handleAnrufEinstellungenSpeichernAdminAbmeldung
+                  }
+                >
+                  Speichern
+                </button>
+              )}
+              <button
+                type="button"
+                className="btn-orange klient-loeschen-action-btn"
+                onClick={() => setIsAnrufEinstellungenModalOpen(false)}
+              >
+                Abbrechen
+              </button>
             </div>
           </div>
         </div>
@@ -1952,6 +2978,24 @@ const AnfrageSitzlift: React.FC = () => {
               <button className="btn-blue" onClick={savePhoneNumber}>Speichern</button>
             </div>
           </div>
+        </div>
+      )}
+
+      {appToast && (
+        <div
+          className={`app-toast app-toast--${appToast.variant} app-toast--visible`}
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <span key={appToast.tick} className={`app-toast-icon app-toast-icon--${appToast.variant}`} aria-hidden="true">
+            {appToast.variant === 'copy' ? '✓' : '✉'}
+          </span>
+          <span>
+            {appToast.variant === 'copy'
+              ? 'Erfolgreich in die Zwischenablage kopiert'
+              : appToast.message ?? 'E-Mail wurde versendet'}
+          </span>
         </div>
       )}
     </div>
