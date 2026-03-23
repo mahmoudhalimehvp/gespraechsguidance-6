@@ -333,6 +333,21 @@ const guidanceData: GuidanceSection[] = [
   }
 ];
 
+/** Weiterleiten-Modus: Standard-Abschluss (Anbieter-Kontakt) */
+const ABSCHLUSS_WEITERLEITEN_DEFAULT =
+  'Vielen Dank. Ich habe einmal die Kapazitäten unseres Pflegenetzwerks geprüft und werde nun für Sie den Kontakt zu den Anbietern Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Diese werden sich in den nächsten Minuten oder Stunden telefonisch bei Ihnen melden. Deshalb ist wichtig, dass Sie telefonisch erreichbar bleiben.';
+
+/** Alternative Abschlüsse, wenn kein passender Anbieter – Demo per Toggle */
+const ABSCHLUSS_TEXT_WARTELISTE = `Ich habe Sie jetzt auf die Warteliste gesetzt.
+
+Sobald sich bei einem passenden Partner etwas ergibt, meldet sich dieser direkt bei Ihnen.
+
+Parallel behalten wir Ihre Situation im Blick und unterstützen Sie weiterhin, sobald sich etwas verändert.`;
+
+const ABSCHLUSS_TEXT_TOOLS_INFOS = `Ich sende Ihnen im Anschluss passende Informationen und hilfreiche Tools zu.
+
+Wir bleiben in Kontakt und schauen gemeinsam, wie sich Ihre Situation entwickelt und welche nächsten Schritte sinnvoll sind.`;
+
 const Gespraechsguidance: React.FC<{
   klientDisplayName: string;
   klientAnrede: string;
@@ -358,8 +373,61 @@ const Gespraechsguidance: React.FC<{
   const weiterleitenModeGroups: GuidanceGroup[] = [
     {
       title: 'Abschluss',
-      items: [
-        'Vielen Dank. Ich habe einmal die Kapazitäten unseres Pflegenetzwerks geprüft und werde nun für Sie den Kontakt zu den Anbietern Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Diese werden sich in den nächsten Minuten oder Stunden telefonisch bei Ihnen melden. Deshalb ist wichtig, dass Sie telefonisch erreichbar bleiben.'
+      items: [ABSCHLUSS_WEITERLEITEN_DEFAULT]
+    },
+    {
+      title: 'Einwandbehandlung',
+      entries: [
+        {
+          title: 'Ich möchte nicht mit so vielen sprechen',
+          text: `Die Partner melden sich nicht gleichzeitig bei Ihnen, sondern nacheinander.
+
+Sie können ganz in Ruhe mit jedem sprechen und entscheiden dann selbst, wer am besten zu Ihnen passt.
+
+Der Vorteil ist, dass Sie vergleichen können und nicht vom ersten Angebot abhängig sind.
+
+Ich gebe Ihnen die passenden Partner mit.`
+        },
+        {
+          title: 'Mir reicht ein Anbieter',
+          text: `Ein Partner kann nicht immer direkt die passende Lösung haben.
+
+Mit mehreren Partnern stellen wir sicher, dass Sie wirklich jemanden finden, der zu Ihrer Situation passt und verfügbar ist.
+
+So vermeiden Sie Wartezeiten.
+
+Ich nehme Ihnen mehrere passende Partner mit rein.`
+        },
+        {
+          title: 'Ich habe keine Zeit für mehrere Gespräche',
+          text: `Die Gespräche sind in der Regel kurz und Sie können direkt den Vor Ort/Telefon-Termin ausmachen.
+
+Das spart Ihnen am Ende Zeit, weil Sie nicht mehrfach neu suchen müssen, falls es beim ersten Partner nicht passt.
+
+So kommen Sie schneller zu einer guten Lösung.
+
+Ich gebe Ihnen die passenden Partner mit.`
+        },
+        {
+          title: 'Ich entscheide mich lieber direkt für einen Anbieter',
+          text: `Das verstehe ich gut.
+
+Nur ohne Vergleich fehlt Ihnen die Sicherheit, ob es wirklich die beste Lösung ist.
+
+Mit mehreren Partnern bekommen Sie einen direkten Überblick und können dann eine sichere Entscheidung treffen.
+
+Ich stelle Ihnen die passenden Partner zusammen.`
+        },
+        {
+          title: 'Ich möchte erstmal schauen und mich dann entscheiden',
+          text: `Genau dafür sind die Partner da.
+
+Sie bekommen einen direkten Einblick und können danach in Ruhe entscheiden, was für Sie am besten passt.
+
+So haben Sie eine klare Grundlage für Ihre Entscheidung.
+
+Ich gebe Ihnen die passenden Kontakte mit.`
+        }
       ]
     },
     {
@@ -374,7 +442,7 @@ const Gespraechsguidance: React.FC<{
     text
       .replace('[Anrede]', klientAnrede || '')
       .replace('[Nachname]', klientNachname || '')
-      .replace(/\s{2,}/g, ' ')
+      .replace(/[ \t]+/g, ' ')
       .trim();
 
   const vorwandbehandlungIndex = visibleGroups.findIndex((g) => g.title === 'Vorwandbehandlung');
@@ -382,6 +450,10 @@ const Gespraechsguidance: React.FC<{
     vorwandbehandlungIndex >= 0 ? vorwandbehandlungIndex : null
   );
   const [openEntryKey, setOpenEntryKey] = useState<string | null>(null);
+  /** Demo: alternative Abschluss-Texte im Weiterleiten-Modus */
+  const [demoAbschlussVariant, setDemoAbschlussVariant] = useState<
+    'default' | 'warteliste' | 'tools'
+  >('default');
 
   const handleGroupSummaryClick = (index: number) => {
     setOpenGroupIndex((prev) => (prev === index ? null : index));
@@ -421,13 +493,68 @@ const Gespraechsguidance: React.FC<{
                   {group.title}
                 </summary>
                 {group.items && group.items.length > 0 && (
-                  <div className="guidance-group-items guidance-collapsible-content">
-                    {group.items.map((item, itemIndex) => (
-                      <div key={itemIndex} className="guidance-group-item">
-                        {item}
+                  isWeiterleitenMode && group.title === 'Abschluss' ? (
+                    <div className="guidance-collapsible-content">
+                      <div
+                        className="guidance-abschluss-demo"
+                        role="group"
+                        aria-label="Demo Abschluss-Variante"
+                      >
+                        <span className="guidance-abschluss-demo-label">Demo</span>
+                        <div className="guidance-abschluss-demo-toggle">
+                          <button
+                            type="button"
+                            className={
+                              demoAbschlussVariant === 'default'
+                                ? 'is-active'
+                                : ''
+                            }
+                            onClick={() => setDemoAbschlussVariant('default')}
+                          >
+                            Standard (Anbieter)
+                          </button>
+                          <button
+                            type="button"
+                            className={
+                              demoAbschlussVariant === 'warteliste'
+                                ? 'is-active'
+                                : ''
+                            }
+                            onClick={() => setDemoAbschlussVariant('warteliste')}
+                          >
+                            Nur Warteliste
+                          </button>
+                          <button
+                            type="button"
+                            className={
+                              demoAbschlussVariant === 'tools' ? 'is-active' : ''
+                            }
+                            onClick={() => setDemoAbschlussVariant('tools')}
+                          >
+                            Tools &amp; Infos
+                          </button>
+                        </div>
                       </div>
-                    ))}
-                  </div>
+                      <div className="guidance-group-items">
+                        <div className="guidance-group-item guidance-group-item-preline">
+                          {demoAbschlussVariant === 'default' &&
+                            ABSCHLUSS_WEITERLEITEN_DEFAULT}
+                          {demoAbschlussVariant === 'warteliste' &&
+                            ABSCHLUSS_TEXT_WARTELISTE}
+                          {demoAbschlussVariant === 'tools' &&
+                            ABSCHLUSS_TEXT_TOOLS_INFOS}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="guidance-group-items guidance-collapsible-content">
+                      {group.items.map((item, itemIndex) => (
+                        <div key={itemIndex} className="guidance-group-item">
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                  )
                 )}
                 {group.entries && group.entries.length > 0 && (
                   <div className="guidance-group-entries guidance-collapsible-content">
@@ -447,7 +574,9 @@ const Gespraechsguidance: React.FC<{
                           {entry.title}
                         </summary>
                         <div className="guidance-group-entry-text">
-                          {replaceKlientPlaceholders(entry.text)}
+                          {replaceKlientPlaceholders(entry.text) || (
+                            <span className="guidance-entry-placeholder">Text folgt.</span>
+                          )}
                         </div>
                       </details>
                     ))}

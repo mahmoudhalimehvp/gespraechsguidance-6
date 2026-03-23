@@ -245,6 +245,59 @@
   letter-spacing: 0.01em;
 }
 
+.guidance-group-item-preline {
+  white-space: pre-line;
+}
+
+/* Demo: alternative Abschluss-Texte (Weiterleiten) */
+.guidance-abschluss-demo {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: #f0f7ff;
+  border: 1px solid #bbdefb;
+  border-radius: 8px;
+}
+
+.guidance-abschluss-demo-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #1565c0;
+  margin-bottom: 8px;
+}
+
+.guidance-abschluss-demo-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.guidance-abschluss-demo-toggle button {
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.guidance-abschluss-demo-toggle button:hover {
+  background: #e3f2fd;
+  border-color: #90caf9;
+  color: #0d47a1;
+}
+
+.guidance-abschluss-demo-toggle button.is-active {
+  background: #1565c0;
+  border-color: #1565c0;
+  color: #fff;
+}
+
 .guidance-group-entries {
   display: flex;
   flex-direction: column;
@@ -290,6 +343,12 @@
   color: #1f2937;
   letter-spacing: 0.01em;
   border-top: 1px solid #e9ecef;
+  white-space: pre-line;
+}
+
+.guidance-entry-placeholder {
+  color: #9ca3af;
+  font-style: italic;
 }
 
 .guidance-group-collapsible {
