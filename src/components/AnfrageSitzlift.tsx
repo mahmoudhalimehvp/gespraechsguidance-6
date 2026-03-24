@@ -350,6 +350,21 @@ const ABSCHLUSS_TEXT_TOOLS_INFOS = `Ich sende Ihnen im Anschluss passende Inform
 
 Wir bleiben in Kontakt und schauen gemeinsam, wie sich Ihre Situation entwickelt und welche nächsten Schritte sinnvoll sind.`;
 
+/** Version 2 – alternative Formulierungen (bei Bedarf in der Datei anpassen) */
+const ABSCHLUSS_V2_WEITERLEITEN_DEFAULT = `Vielen Dank. Wir haben in unserem Netzwerk passende Anbieter für das Produkt/die Produkte []. Für Produkt [x] sind das die Anbieter [yz]. Für Produkt [y] sind das die Anbieter [xy].
+
+Ich werde Ihre Kontaktdaten nun einmal an die genannten Anbieter übermitteln. Diese werden sich dann in den nächsten Minuten oder Stunden telefonisch bei Ihnen melden. Deshalb ist wichtig, dass Sie telefonisch erreichbar bleiben.`;
+
+const ABSCHLUSS_V2_TEXT_WARTELISTE = `Sie stehen bei uns auf der Warteliste.
+
+Sobald sich bei einem passenden Partner etwas ergibt, meldet sich dieser direkt bei Ihnen.
+
+Wir behalten Ihre Situation mit im Blick und unterstützen Sie, sobald sich etwas verändert.`;
+
+const ABSCHLUSS_V2_TEXT_TOOLS_INFOS = `Ich schicke Ihnen gleich passende Informationen und hilfreiche Tools zu.
+
+Wir bleiben in Kontakt und klären gemeinsam, wie sich Ihre Situation entwickelt und welche nächsten Schritte für Sie sinnvoll sind.`;
+
 const Gespraechsguidance: React.FC<{
   klientDisplayName: string;
   klientAnrede: string;
@@ -376,6 +391,12 @@ const Gespraechsguidance: React.FC<{
     {
       title: 'Abschluss',
       items: [ABSCHLUSS_WEITERLEITEN_DEFAULT]
+    },
+    {
+      title: 'Verabschiedung',
+      items: [
+        'Sie bekommen jetzt noch eine E-Mail von mir, da steht alles Wichtige auch noch einmal drin. Wenn noch etwas sein sollte, melden Sie sich gerne. Ansonsten werden wir sie in zwei Wochen noch einmal anrufen und Fragen, ob die Unterstützung hilfreich war.'
+      ]
     },
     {
       title: 'Einwandbehandlung',
@@ -431,12 +452,6 @@ So haben Sie eine klare Grundlage für Ihre Entscheidung.
 Ich gebe Ihnen die passenden Kontakte mit.`
         }
       ]
-    },
-    {
-      title: 'Verabschiedung',
-      items: [
-        'Sie bekommen jetzt noch eine E-Mail von mir, da steht alles Wichtige auch noch einmal drin. Wenn noch etwas sein sollte, melden Sie sich gerne. Ansonsten werden wir sie in zwei Wochen noch einmal anrufen und Fragen, ob die Unterstützung hilfreich war.'
-      ]
     }
   ];
   const visibleGroups = isWeiterleitenMode ? weiterleitenModeGroups : defaultVisibleGroups;
@@ -452,10 +467,25 @@ Ich gebe Ihnen die passenden Kontakte mit.`
     vorwandbehandlungIndex >= 0 ? vorwandbehandlungIndex : null
   );
   const [openEntryKey, setOpenEntryKey] = useState<string | null>(null);
-  /** Demo: alternative Abschluss-Texte im Weiterleiten-Modus */
+  /** Demo: Textversion Abschluss (1 / 2) */
+  const [abschlussTextVersion, setAbschlussTextVersion] = useState<1 | 2>(1);
+  /** Demo: Fall Standard / Warteliste / Tools */
   const [demoAbschlussVariant, setDemoAbschlussVariant] = useState<
     'default' | 'warteliste' | 'tools'
   >('default');
+
+  const abschlussDemoText =
+    abschlussTextVersion === 1
+      ? {
+          default: ABSCHLUSS_WEITERLEITEN_DEFAULT,
+          warteliste: ABSCHLUSS_TEXT_WARTELISTE,
+          tools: ABSCHLUSS_TEXT_TOOLS_INFOS
+        }
+      : {
+          default: ABSCHLUSS_V2_WEITERLEITEN_DEFAULT,
+          warteliste: ABSCHLUSS_V2_TEXT_WARTELISTE,
+          tools: ABSCHLUSS_V2_TEXT_TOOLS_INFOS
+        };
 
   const handleGroupSummaryClick = (index: number) => {
     setOpenGroupIndex((prev) => (prev === index ? null : index));
@@ -500,8 +530,35 @@ Ich gebe Ihnen die passenden Kontakte mit.`
                       <div
                         className="guidance-abschluss-demo"
                         role="group"
-                        aria-label="Demo Abschluss-Variante"
+                        aria-label="Abschluss Demo: Version und Fall"
                       >
+                        <div
+                          className="guidance-abschluss-version-compact"
+                          role="group"
+                          aria-label="Textversion"
+                        >
+                          <span className="guidance-abschluss-version-hint">Texte</span>
+                          <div className="guidance-abschluss-version-segment">
+                            <button
+                              type="button"
+                              className={
+                                abschlussTextVersion === 1 ? 'is-active' : ''
+                              }
+                              onClick={() => setAbschlussTextVersion(1)}
+                            >
+                              V1
+                            </button>
+                            <button
+                              type="button"
+                              className={
+                                abschlussTextVersion === 2 ? 'is-active' : ''
+                              }
+                              onClick={() => setAbschlussTextVersion(2)}
+                            >
+                              V2
+                            </button>
+                          </div>
+                        </div>
                         <span className="guidance-abschluss-demo-label">Demo</span>
                         <div className="guidance-abschluss-demo-toggle">
                           <button
@@ -539,12 +596,7 @@ Ich gebe Ihnen die passenden Kontakte mit.`
                       </div>
                       <div className="guidance-group-items">
                         <div className="guidance-group-item guidance-group-item-preline">
-                          {demoAbschlussVariant === 'default' &&
-                            ABSCHLUSS_WEITERLEITEN_DEFAULT}
-                          {demoAbschlussVariant === 'warteliste' &&
-                            ABSCHLUSS_TEXT_WARTELISTE}
-                          {demoAbschlussVariant === 'tools' &&
-                            ABSCHLUSS_TEXT_TOOLS_INFOS}
+                          {abschlussDemoText[demoAbschlussVariant]}
                         </div>
                       </div>
                     </div>
