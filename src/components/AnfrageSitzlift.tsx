@@ -335,6 +335,36 @@ const guidanceData: GuidanceSection[] = [
   }
 ];
 
+/** Weiterleiten-Modus: Standard-Abschluss (Anbieter-Kontakt) */
+const ABSCHLUSS_WEITERLEITEN_DEFAULT =
+  'Vielen Dank. Ich habe einmal die Kapazitäten unseres Pflegenetzwerks geprüft und werde nun für Sie den Kontakt zu den Anbietern Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Diese werden sich in den nächsten Minuten oder Stunden telefonisch bei Ihnen melden. Deshalb ist wichtig, dass Sie telefonisch erreichbar bleiben.';
+
+/** Alternative Abschlüsse, wenn kein passender Anbieter – Demo per Toggle */
+const ABSCHLUSS_TEXT_WARTELISTE = `Ich habe Sie jetzt auf die Warteliste gesetzt.
+
+Sobald sich bei einem passenden Partner etwas ergibt, meldet sich dieser direkt bei Ihnen.
+
+Parallel behalten wir Ihre Situation im Blick und unterstützen Sie weiterhin, sobald sich etwas verändert.`;
+
+const ABSCHLUSS_TEXT_TOOLS_INFOS = `Ich sende Ihnen im Anschluss passende Informationen und hilfreiche Tools zu.
+
+Wir bleiben in Kontakt und schauen gemeinsam, wie sich Ihre Situation entwickelt und welche nächsten Schritte sinnvoll sind.`;
+
+/** Version 2 – alternative Formulierungen (bei Bedarf in der Datei anpassen) */
+const ABSCHLUSS_V2_WEITERLEITEN_DEFAULT = `Vielen Dank. Wir haben in unserem Netzwerk passende Anbieter für das Produkt/die Produkte []. Für Produkt [x] sind das die Anbieter [yz]. Für Produkt [y] sind das die Anbieter [xy].
+
+Ich werde Ihre Kontaktdaten nun einmal an die genannten Anbieter übermitteln. Diese werden sich dann in den nächsten Minuten oder Stunden telefonisch bei Ihnen melden. Deshalb ist wichtig, dass Sie telefonisch erreichbar bleiben.`;
+
+const ABSCHLUSS_V2_TEXT_WARTELISTE = `Sie stehen bei uns auf der Warteliste.
+
+Sobald sich bei einem passenden Partner etwas ergibt, meldet sich dieser direkt bei Ihnen.
+
+Wir behalten Ihre Situation mit im Blick und unterstützen Sie, sobald sich etwas verändert.`;
+
+const ABSCHLUSS_V2_TEXT_TOOLS_INFOS = `Ich schicke Ihnen gleich passende Informationen und hilfreiche Tools zu.
+
+Wir bleiben in Kontakt und klären gemeinsam, wie sich Ihre Situation entwickelt und welche nächsten Schritte für Sie sinnvoll sind.`;
+
 const Gespraechsguidance: React.FC<{
   klientDisplayName: string;
   klientAnrede: string;
@@ -360,14 +390,67 @@ const Gespraechsguidance: React.FC<{
   const weiterleitenModeGroups: GuidanceGroup[] = [
     {
       title: 'Abschluss',
-      items: [
-        'Vielen Dank. Ich habe einmal die Kapazitäten unseres Pflegenetzwerks geprüft und werde nun für Sie den Kontakt zu den Anbietern Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Diese werden sich in den nächsten Minuten oder Stunden telefonisch bei Ihnen melden. Deshalb ist wichtig, dass Sie telefonisch erreichbar bleiben.'
-      ]
+      items: [ABSCHLUSS_WEITERLEITEN_DEFAULT]
     },
     {
       title: 'Verabschiedung',
       items: [
         'Sie bekommen jetzt noch eine E-Mail von mir, da steht alles Wichtige auch noch einmal drin. Wenn noch etwas sein sollte, melden Sie sich gerne. Ansonsten werden wir sie in zwei Wochen noch einmal anrufen und Fragen, ob die Unterstützung hilfreich war.'
+      ]
+    },
+    {
+      title: 'Einwandbehandlung',
+      entries: [
+        {
+          title: 'Ich möchte nicht mit so vielen sprechen',
+          text: `Die Partner melden sich nicht gleichzeitig bei Ihnen, sondern nacheinander.
+
+Sie können ganz in Ruhe mit jedem sprechen und entscheiden dann selbst, wer am besten zu Ihnen passt.
+
+Der Vorteil ist, dass Sie vergleichen können und nicht vom ersten Angebot abhängig sind.
+
+Ich gebe Ihnen die passenden Partner mit.`
+        },
+        {
+          title: 'Mir reicht ein Anbieter',
+          text: `Ein Partner kann nicht immer direkt die passende Lösung haben.
+
+Mit mehreren Partnern stellen wir sicher, dass Sie wirklich jemanden finden, der zu Ihrer Situation passt und verfügbar ist.
+
+So vermeiden Sie Wartezeiten.
+
+Ich nehme Ihnen mehrere passende Partner mit rein.`
+        },
+        {
+          title: 'Ich habe keine Zeit für mehrere Gespräche',
+          text: `Die Gespräche sind in der Regel kurz und Sie können direkt den Vor Ort/Telefon-Termin ausmachen.
+
+Das spart Ihnen am Ende Zeit, weil Sie nicht mehrfach neu suchen müssen, falls es beim ersten Partner nicht passt.
+
+So kommen Sie schneller zu einer guten Lösung.
+
+Ich gebe Ihnen die passenden Partner mit.`
+        },
+        {
+          title: 'Ich entscheide mich lieber direkt für einen Anbieter',
+          text: `Das verstehe ich gut.
+
+Nur ohne Vergleich fehlt Ihnen die Sicherheit, ob es wirklich die beste Lösung ist.
+
+Mit mehreren Partnern bekommen Sie einen direkten Überblick und können dann eine sichere Entscheidung treffen.
+
+Ich stelle Ihnen die passenden Partner zusammen.`
+        },
+        {
+          title: 'Ich möchte erstmal schauen und mich dann entscheiden',
+          text: `Genau dafür sind die Partner da.
+
+Sie bekommen einen direkten Einblick und können danach in Ruhe entscheiden, was für Sie am besten passt.
+
+So haben Sie eine klare Grundlage für Ihre Entscheidung.
+
+Ich gebe Ihnen die passenden Kontakte mit.`
+        }
       ]
     }
   ];
@@ -376,7 +459,7 @@ const Gespraechsguidance: React.FC<{
     text
       .replace('[Anrede]', klientAnrede || '')
       .replace('[Nachname]', klientNachname || '')
-      .replace(/\s{2,}/g, ' ')
+      .replace(/[ \t]+/g, ' ')
       .trim();
 
   const vorwandbehandlungIndex = visibleGroups.findIndex((g) => g.title === 'Vorwandbehandlung');
@@ -384,6 +467,25 @@ const Gespraechsguidance: React.FC<{
     vorwandbehandlungIndex >= 0 ? vorwandbehandlungIndex : null
   );
   const [openEntryKey, setOpenEntryKey] = useState<string | null>(null);
+  /** Demo: Textversion Abschluss (1 / 2) */
+  const [abschlussTextVersion, setAbschlussTextVersion] = useState<1 | 2>(1);
+  /** Demo: Fall Standard / Warteliste / Tools */
+  const [demoAbschlussVariant, setDemoAbschlussVariant] = useState<
+    'default' | 'warteliste' | 'tools'
+  >('default');
+
+  const abschlussDemoText =
+    abschlussTextVersion === 1
+      ? {
+          default: ABSCHLUSS_WEITERLEITEN_DEFAULT,
+          warteliste: ABSCHLUSS_TEXT_WARTELISTE,
+          tools: ABSCHLUSS_TEXT_TOOLS_INFOS
+        }
+      : {
+          default: ABSCHLUSS_V2_WEITERLEITEN_DEFAULT,
+          warteliste: ABSCHLUSS_V2_TEXT_WARTELISTE,
+          tools: ABSCHLUSS_V2_TEXT_TOOLS_INFOS
+        };
 
   const handleGroupSummaryClick = (index: number) => {
     setOpenGroupIndex((prev) => (prev === index ? null : index));
@@ -423,13 +525,90 @@ const Gespraechsguidance: React.FC<{
                   {group.title}
                 </summary>
                 {group.items && group.items.length > 0 && (
-                  <div className="guidance-group-items guidance-collapsible-content">
-                    {group.items.map((item, itemIndex) => (
-                      <div key={itemIndex} className="guidance-group-item">
-                        {item}
+                  isWeiterleitenMode && group.title === 'Abschluss' ? (
+                    <div className="guidance-collapsible-content">
+                      <div
+                        className="guidance-abschluss-demo"
+                        role="group"
+                        aria-label="Abschluss Demo: Version und Fall"
+                      >
+                        <div
+                          className="guidance-abschluss-version-compact"
+                          role="group"
+                          aria-label="Textversion"
+                        >
+                          <span className="guidance-abschluss-version-hint">Texte</span>
+                          <div className="guidance-abschluss-version-segment">
+                            <button
+                              type="button"
+                              className={
+                                abschlussTextVersion === 1 ? 'is-active' : ''
+                              }
+                              onClick={() => setAbschlussTextVersion(1)}
+                            >
+                              V1
+                            </button>
+                            <button
+                              type="button"
+                              className={
+                                abschlussTextVersion === 2 ? 'is-active' : ''
+                              }
+                              onClick={() => setAbschlussTextVersion(2)}
+                            >
+                              V2
+                            </button>
+                          </div>
+                        </div>
+                        <span className="guidance-abschluss-demo-label">Demo</span>
+                        <div className="guidance-abschluss-demo-toggle">
+                          <button
+                            type="button"
+                            className={
+                              demoAbschlussVariant === 'default'
+                                ? 'is-active'
+                                : ''
+                            }
+                            onClick={() => setDemoAbschlussVariant('default')}
+                          >
+                            Standard (Anbieter)
+                          </button>
+                          <button
+                            type="button"
+                            className={
+                              demoAbschlussVariant === 'warteliste'
+                                ? 'is-active'
+                                : ''
+                            }
+                            onClick={() => setDemoAbschlussVariant('warteliste')}
+                          >
+                            Nur Warteliste
+                          </button>
+                          <button
+                            type="button"
+                            className={
+                              demoAbschlussVariant === 'tools' ? 'is-active' : ''
+                            }
+                            onClick={() => setDemoAbschlussVariant('tools')}
+                          >
+                            Tools &amp; Infos
+                          </button>
+                        </div>
                       </div>
-                    ))}
-                  </div>
+                      <div className="guidance-group-items">
+                        <div className="guidance-group-item guidance-group-item-preline">
+                          {abschlussDemoText[demoAbschlussVariant]}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="guidance-group-items guidance-collapsible-content">
+                      {group.items.map((item, itemIndex) => (
+                        <div key={itemIndex} className="guidance-group-item">
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                  )
                 )}
                 {group.entries && group.entries.length > 0 && (
                   <div className="guidance-group-entries guidance-collapsible-content">
@@ -449,7 +628,9 @@ const Gespraechsguidance: React.FC<{
                           {entry.title}
                         </summary>
                         <div className="guidance-group-entry-text">
-                          {replaceKlientPlaceholders(entry.text)}
+                          {replaceKlientPlaceholders(entry.text) || (
+                            <span className="guidance-entry-placeholder">Text folgt.</span>
+                          )}
                         </div>
                       </details>
                     ))}
@@ -560,12 +741,10 @@ const AnfrageSitzlift: React.FC = () => {
     instant?: boolean;
   } | null>(null);
   const [schliessenTyp, setSchliessenTyp] = useState<'kein-akut' | 'info-mail'>('info-mail');
-  const [schliessenNachgespraechZustimmung, setSchliessenNachgespraechZustimmung] = useState(false);
   const [schliessenNachbetreuungDatum, setSchliessenNachbetreuungDatum] = useState('30.03.26');
   const [schliessenNachbetreuungZeit, setSchliessenNachbetreuungZeit] = useState('14:10');
   const [erreichbarkeit, setErreichbarkeit] = useState({ ganztägig: false, vormittags: false, nachmittags: false, abends: false });
   const [zustimmungKontaktweitergabe, setZustimmungKontaktweitergabe] = useState(false);
-  const [zustimmungNachgespraechBeratung, setZustimmungNachgespraechBeratung] = useState(false);
   const [editingPhoneId, setEditingPhoneId] = useState<string | null>(null);
   const [phoneModalData, setPhoneModalData] = useState({
     type: 'Mobil',
@@ -960,7 +1139,6 @@ const AnfrageSitzlift: React.FC = () => {
 
   const weiterleitenAbschickenEnabled =
     zustimmungKontaktweitergabe &&
-    zustimmungNachgespraechBeratung &&
     (erreichbarkeit.ganztägig ||
       erreichbarkeit.vormittags ||
       erreichbarkeit.nachmittags ||
@@ -2252,15 +2430,7 @@ const AnfrageSitzlift: React.FC = () => {
                     checked={zustimmungKontaktweitergabe}
                     onChange={(e) => setZustimmungKontaktweitergabe(e.target.checked)}
                   />
-                  Ihre Kontaktdaten werden an die genannten Anbieter übermittelt, die sich dann bei Ihnen melden.
-                </label>
-                <label className={`weiterleiten-consent ${!zustimmungNachgespraechBeratung ? 'weiterleiten-option-unchecked' : ''}`}>
-                  <input
-                    type="checkbox"
-                    checked={zustimmungNachgespraechBeratung}
-                    onChange={(e) => setZustimmungNachgespraechBeratung(e.target.checked)}
-                  />
-                  Wir werden uns in den nächsten Wochen bei Ihnen melden, um ein Nachgespräch sowie eine weitere Beratung anzubieten.
+                  Zustimmung zur Kontaktweitergabe &amp; -aufnahme durch die genannten Anbieter
                 </label>
               </div>
             </div>
@@ -2329,19 +2499,6 @@ const AnfrageSitzlift: React.FC = () => {
             </div>
 
             <div className="schliessen-main-grid">
-              <div className="weiterleiten-klient-block schliessen-klient-block">
-                <div className="weiterleiten-klient-zustimmung schliessen-nachgespraech-only">
-                  <label className={`weiterleiten-consent ${!schliessenNachgespraechZustimmung ? 'weiterleiten-option-unchecked' : ''}`}>
-                    <input
-                      type="checkbox"
-                      checked={schliessenNachgespraechZustimmung}
-                      onChange={(e) => setSchliessenNachgespraechZustimmung(e.target.checked)}
-                    />
-                    Wir werden uns in den nächsten Wochen bei Ihnen melden, um ein Nachgespräch sowie eine weitere Beratung anzubieten.
-                  </label>
-                </div>
-              </div>
-
               <div className="schliessen-followup-col">
                 <div className="schliessen-followup-block">
                   <div className="weiterleiten-followup-fields schliessen-followup-fields weiterleiten-followup-stacked">
@@ -2379,7 +2536,6 @@ const AnfrageSitzlift: React.FC = () => {
                 <button
                   type="button"
                   className="btn-blue"
-                  disabled={!schliessenNachgespraechZustimmung}
                   onClick={() => {
                     showAppToast('email');
                     setIsSchliessenModalOpen(false);
