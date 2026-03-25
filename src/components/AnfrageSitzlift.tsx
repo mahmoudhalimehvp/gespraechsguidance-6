@@ -556,6 +556,8 @@ const AnfrageSitzlift: React.FC = () => {
     variant: 'copy' | 'email';
     tick: number;
     message?: string;
+    /** Kein Ein-/Ausblend- oder Icon-Animation (z. B. Admin-Direktlöschung → Dashboard) */
+    instant?: boolean;
   } | null>(null);
   const [schliessenTyp, setSchliessenTyp] = useState<'kein-akut' | 'info-mail'>('info-mail');
   const [schliessenNachgespraechZustimmung, setSchliessenNachgespraechZustimmung] = useState(false);
@@ -692,9 +694,9 @@ const AnfrageSitzlift: React.FC = () => {
     };
   }, []);
 
-  const showAppToast = (variant: 'copy' | 'email', message?: string) => {
+  const showAppToast = (variant: 'copy' | 'email', message?: string, options?: { instant?: boolean }) => {
     if (appToastTimerRef.current) clearTimeout(appToastTimerRef.current);
-    setAppToast({ variant, tick: Date.now(), message });
+    setAppToast({ variant, tick: Date.now(), message, instant: options?.instant });
     appToastTimerRef.current = setTimeout(() => {
       setAppToast(null);
       appToastTimerRef.current = null;
@@ -2116,7 +2118,7 @@ const AnfrageSitzlift: React.FC = () => {
 
       {/* Anfrage weiterleiten Modal */}
       {isWeiterleitenModalOpen && (
-        <div className="modal-overlay modal-overlay-right-pane" onClick={() => setIsWeiterleitenModalOpen(false)}>
+        <div className="modal-overlay" onClick={() => setIsWeiterleitenModalOpen(false)}>
           <div className="modal-content weiterleiten-modal" onClick={(e) => e.stopPropagation()}>
             <h2 className="modal-title">Anfrage abschicken</h2>
 
@@ -2305,7 +2307,7 @@ const AnfrageSitzlift: React.FC = () => {
 
       {/* Anfrage schließen Modal */}
       {isSchliessenModalOpen && (
-        <div className="modal-overlay modal-overlay-right-pane" onClick={() => setIsSchliessenModalOpen(false)}>
+        <div className="modal-overlay" onClick={() => setIsSchliessenModalOpen(false)}>
           <div className="modal-content weiterleiten-modal schliessen-modal" onClick={(e) => e.stopPropagation()}>
             <h2 className="modal-title modal-title-schliessen">Anfrage schließen</h2>
 
@@ -2468,7 +2470,7 @@ const AnfrageSitzlift: React.FC = () => {
                     className="btn-red klient-loeschen-action-btn"
                     disabled={!klientLoeschenAdminKlientBestaetigt}
                     onClick={() => {
-                      showAppToast('email');
+                      showAppToast('email', 'Klient wurde gelöscht.', { instant: true });
                       setIsKlientLoeschenModalOpen(false);
                       setCrmMainView('dashboard');
                     }}
@@ -2494,7 +2496,7 @@ const AnfrageSitzlift: React.FC = () => {
                     className="btn-blue klient-loeschen-action-btn"
                     disabled={!klientLoeschenAdminDuplikatBestaetigt}
                     onClick={() => {
-                      showAppToast('email');
+                      showAppToast('email', 'Dublette wurde gelöscht.', { instant: true });
                       setIsKlientLoeschenModalOpen(false);
                       setCrmMainView('dashboard');
                     }}
@@ -3071,7 +3073,7 @@ const AnfrageSitzlift: React.FC = () => {
 
       {appToast && (
         <div
-          className={`app-toast app-toast--${appToast.variant} app-toast--visible`}
+          className={`app-toast app-toast--${appToast.variant} app-toast--visible${appToast.instant ? ' app-toast--instant' : ''}`}
           role="status"
           aria-live="polite"
           aria-atomic="true"

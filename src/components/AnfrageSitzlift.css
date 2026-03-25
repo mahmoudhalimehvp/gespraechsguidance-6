@@ -2338,13 +2338,6 @@
   z-index: 2000;
 }
 
-.modal-overlay-right-pane {
-  top: 60px;
-  left: var(--guidance-width);
-  right: 0;
-  bottom: 0;
-}
-
 .modal-content {
   background-color: white;
   border-radius: 8px;
@@ -3519,6 +3512,21 @@
   opacity: 1;
   transform: translateX(-50%) translateY(0);
   pointer-events: auto;
+}
+
+/* Ohne Einblend-/Bewegungsanimation (z. B. nach Admin-Direktlöschung) */
+.app-toast.app-toast--instant {
+  transition: none !important;
+}
+
+.app-toast.app-toast--instant.app-toast--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.app-toast--instant .app-toast-icon--copy,
+.app-toast--instant .app-toast-icon--email {
+  animation: none !important;
 }
 
 .app-toast-icon {
