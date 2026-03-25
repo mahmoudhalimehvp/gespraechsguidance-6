@@ -370,11 +370,14 @@ const Gespraechsguidance: React.FC<{
   klientAnrede: string;
   klientNachname: string;
   isWeiterleitenMode: boolean;
+  /** Sidebar sichtbar aber ausgegraut, ohne Texte (z. B. anderes Modal offen) */
+  obscured?: boolean;
 }> = ({
   klientDisplayName,
   klientAnrede,
   klientNachname,
-  isWeiterleitenMode
+  isWeiterleitenMode,
+  obscured = false
 }) => {
   const groupOrder = [
     'Vorwandbehandlung',
@@ -496,6 +499,15 @@ Ich gebe Ihnen die passenden Kontakte mit.`
     const key = `${groupIndex}-${entryIndex}`;
     setOpenEntryKey((prev) => (prev === key ? null : key));
   };
+
+  if (obscured) {
+    return (
+      <div
+        className="guidance-sidebar guidance-sidebar--obscured"
+        aria-hidden="true"
+      />
+    );
+  }
 
   return (
     <div className="guidance-sidebar">
@@ -1142,6 +1154,14 @@ const AnfrageSitzlift: React.FC = () => {
       erreichbarkeit.nachmittags ||
       erreichbarkeit.abends);
 
+  /** Gesprächshilfen ausgrauen ohne Inhalt, solange ein anderes Modal als „Weiterleiten“ offen ist */
+  const guidanceSidebarObscured =
+    isSchliessenModalOpen ||
+    isKlientLoeschenModalOpen ||
+    isNewsletterEinstellungenModalOpen ||
+    isAnrufEinstellungenModalOpen ||
+    isPhoneModalOpen;
+
   return (
     <div className="anfrage-container">
       {/* Top Navigation */}
@@ -1266,7 +1286,8 @@ const AnfrageSitzlift: React.FC = () => {
                 }
                 klientAnrede={formData.anrede}
                 klientNachname={formData.nachname}
-                isWeiterleitenMode={isWeiterleitenModalOpen || isSchliessenModalOpen}
+                isWeiterleitenMode={isWeiterleitenModalOpen}
+                obscured={guidanceSidebarObscured}
               />
 
               <div className="main-content">

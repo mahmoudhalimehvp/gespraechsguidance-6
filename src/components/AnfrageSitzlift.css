@@ -251,6 +251,16 @@
   align-self: stretch;
 }
 
+/* Gesprächshilfen: Platzhalter-Spalte wenn ein anderes Modal den Inhalt verdeckt */
+.guidance-sidebar--obscured {
+  background: #e4e7eb;
+  border-right: 1px solid #d1d5db;
+  padding: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
 .guidance-klient-line {
   display: flex;
   align-items: center;
