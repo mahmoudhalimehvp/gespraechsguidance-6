@@ -1156,13 +1156,14 @@ const AnfrageSitzlift: React.FC = () => {
       erreichbarkeit.nachmittags ||
       erreichbarkeit.abends);
 
-  /** Gesprächshilfen ausgrauen ohne Inhalt, solange ein anderes Modal als „Weiterleiten“ offen ist */
+  /** Gesprächshilfen ausgrauen ohne Inhalt bei blockierenden Modals – nicht bei „Speichern und weiter“ / Weiterleiten-Popup */
   const guidanceSidebarObscured =
-    isSchliessenModalOpen ||
-    isKlientLoeschenModalOpen ||
-    isNewsletterEinstellungenModalOpen ||
-    isAnrufEinstellungenModalOpen ||
-    isPhoneModalOpen;
+    !isWeiterleitenModalOpen &&
+    (isSchliessenModalOpen ||
+      isKlientLoeschenModalOpen ||
+      isNewsletterEinstellungenModalOpen ||
+      isAnrufEinstellungenModalOpen ||
+      isPhoneModalOpen);
 
   return (
     <div className="anfrage-container">
@@ -2319,7 +2320,7 @@ const AnfrageSitzlift: React.FC = () => {
       {isWeiterleitenModalOpen && (
         <div className="modal-overlay" onClick={() => setIsWeiterleitenModalOpen(false)}>
           <div className="modal-content weiterleiten-modal" onClick={(e) => e.stopPropagation()}>
-            <h2 className="modal-title">Anfrage abschicken</h2>
+            <h2 className="modal-title">Speichern und weiter</h2>
 
             <div className="weiterleiten-grid">
               <div className="weiterleiten-column-title">Sitzlift</div>
