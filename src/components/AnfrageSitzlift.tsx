@@ -739,12 +739,10 @@ const AnfrageSitzlift: React.FC = () => {
     message?: string;
   } | null>(null);
   const [schliessenTyp, setSchliessenTyp] = useState<'kein-akut' | 'info-mail'>('info-mail');
-  const [schliessenNachgespraechZustimmung, setSchliessenNachgespraechZustimmung] = useState(false);
   const [schliessenNachbetreuungDatum, setSchliessenNachbetreuungDatum] = useState('30.03.26');
   const [schliessenNachbetreuungZeit, setSchliessenNachbetreuungZeit] = useState('14:10');
   const [erreichbarkeit, setErreichbarkeit] = useState({ ganztägig: false, vormittags: false, nachmittags: false, abends: false });
   const [zustimmungKontaktweitergabe, setZustimmungKontaktweitergabe] = useState(false);
-  const [zustimmungNachgespraechBeratung, setZustimmungNachgespraechBeratung] = useState(false);
   const [editingPhoneId, setEditingPhoneId] = useState<string | null>(null);
   const [phoneModalData, setPhoneModalData] = useState({
     type: 'Mobil',
@@ -1139,7 +1137,6 @@ const AnfrageSitzlift: React.FC = () => {
 
   const weiterleitenAbschickenEnabled =
     zustimmungKontaktweitergabe &&
-    zustimmungNachgespraechBeratung &&
     (erreichbarkeit.ganztägig ||
       erreichbarkeit.vormittags ||
       erreichbarkeit.nachmittags ||
@@ -2431,15 +2428,7 @@ const AnfrageSitzlift: React.FC = () => {
                     checked={zustimmungKontaktweitergabe}
                     onChange={(e) => setZustimmungKontaktweitergabe(e.target.checked)}
                   />
-                  Ihre Kontaktdaten werden an die genannten Anbieter übermittelt, die sich dann bei Ihnen melden.
-                </label>
-                <label className={`weiterleiten-consent ${!zustimmungNachgespraechBeratung ? 'weiterleiten-option-unchecked' : ''}`}>
-                  <input
-                    type="checkbox"
-                    checked={zustimmungNachgespraechBeratung}
-                    onChange={(e) => setZustimmungNachgespraechBeratung(e.target.checked)}
-                  />
-                  Wir werden uns in den nächsten Wochen bei Ihnen melden, um ein Nachgespräch sowie eine weitere Beratung anzubieten.
+                  Zustimmung zur Kontaktweitergabe &amp; -aufnahme durch die genannten Anbieter
                 </label>
               </div>
             </div>
@@ -2508,19 +2497,6 @@ const AnfrageSitzlift: React.FC = () => {
             </div>
 
             <div className="schliessen-main-grid">
-              <div className="weiterleiten-klient-block schliessen-klient-block">
-                <div className="weiterleiten-klient-zustimmung schliessen-nachgespraech-only">
-                  <label className={`weiterleiten-consent ${!schliessenNachgespraechZustimmung ? 'weiterleiten-option-unchecked' : ''}`}>
-                    <input
-                      type="checkbox"
-                      checked={schliessenNachgespraechZustimmung}
-                      onChange={(e) => setSchliessenNachgespraechZustimmung(e.target.checked)}
-                    />
-                    Wir werden uns in den nächsten Wochen bei Ihnen melden, um ein Nachgespräch sowie eine weitere Beratung anzubieten.
-                  </label>
-                </div>
-              </div>
-
               <div className="schliessen-followup-col">
                 <div className="schliessen-followup-block">
                   <div className="weiterleiten-followup-fields schliessen-followup-fields weiterleiten-followup-stacked">
@@ -2558,7 +2534,6 @@ const AnfrageSitzlift: React.FC = () => {
                 <button
                   type="button"
                   className="btn-blue"
-                  disabled={!schliessenNachgespraechZustimmung}
                   onClick={() => {
                     showAppToast('email');
                     setIsSchliessenModalOpen(false);
