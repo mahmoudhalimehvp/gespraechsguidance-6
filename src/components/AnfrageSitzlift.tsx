@@ -1156,14 +1156,17 @@ const AnfrageSitzlift: React.FC = () => {
       erreichbarkeit.nachmittags ||
       erreichbarkeit.abends);
 
-  /** Gesprächshilfen ausgrauen ohne Inhalt bei blockierenden Modals – nicht bei „Speichern und weiter“ / Weiterleiten-Popup */
+  /** Modals, die die Gesprächshilfen ausgrauen (nicht das Weiterleiten-/„Speichern und weiter“-Popup) */
+  const guidanceSidebarObscuredByOtherModal =
+    isSchliessenModalOpen ||
+    isKlientLoeschenModalOpen ||
+    isNewsletterEinstellungenModalOpen ||
+    isAnrufEinstellungenModalOpen ||
+    isPhoneModalOpen;
+
+  /** Während „Speichern und weiter“ (Weiterleiten) offen ist: immer volle Gesprächshilfen, nie ausgrauen */
   const guidanceSidebarObscured =
-    !isWeiterleitenModalOpen &&
-    (isSchliessenModalOpen ||
-      isKlientLoeschenModalOpen ||
-      isNewsletterEinstellungenModalOpen ||
-      isAnrufEinstellungenModalOpen ||
-      isPhoneModalOpen);
+    guidanceSidebarObscuredByOtherModal && !isWeiterleitenModalOpen;
 
   return (
     <div className="anfrage-container">
@@ -1292,6 +1295,190 @@ const AnfrageSitzlift: React.FC = () => {
                 isWeiterleitenMode={isWeiterleitenModalOpen}
                 obscured={guidanceSidebarObscured}
               />
+
+              {/* Anfrage weiterleiten / „Speichern und weiter“ */}
+              {isWeiterleitenModalOpen && (
+                <div
+                  className="main-content-modal-overlay"
+                  onClick={() => setIsWeiterleitenModalOpen(false)}
+                >
+                  <div className="modal-content weiterleiten-modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-title">Speichern und weiter</h2>
+
+            <div className="weiterleiten-grid">
+              <div className="weiterleiten-column-title">Sitzlift</div>
+              <div className="weiterleiten-anbieter-card selected">
+                <div className="anbieter-head">
+                  <span className="anbieter-name">Sonilift GmbH</span>
+                  <span className="anbieter-check">✓</span>
+                </div>
+                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
+              </div>
+              <div className="weiterleiten-anbieter-card selected">
+                <div className="anbieter-head">
+                  <span className="anbieter-name">SANA Treppenlifte</span>
+                  <span className="anbieter-check">✓</span>
+                </div>
+                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
+              </div>
+              <div className="weiterleiten-anbieter-card selected">
+                <div className="anbieter-head">
+                  <span className="anbieter-name">Expertlift GmbH</span>
+                  <span className="anbieter-check">✓</span>
+                </div>
+                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
+              </div>
+              <div className="weiterleiten-anbieter-card selected">
+                <div className="anbieter-head">
+                  <span className="anbieter-name">Fairlifi Treppenlifte GmbH</span>
+                  <span className="anbieter-check">✓</span>
+                </div>
+                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
+              </div>
+
+              <div className="weiterleiten-column-title weiterleiten-column-title--tools">
+                <span className="weiterleiten-tools-heading">Tools &amp; Informationen</span>
+                <p className="weiterleiten-tools-subhint">Die Auswahl wird dem Klienten via E-Mail zugesendet.</p>
+              </div>
+              <div className="weiterleiten-anbieter-card selected weiterleiten-tool-card">
+                <div className="anbieter-head">
+                  <span className="anbieter-name">Pflegegrad-Rechner</span>
+                  <span className="anbieter-check">✓</span>
+                </div>
+              </div>
+              <div className="weiterleiten-anbieter-card selected weiterleiten-tool-card">
+                <div className="anbieter-head">
+                  <span className="anbieter-name">Pflegezuschüsse &amp; -Leistungen</span>
+                  <span className="anbieter-check">✓</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="weiterleiten-separator" />
+
+            <div className="weiterleiten-klient-block">
+              <div className="weiterleiten-klient-title">Klient / Interessent</div>
+              <div className="weiterleiten-klient-felder">
+                <div className="weiterleiten-klient-labels">
+                  <span className="weiterleiten-klient-label">Anrede</span>
+                  <span className="weiterleiten-klient-label">Vorname</span>
+                  <span className="weiterleiten-klient-label">Nachname</span>
+                  <span className="weiterleiten-klient-label">E-Mail</span>
+                </div>
+                <div className="weiterleiten-klient-inputs">
+                  <div className="weiterleiten-klient-cell">
+                    <div className="radio-group">
+                      <label><input type="radio" name="weiterleiten-anrede" value="Frau" checked={formData.anrede === 'Frau'} onChange={(e) => setFormData(prev => ({ ...prev, anrede: e.target.value }))} /> Frau</label>
+                      <label><input type="radio" name="weiterleiten-anrede" value="Herr" checked={formData.anrede === 'Herr'} onChange={(e) => setFormData(prev => ({ ...prev, anrede: e.target.value }))} /> Herr</label>
+                    </div>
+                  </div>
+                  <div className="weiterleiten-klient-cell">
+                    <input type="text" value={formData.vorname} onChange={(e) => setFormData(prev => ({ ...prev, vorname: e.target.value }))} placeholder="Vorname" />
+                  </div>
+                  <div className="weiterleiten-klient-cell">
+                    <input type="text" value={formData.nachname} onChange={(e) => setFormData(prev => ({ ...prev, nachname: e.target.value }))} placeholder="Nachname" />
+                  </div>
+                  <div className="weiterleiten-klient-cell">
+                    <input type="email" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} placeholder="E-Mail" />
+                  </div>
+                </div>
+              </div>
+              <div className="weiterleiten-klient-erreichbarkeit">
+                <div className="weiterleiten-options-title">Beste telefonische Erreichbarkeit</div>
+                <div className="weiterleiten-options">
+                  <label className={!erreichbarkeit.ganztägig ? 'weiterleiten-option-unchecked' : ''}>
+                    <input
+                      type="checkbox"
+                      checked={erreichbarkeit.ganztägig}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setErreichbarkeit((prev) => ({
+                          ...prev,
+                          ganztägig: checked,
+                          ...(checked ? { vormittags: true, nachmittags: true, abends: true } : {})
+                        }));
+                      }}
+                    />
+                    Ganztägig
+                  </label>
+                  <span className="weiterleiten-option-separator" aria-hidden="true" />
+                  <label className={!erreichbarkeit.vormittags ? 'weiterleiten-option-unchecked' : ''}>
+                    <input
+                      type="checkbox"
+                      checked={erreichbarkeit.vormittags}
+                      onChange={(e) => setErreichbarkeit((prev) => ({ ...prev, vormittags: e.target.checked }))}
+                    />
+                    Vormittags
+                  </label>
+                  <label className={!erreichbarkeit.nachmittags ? 'weiterleiten-option-unchecked' : ''}>
+                    <input
+                      type="checkbox"
+                      checked={erreichbarkeit.nachmittags}
+                      onChange={(e) => setErreichbarkeit((prev) => ({ ...prev, nachmittags: e.target.checked }))}
+                    />
+                    Nachmittags
+                  </label>
+                  <label className={!erreichbarkeit.abends ? 'weiterleiten-option-unchecked' : ''}>
+                    <input
+                      type="checkbox"
+                      checked={erreichbarkeit.abends}
+                      onChange={(e) => setErreichbarkeit((prev) => ({ ...prev, abends: e.target.checked }))}
+                    />
+                    Abends
+                  </label>
+                </div>
+              </div>
+              <div className="weiterleiten-klient-zustimmung">
+                <label className={`weiterleiten-consent ${!zustimmungKontaktweitergabe ? 'weiterleiten-option-unchecked' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={zustimmungKontaktweitergabe}
+                    onChange={(e) => setZustimmungKontaktweitergabe(e.target.checked)}
+                  />
+                  Zustimmung zur Kontaktweitergabe &amp; -aufnahme durch die genannten Anbieter
+                </label>
+              </div>
+            </div>
+
+            <div className="weiterleiten-bottom-grid">
+              <div className="weiterleiten-followup-block">
+                <div className="weiterleiten-followup-fields weiterleiten-followup-stacked">
+                  <div className="weiterleiten-followup-field">
+                    <div className="weiterleiten-followup-field-label">Nachbetreuung am</div>
+                    <input type="text" defaultValue="04.03.26" aria-label="Nachbetreuung am" />
+                  </div>
+                  <div className="weiterleiten-followup-field">
+                    <div className="weiterleiten-followup-field-label">Uhrzeit</div>
+                    <input type="text" defaultValue="16:18" aria-label="Uhrzeit" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="weiterleiten-footer weiterleiten-footer--stacked">
+              <div className="weiterleiten-footer-trailing">
+                <div className="weiterleiten-note">Super - die umsatzstärkste Anbieterauswahl wurde ausgewählt!</div>
+                <div className="weiterleiten-actions">
+                  <button
+                    type="button"
+                    className="btn-blue"
+                    disabled={!weiterleitenAbschickenEnabled}
+                    onClick={() => {
+                      showAppToast('email');
+                      setIsWeiterleitenModalOpen(false);
+                    }}
+                  >
+                    Abschicken
+                  </button>
+                  <button type="button" className="btn-orange" onClick={() => setIsWeiterleitenModalOpen(false)}>
+                    Abbrechen
+                  </button>
+                </div>
+              </div>
+            </div>
+                  </div>
+                </div>
+              )}
 
               <div className="main-content">
           {/* Header */}
@@ -2311,189 +2498,8 @@ const AnfrageSitzlift: React.FC = () => {
               setIsWeiterleitenModalOpen(true);
             }}
           >
-            Anfrage weiterleiten
+            Speichern und weiter
           </button>
-        </div>
-      )}
-
-      {/* Anfrage weiterleiten Modal */}
-      {isWeiterleitenModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsWeiterleitenModalOpen(false)}>
-          <div className="modal-content weiterleiten-modal" onClick={(e) => e.stopPropagation()}>
-            <h2 className="modal-title">Speichern und weiter</h2>
-
-            <div className="weiterleiten-grid">
-              <div className="weiterleiten-column-title">Sitzlift</div>
-              <div className="weiterleiten-anbieter-card selected">
-                <div className="anbieter-head">
-                  <span className="anbieter-name">Sonilift GmbH</span>
-                  <span className="anbieter-check">✓</span>
-                </div>
-                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
-              </div>
-              <div className="weiterleiten-anbieter-card selected">
-                <div className="anbieter-head">
-                  <span className="anbieter-name">SANA Treppenlifte</span>
-                  <span className="anbieter-check">✓</span>
-                </div>
-                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
-              </div>
-              <div className="weiterleiten-anbieter-card selected">
-                <div className="anbieter-head">
-                  <span className="anbieter-name">Expertlift GmbH</span>
-                  <span className="anbieter-check">✓</span>
-                </div>
-                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
-              </div>
-              <div className="weiterleiten-anbieter-card selected">
-                <div className="anbieter-head">
-                  <span className="anbieter-name">Fairlifi Treppenlifte GmbH</span>
-                  <span className="anbieter-check">✓</span>
-                </div>
-                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
-              </div>
-
-              <div className="weiterleiten-column-title weiterleiten-column-title--tools">
-                <span className="weiterleiten-tools-heading">Tools &amp; Informationen</span>
-                <p className="weiterleiten-tools-subhint">Die Auswahl wird dem Klienten via E-Mail zugesendet.</p>
-              </div>
-              <div className="weiterleiten-anbieter-card selected weiterleiten-tool-card">
-                <div className="anbieter-head">
-                  <span className="anbieter-name">Pflegegrad-Rechner</span>
-                  <span className="anbieter-check">✓</span>
-                </div>
-              </div>
-              <div className="weiterleiten-anbieter-card selected weiterleiten-tool-card">
-                <div className="anbieter-head">
-                  <span className="anbieter-name">Pflegezuschüsse &amp; -Leistungen</span>
-                  <span className="anbieter-check">✓</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="weiterleiten-separator" />
-
-            <div className="weiterleiten-klient-block">
-              <div className="weiterleiten-klient-title">Klient / Interessent</div>
-              <div className="weiterleiten-klient-felder">
-                <div className="weiterleiten-klient-labels">
-                  <span className="weiterleiten-klient-label">Anrede</span>
-                  <span className="weiterleiten-klient-label">Vorname</span>
-                  <span className="weiterleiten-klient-label">Nachname</span>
-                  <span className="weiterleiten-klient-label">E-Mail</span>
-                </div>
-                <div className="weiterleiten-klient-inputs">
-                  <div className="weiterleiten-klient-cell">
-                    <div className="radio-group">
-                      <label><input type="radio" name="weiterleiten-anrede" value="Frau" checked={formData.anrede === 'Frau'} onChange={(e) => setFormData(prev => ({ ...prev, anrede: e.target.value }))} /> Frau</label>
-                      <label><input type="radio" name="weiterleiten-anrede" value="Herr" checked={formData.anrede === 'Herr'} onChange={(e) => setFormData(prev => ({ ...prev, anrede: e.target.value }))} /> Herr</label>
-                    </div>
-                  </div>
-                  <div className="weiterleiten-klient-cell">
-                    <input type="text" value={formData.vorname} onChange={(e) => setFormData(prev => ({ ...prev, vorname: e.target.value }))} placeholder="Vorname" />
-                  </div>
-                  <div className="weiterleiten-klient-cell">
-                    <input type="text" value={formData.nachname} onChange={(e) => setFormData(prev => ({ ...prev, nachname: e.target.value }))} placeholder="Nachname" />
-                  </div>
-                  <div className="weiterleiten-klient-cell">
-                    <input type="email" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} placeholder="E-Mail" />
-                  </div>
-                </div>
-              </div>
-              <div className="weiterleiten-klient-erreichbarkeit">
-                <div className="weiterleiten-options-title">Beste telefonische Erreichbarkeit</div>
-                <div className="weiterleiten-options">
-                  <label className={!erreichbarkeit.ganztägig ? 'weiterleiten-option-unchecked' : ''}>
-                    <input
-                      type="checkbox"
-                      checked={erreichbarkeit.ganztägig}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        setErreichbarkeit((prev) => ({
-                          ...prev,
-                          ganztägig: checked,
-                          ...(checked ? { vormittags: true, nachmittags: true, abends: true } : {})
-                        }));
-                      }}
-                    />
-                    Ganztägig
-                  </label>
-                  <span className="weiterleiten-option-separator" aria-hidden="true" />
-                  <label className={!erreichbarkeit.vormittags ? 'weiterleiten-option-unchecked' : ''}>
-                    <input
-                      type="checkbox"
-                      checked={erreichbarkeit.vormittags}
-                      onChange={(e) => setErreichbarkeit((prev) => ({ ...prev, vormittags: e.target.checked }))}
-                    />
-                    Vormittags
-                  </label>
-                  <label className={!erreichbarkeit.nachmittags ? 'weiterleiten-option-unchecked' : ''}>
-                    <input
-                      type="checkbox"
-                      checked={erreichbarkeit.nachmittags}
-                      onChange={(e) => setErreichbarkeit((prev) => ({ ...prev, nachmittags: e.target.checked }))}
-                    />
-                    Nachmittags
-                  </label>
-                  <label className={!erreichbarkeit.abends ? 'weiterleiten-option-unchecked' : ''}>
-                    <input
-                      type="checkbox"
-                      checked={erreichbarkeit.abends}
-                      onChange={(e) => setErreichbarkeit((prev) => ({ ...prev, abends: e.target.checked }))}
-                    />
-                    Abends
-                  </label>
-                </div>
-              </div>
-              <div className="weiterleiten-klient-zustimmung">
-                <label className={`weiterleiten-consent ${!zustimmungKontaktweitergabe ? 'weiterleiten-option-unchecked' : ''}`}>
-                  <input
-                    type="checkbox"
-                    checked={zustimmungKontaktweitergabe}
-                    onChange={(e) => setZustimmungKontaktweitergabe(e.target.checked)}
-                  />
-                  Zustimmung zur Kontaktweitergabe &amp; -aufnahme durch die genannten Anbieter
-                </label>
-              </div>
-            </div>
-
-            <div className="weiterleiten-bottom-grid">
-              <div className="weiterleiten-followup-block">
-                <div className="weiterleiten-followup-fields weiterleiten-followup-stacked">
-                  <div className="weiterleiten-followup-field">
-                    <div className="weiterleiten-followup-field-label">Nachbetreuung am</div>
-                    <input type="text" defaultValue="04.03.26" aria-label="Nachbetreuung am" />
-                  </div>
-                  <div className="weiterleiten-followup-field">
-                    <div className="weiterleiten-followup-field-label">Uhrzeit</div>
-                    <input type="text" defaultValue="16:18" aria-label="Uhrzeit" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="weiterleiten-footer weiterleiten-footer--stacked">
-              <div className="weiterleiten-footer-trailing">
-                <div className="weiterleiten-note">Super - die umsatzstärkste Anbieterauswahl wurde ausgewählt!</div>
-                <div className="weiterleiten-actions">
-                  <button
-                    type="button"
-                    className="btn-blue"
-                    disabled={!weiterleitenAbschickenEnabled}
-                    onClick={() => {
-                      showAppToast('email');
-                      setIsWeiterleitenModalOpen(false);
-                    }}
-                  >
-                    Abschicken
-                  </button>
-                  <button type="button" className="btn-orange" onClick={() => setIsWeiterleitenModalOpen(false)}>
-                    Abbrechen
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       )}
 

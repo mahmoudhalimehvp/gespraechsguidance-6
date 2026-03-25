@@ -228,12 +228,42 @@
 
 /* Main Content Wrapper - Gesprächsguidance + Formular */
 .main-content-wrapper {
+  position: relative;
   display: flex;
   flex: 1;
   min-height: calc(100vh - 52px);
   width: 100%;
   min-width: 0;
   overflow-x: hidden;
+}
+
+/* „Speichern und weiter“: nur den rechten Bereich abdunkeln; Höhe = Viewport (nicht volle Formularhöhe), sonst wandert die Box nach unten */
+.main-content-modal-overlay {
+  position: fixed;
+  top: 52px;
+  left: var(--guidance-width, 550px);
+  right: 0;
+  bottom: 0;
+  z-index: 2100;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.main-content-modal-overlay .weiterleiten-modal {
+  max-height: calc(100vh - 52px - 40px);
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .main-content-modal-overlay {
+    left: 0;
+  }
 }
 
 /* Gesprächsguidance Sidebar */
