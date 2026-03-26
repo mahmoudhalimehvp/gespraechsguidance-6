@@ -3570,12 +3570,14 @@
   margin-top: 0;
 }
 
-/* Toast: Kopie / E-Mail */
+/* Toast: Kopie / E-Mail (oben links, Erfolg-Grün) */
 .app-toast {
   position: fixed;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%) translateY(28px);
+  top: 28px;
+  left: 28px;
+  right: auto;
+  bottom: auto;
+  transform: translateY(-28px);
   z-index: 10050;
   display: flex;
   align-items: center;
@@ -3597,17 +3599,14 @@
     transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.app-toast--copy {
-  background: linear-gradient(145deg, #2e7d32 0%, #1b5e20 100%);
-}
-
+.app-toast--copy,
 .app-toast--email {
-  background: linear-gradient(145deg, #1565c0 0%, #0d47a1 100%);
+  background: linear-gradient(145deg, #2e7d32 0%, #1b5e20 100%);
 }
 
 .app-toast--visible {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
   pointer-events: auto;
 }
 
@@ -3618,7 +3617,7 @@
 
 .app-toast.app-toast--instant.app-toast--visible {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
 }
 
 .app-toast--instant .app-toast-icon--copy,
@@ -3687,7 +3686,7 @@
   }
 
   .app-toast--visible {
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
   }
 
   .app-toast-icon--copy,

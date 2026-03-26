@@ -2610,8 +2610,8 @@ const AnfrageSitzlift: React.FC = () => {
               <div className="klient-loeschen-admin-hinweise">
                 <div className="newsletter-admin-abmelden klient-loeschen-admin-block">
                   <p className="newsletter-admin-abmelden-text">
-                    <strong>Admin:</strong> Endgültige Löschung der Klientendaten und zugehöriger Anfragen im CRM (wird
-                    protokolliert).
+                    <strong>Admin:</strong> Endgültige Löschung des Klienten und aller personenbezogenen Daten? Dem
+                    Klienten wird eine Löschbestätigung zugesendet.
                   </p>
                   <label className="newsletter-wahl-checkbox newsletter-admin-abmelden-checkbox">
                     <input
@@ -2636,8 +2636,7 @@ const AnfrageSitzlift: React.FC = () => {
                 </div>
                 <div className="newsletter-admin-abmelden klient-loeschen-admin-block klient-loeschen-admin-block--duplikat">
                   <p className="newsletter-admin-abmelden-text">
-                    <strong>Admin:</strong> Endgültige Löschung nur dieser Dublette (Hauptklient bleibt erhalten) (wird
-                    protokolliert).
+                    <strong>Admin:</strong> Endgültige Löschung dieses mehrfach angelegten Klienten (Dublette)?
                   </p>
                   <label className="newsletter-wahl-checkbox newsletter-admin-abmelden-checkbox">
                     <input
