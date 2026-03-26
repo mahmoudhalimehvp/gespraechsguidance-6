@@ -1008,14 +1008,12 @@ const AnfrageSitzlift: React.FC = () => {
     if (!newsletterWunschErhalten) return;
     setNewsletterDemoModus('angemeldet');
     setIsNewsletterEinstellungenModalOpen(false);
-    showAppToast('email');
   };
 
   const handleNewsletterAdminAbmeldungSpeichern = () => {
     if (!newsletterAdminAbmeldungBestaetigt) return;
     setNewsletterDemoModus('nicht-angemeldet');
     setIsNewsletterEinstellungenModalOpen(false);
-    showAppToast('email');
   };
 
   const handleAnrufEinstellungenSpeichernTelefonieAnmelden = () => {
@@ -2806,9 +2804,12 @@ const AnfrageSitzlift: React.FC = () => {
                   </div>
                 </div>
                 {newsletterDemoModus === 'admin' && (
-                  <div className="newsletter-admin-abmelden" onClick={(e) => e.stopPropagation()}>
+                  <div
+                    className="newsletter-admin-abmelden klient-loeschen-admin-block"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <p className="newsletter-admin-abmelden-text">
-                      <strong>Admin:</strong> Bei berechtigtem Anlass kann der Klient hier direkt vom Newsletter abgemeldet werden (wird protokolliert).
+                      <strong>Admin:</strong> Fordert der Klient die Abmeldung vom Newsletter?
                     </p>
                     <label className="newsletter-wahl-checkbox newsletter-admin-abmelden-checkbox">
                       <input
@@ -2818,6 +2819,14 @@ const AnfrageSitzlift: React.FC = () => {
                       />
                       <span>Ich bestätige die Abmeldung des Klienten vom Newsletter.</span>
                     </label>
+                    <button
+                      type="button"
+                      className="btn-red klient-loeschen-action-btn"
+                      disabled={!newsletterAdminAbmeldungBestaetigt}
+                      onClick={handleNewsletterAdminAbmeldungSpeichern}
+                    >
+                      Speichern
+                    </button>
                   </div>
                 )}
               </div>
@@ -2826,20 +2835,12 @@ const AnfrageSitzlift: React.FC = () => {
             <div className="klient-loeschen-grund-line klient-loeschen-footer-line" aria-hidden="true" />
 
             <div className="klient-loeschen-actions">
-              {(newsletterDemoModus === 'nicht-angemeldet' || newsletterDemoModus === 'admin') && (
+              {newsletterDemoModus === 'nicht-angemeldet' && (
                 <button
                   type="button"
                   className="btn-blue klient-loeschen-action-btn"
-                  disabled={
-                    newsletterDemoModus === 'nicht-angemeldet'
-                      ? !newsletterWunschErhalten
-                      : !newsletterAdminAbmeldungBestaetigt
-                  }
-                  onClick={
-                    newsletterDemoModus === 'nicht-angemeldet'
-                      ? handleNewsletterEinstellungenSpeichern
-                      : handleNewsletterAdminAbmeldungSpeichern
-                  }
+                  disabled={!newsletterWunschErhalten}
+                  onClick={handleNewsletterEinstellungenSpeichern}
                 >
                   Speichern
                 </button>

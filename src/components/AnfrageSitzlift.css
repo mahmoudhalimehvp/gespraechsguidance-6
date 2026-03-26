@@ -3266,7 +3266,9 @@
 }
 
 .klient-loeschen-admin-hinweise .btn-red:disabled,
-.klient-loeschen-admin-hinweise .btn-blue:disabled {
+.klient-loeschen-admin-hinweise .btn-blue:disabled,
+.klient-loeschen-admin-block .btn-red:disabled,
+.klient-loeschen-admin-block .btn-blue:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
