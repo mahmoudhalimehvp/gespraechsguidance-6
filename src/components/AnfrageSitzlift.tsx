@@ -729,9 +729,13 @@ const AnfrageSitzlift: React.FC = () => {
   /** Newsletter Admin-Anmeldung (nur Admins): Bestätigung per Checkbox vor Speichern */
   const [newsletterAdminAnmeldungBestaetigt, setNewsletterAdminAnmeldungBestaetigt] = useState(false);
   /** Nur Demo/Preview: Ansicht im Anruf-Modal (Standard / Admin) */
-  const [anrufDemoModus, setAnrufDemoModus] = useState<'telefonie-aktiv' | 'abgemeldet' | 'admin'>('telefonie-aktiv');
+  const [anrufDemoModus, setAnrufDemoModus] = useState<
+    'telefonie-aktiv' | 'abgemeldet' | 'admin' | 'admin-anmelden'
+  >('telefonie-aktiv');
   /** Telefonie Admin-Abmeldung: Bestätigung per Checkbox vor Speichern */
   const [anrufAdminTelefonieAbmeldungBestaetigt, setAnrufAdminTelefonieAbmeldungBestaetigt] = useState(false);
+  /** Telefonie Admin-Anmeldung (nur Admins): Bestätigung per Checkbox vor Speichern */
+  const [anrufAdminTelefonieAnmeldungBestaetigt, setAnrufAdminTelefonieAnmeldungBestaetigt] = useState(false);
   /** Landingpage Schritt 3 – Anruf-Einstellungen (nur echte CRM-Admins, Demo-Zustand) */
   const [anrufLandingEinstellungen, setAnrufLandingEinstellungen] = useState({
     regelmaessigkeit: 'regelmaessig' as 'regelmaessig' | 'halbjaehrlich' | 'jaehrlich',
@@ -867,6 +871,9 @@ const AnfrageSitzlift: React.FC = () => {
   useEffect(() => {
     if (isAnrufEinstellungenModalOpen && anrufDemoModus === 'admin') {
       setAnrufAdminTelefonieAbmeldungBestaetigt(false);
+    }
+    if (isAnrufEinstellungenModalOpen && anrufDemoModus === 'admin-anmelden') {
+      setAnrufAdminTelefonieAnmeldungBestaetigt(false);
     }
   }, [isAnrufEinstellungenModalOpen, anrufDemoModus]);
 
@@ -1018,6 +1025,12 @@ const AnfrageSitzlift: React.FC = () => {
     setAnrufDemoModus('abgemeldet');
     setIsAnrufEinstellungenModalOpen(false);
     showAppToast('email');
+  };
+
+  const handleAnrufEinstellungenSpeichernAdminTelefonieAnmeldung = () => {
+    if (!anrufAdminTelefonieAnmeldungBestaetigt) return;
+    setAnrufDemoModus('telefonie-aktiv');
+    setIsAnrufEinstellungenModalOpen(false);
   };
 
   const handleAnrufLandingEinstellungenZuruecksetzen = () => {
@@ -2893,6 +2906,14 @@ const AnfrageSitzlift: React.FC = () => {
                   >
                     Admin
                   </button>
+                  <button
+                    type="button"
+                    className={anrufDemoModus === 'admin-anmelden' ? 'is-active' : ''}
+                    onClick={() => setAnrufDemoModus('admin-anmelden')}
+                    title="Nur für CRM-Admins: Klient zur Telefonie anmelden"
+                  >
+                    Admin Anmeldung
+                  </button>
                 </div>
               </div>
             </div>
@@ -2902,7 +2923,7 @@ const AnfrageSitzlift: React.FC = () => {
                   Der Klient ist aktuell <strong>zur Telefonie angemeldet</strong>.
                 </>
               )}
-              {anrufDemoModus === 'abgemeldet' && (
+              {(anrufDemoModus === 'abgemeldet' || anrufDemoModus === 'admin-anmelden') && (
                 <>
                   Der Klient ist aktuell <strong>von der Telefonie abgemeldet</strong> und wird nicht angerufen.
                 </>
@@ -2911,20 +2932,15 @@ const AnfrageSitzlift: React.FC = () => {
 
             {anrufDemoModus !== 'abgemeldet' && (
               <div className="klient-loeschen-sections">
-                <div className="klient-loeschen-row">
-                  <div className="klient-loeschen-row-label">
-                    {(anrufDemoModus === 'telefonie-aktiv' || anrufDemoModus === 'admin') &&
-                      'Klient möchte nicht mehr angerufen werden:'}
+                {(anrufDemoModus === 'telefonie-aktiv' || anrufDemoModus === 'admin') && (
+                  <div className="klient-loeschen-row">
+                    <div className="klient-loeschen-row-label">Klient möchte nicht mehr angerufen werden:</div>
+                    <div className="klient-loeschen-row-body">
+                      Der Klient kann seine <strong>Anrufeinstellungen</strong> über eine <strong>Landingpage</strong>{' '}
+                      anpassen. Bitte E-Mail mit Link zur Landingpage versenden.
+                    </div>
                   </div>
-                  <div className="klient-loeschen-row-body">
-                    {(anrufDemoModus === 'telefonie-aktiv' || anrufDemoModus === 'admin') && (
-                      <>
-                        Der Klient kann seine <strong>Anrufeinstellungen</strong> über eine <strong>Landingpage</strong>{' '}
-                        anpassen. Bitte E-Mail mit Link zur Landingpage versenden.
-                      </>
-                    )}
-                  </div>
-                </div>
+                )}
                 {isCrmAdminUser() && anrufDemoModus === 'admin' && (
                   <div className="anruf-admin-lp-panel" onClick={(e) => e.stopPropagation()}>
                     <h3 className="anruf-admin-lp-panel-title">
@@ -3126,7 +3142,8 @@ const AnfrageSitzlift: React.FC = () => {
                 {anrufDemoModus === 'admin' && (
                   <div className="newsletter-admin-abmelden" onClick={(e) => e.stopPropagation()}>
                     <p className="newsletter-admin-abmelden-text">
-                      <strong>Admin:</strong> Bei berechtigtem Anlass kann der Klient hier direkt von der Telefonie abgemeldet werden (wird protokolliert).
+                      <strong>Admin:</strong> Fordert der Klient von der Telefonie abgemeldet zu werden? Hinweis: Es werden
+                      alle geplanten Nachbetreuungstermine für diesen Klienten gelöscht.
                     </p>
                     <label className="newsletter-wahl-checkbox newsletter-admin-abmelden-checkbox">
                       <input
@@ -3136,6 +3153,32 @@ const AnfrageSitzlift: React.FC = () => {
                       />
                       <span>Ich bestätige die Abmeldung des Klienten von der Telefonie.</span>
                     </label>
+                  </div>
+                )}
+                {anrufDemoModus === 'admin-anmelden' && (
+                  <div
+                    className="newsletter-admin-newsletter-anmeldung klient-loeschen-admin-block"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <p className="newsletter-admin-newsletter-anmeldung-text">
+                      <strong>Admin:</strong> Soll der Klient zur Telefonie angemeldet werden?
+                    </p>
+                    <label className="newsletter-wahl-checkbox newsletter-admin-newsletter-anmeldung-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={anrufAdminTelefonieAnmeldungBestaetigt}
+                        onChange={(e) => setAnrufAdminTelefonieAnmeldungBestaetigt(e.target.checked)}
+                      />
+                      <span>Ich bestätige die Anmeldung des Klienten zur Telefonie.</span>
+                    </label>
+                    <button
+                      type="button"
+                      className="btn-green klient-loeschen-action-btn"
+                      disabled={!anrufAdminTelefonieAnmeldungBestaetigt}
+                      onClick={handleAnrufEinstellungenSpeichernAdminTelefonieAnmeldung}
+                    >
+                      Speichern
+                    </button>
                   </div>
                 )}
               </div>
