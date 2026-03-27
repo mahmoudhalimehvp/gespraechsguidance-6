@@ -720,10 +720,14 @@ const AnfrageSitzlift: React.FC = () => {
   const [klientLoeschenAdminDuplikatBestaetigt, setKlientLoeschenAdminDuplikatBestaetigt] = useState(false);
   const [isAnrufEinstellungenModalOpen, setIsAnrufEinstellungenModalOpen] = useState(false);
   const [isNewsletterEinstellungenModalOpen, setIsNewsletterEinstellungenModalOpen] = useState(false);
-  /** Nur Demo/Preview: Ansicht im Newsletter-Modal (Standard / Admin) */
-  const [newsletterDemoModus, setNewsletterDemoModus] = useState<'angemeldet' | 'nicht-angemeldet' | 'admin'>('angemeldet');
+  /** Nur Demo/Preview: Ansicht im Newsletter-Modal (Standard / Admin-Abmeldung / Admin-Anmeldung) */
+  const [newsletterDemoModus, setNewsletterDemoModus] = useState<
+    'angemeldet' | 'nicht-angemeldet' | 'admin' | 'admin-anmelden'
+  >('angemeldet');
   /** Newsletter Admin-Abmeldung: Bestätigung per Checkbox vor Speichern */
   const [newsletterAdminAbmeldungBestaetigt, setNewsletterAdminAbmeldungBestaetigt] = useState(false);
+  /** Newsletter Admin-Anmeldung (nur Admins): Bestätigung per Checkbox vor Speichern */
+  const [newsletterAdminAnmeldungBestaetigt, setNewsletterAdminAnmeldungBestaetigt] = useState(false);
   /** Nur Demo/Preview: Ansicht im Anruf-Modal (Standard / Admin) */
   const [anrufDemoModus, setAnrufDemoModus] = useState<'telefonie-aktiv' | 'abgemeldet' | 'admin'>('telefonie-aktiv');
   /** Telefonie Admin-Abmeldung: Bestätigung per Checkbox vor Speichern */
@@ -854,6 +858,9 @@ const AnfrageSitzlift: React.FC = () => {
   useEffect(() => {
     if (isNewsletterEinstellungenModalOpen && newsletterDemoModus === 'admin') {
       setNewsletterAdminAbmeldungBestaetigt(false);
+    }
+    if (isNewsletterEinstellungenModalOpen && newsletterDemoModus === 'admin-anmelden') {
+      setNewsletterAdminAnmeldungBestaetigt(false);
     }
   }, [isNewsletterEinstellungenModalOpen, newsletterDemoModus]);
 
@@ -997,6 +1004,12 @@ const AnfrageSitzlift: React.FC = () => {
   const handleNewsletterAdminAbmeldungSpeichern = () => {
     if (!newsletterAdminAbmeldungBestaetigt) return;
     setNewsletterDemoModus('nicht-angemeldet');
+    setIsNewsletterEinstellungenModalOpen(false);
+  };
+
+  const handleNewsletterAdminNewsletterAnmeldungSpeichern = () => {
+    if (!newsletterAdminAnmeldungBestaetigt) return;
+    setNewsletterDemoModus('angemeldet');
     setIsNewsletterEinstellungenModalOpen(false);
   };
 
@@ -2738,6 +2751,14 @@ const AnfrageSitzlift: React.FC = () => {
                   >
                     Admin
                   </button>
+                  <button
+                    type="button"
+                    className={newsletterDemoModus === 'admin-anmelden' ? 'is-active' : ''}
+                    onClick={() => setNewsletterDemoModus('admin-anmelden')}
+                    title="Nur für CRM-Admins: Klient zum Newsletter anmelden"
+                  >
+                    Admin Anmeldung
+                  </button>
                 </div>
               </div>
             </div>
@@ -2747,7 +2768,7 @@ const AnfrageSitzlift: React.FC = () => {
                   Der Klient ist aktuell <strong>zum Newsletter angemeldet</strong>.
                 </>
               )}
-              {newsletterDemoModus === 'nicht-angemeldet' && (
+              {(newsletterDemoModus === 'nicht-angemeldet' || newsletterDemoModus === 'admin-anmelden') && (
                 <>
                   Der Klient ist aktuell <strong>nicht zum Newsletter angemeldet</strong>.
                 </>
@@ -2756,19 +2777,15 @@ const AnfrageSitzlift: React.FC = () => {
 
             {newsletterDemoModus !== 'nicht-angemeldet' && (
               <div className="klient-loeschen-sections">
-                <div className="klient-loeschen-row">
-                  <div className="klient-loeschen-row-label">
-                    {(newsletterDemoModus === 'angemeldet' || newsletterDemoModus === 'admin') &&
-                      'Klient möchte vom Newsletter abgemeldet werden:'}
+                {(newsletterDemoModus === 'angemeldet' || newsletterDemoModus === 'admin') && (
+                  <div className="klient-loeschen-row">
+                    <div className="klient-loeschen-row-label">Klient möchte vom Newsletter abgemeldet werden:</div>
+                    <div className="klient-loeschen-row-body">
+                      Weise den Klienten darauf hin, dass er sich über den <strong>Abmeldelink im Newsletter</strong> vom
+                      Newsletter abmelden kann. Der Link befindet sich am Ende des Newsletters.
+                    </div>
                   </div>
-                  <div className="klient-loeschen-row-body">
-                    {(newsletterDemoModus === 'angemeldet' || newsletterDemoModus === 'admin') && (
-                      <>
-                        Weise den Klienten darauf hin, dass er sich über den <strong>Abmeldelink im Newsletter</strong> vom Newsletter abmelden kann.
-                      </>
-                    )}
-                  </div>
-                </div>
+                )}
                 {newsletterDemoModus === 'admin' && (
                   <div
                     className="newsletter-admin-abmelden klient-loeschen-admin-block"
@@ -2790,6 +2807,32 @@ const AnfrageSitzlift: React.FC = () => {
                       className="btn-red klient-loeschen-action-btn"
                       disabled={!newsletterAdminAbmeldungBestaetigt}
                       onClick={handleNewsletterAdminAbmeldungSpeichern}
+                    >
+                      Speichern
+                    </button>
+                  </div>
+                )}
+                {newsletterDemoModus === 'admin-anmelden' && (
+                  <div
+                    className="newsletter-admin-newsletter-anmeldung klient-loeschen-admin-block"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <p className="newsletter-admin-newsletter-anmeldung-text">
+                      <strong>Admin:</strong> Soll der Klient zum Newsletter angemeldet werden?
+                    </p>
+                    <label className="newsletter-wahl-checkbox newsletter-admin-newsletter-anmeldung-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={newsletterAdminAnmeldungBestaetigt}
+                        onChange={(e) => setNewsletterAdminAnmeldungBestaetigt(e.target.checked)}
+                      />
+                      <span>Ich bestätige die Anmeldung des Klienten zum Newsletter.</span>
+                    </label>
+                    <button
+                      type="button"
+                      className="btn-green klient-loeschen-action-btn"
+                      disabled={!newsletterAdminAnmeldungBestaetigt}
+                      onClick={handleNewsletterAdminNewsletterAnmeldungSpeichern}
                     >
                       Speichern
                     </button>

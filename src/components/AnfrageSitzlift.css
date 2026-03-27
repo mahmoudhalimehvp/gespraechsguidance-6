@@ -3260,7 +3260,8 @@
 }
 
 .klient-loeschen-admin-block .btn-red,
-.klient-loeschen-admin-block .btn-blue {
+.klient-loeschen-admin-block .btn-blue,
+.klient-loeschen-admin-block .btn-green {
   align-self: flex-start;
   margin-top: 18px;
 }
@@ -3268,7 +3269,8 @@
 .klient-loeschen-admin-hinweise .btn-red:disabled,
 .klient-loeschen-admin-hinweise .btn-blue:disabled,
 .klient-loeschen-admin-block .btn-red:disabled,
-.klient-loeschen-admin-block .btn-blue:disabled {
+.klient-loeschen-admin-block .btn-blue:disabled,
+.klient-loeschen-admin-block .btn-green:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
@@ -3458,6 +3460,37 @@
 
 .newsletter-admin-abmelden .newsletter-admin-abmelden-checkbox input {
   accent-color: #dc2626;
+}
+
+/* Newsletter: Admin-Anmeldung (nur Admins) */
+.newsletter-admin-newsletter-anmeldung {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-left: 3px solid #16a34a;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #14532d;
+}
+
+.newsletter-admin-newsletter-anmeldung-text {
+  margin: 0 0 10px;
+}
+
+.newsletter-admin-newsletter-anmeldung-text strong {
+  font-weight: 700;
+  color: #14532d;
+}
+
+.newsletter-admin-newsletter-anmeldung .newsletter-admin-newsletter-anmeldung-checkbox {
+  margin: 0;
+  color: #166534;
+}
+
+.newsletter-admin-newsletter-anmeldung .newsletter-admin-newsletter-anmeldung-checkbox input {
+  accent-color: #16a34a;
 }
 
 .einstellungen-status-kopf strong {
