@@ -417,7 +417,7 @@ const Gespraechsguidance: React.FC<{
         },
         {
           title: 'Nur ein Anbieter',
-          text: 'Das kann ich verstehen. Damit Sie eine gute Entscheidung treffen und vor allem die verschiedenen Dienstleistungen und Preise miteinander vergleichen können, lohnt sich jedoch für Sie der Vergleich verschiedener Anbieter. Was halten Sie davon?'
+          text: 'Das kann ich verstehen. Damit Sie eine gute Entscheidung treffen und vor allem die verschiedenen Dienstleistungen und Preise miteinander vergleichen können, lohnt sich der Vergleich von verschiedenen Anbietern. Was halten Sie davon?'
         },
         {
           title: 'Zeit zum Nachdenken',
