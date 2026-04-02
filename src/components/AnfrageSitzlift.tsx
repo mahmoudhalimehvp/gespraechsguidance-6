@@ -697,18 +697,22 @@ const AnfrageSitzlift: React.FC = () => {
   const [klientLoeschenAdminDuplikatBestaetigt, setKlientLoeschenAdminDuplikatBestaetigt] = useState(false);
   const [isAnrufEinstellungenModalOpen, setIsAnrufEinstellungenModalOpen] = useState(false);
   const [isNewsletterEinstellungenModalOpen, setIsNewsletterEinstellungenModalOpen] = useState(false);
-  /** Nur Demo/Preview: Ansicht im Newsletter-Modal (Standard / Admin) */
-  const [newsletterDemoModus, setNewsletterDemoModus] = useState<'angemeldet' | 'nicht-angemeldet' | 'admin'>('angemeldet');
-  /** Newsletter: Zustimmung „Newsletter erhalten“ (Demo, zunächst nicht angehakt) */
-  const [newsletterWunschErhalten, setNewsletterWunschErhalten] = useState(false);
+  /** Nur Demo/Preview: Ansicht im Newsletter-Modal (Standard / Admin-Abmeldung / Admin-Anmeldung) */
+  const [newsletterDemoModus, setNewsletterDemoModus] = useState<
+    'angemeldet' | 'nicht-angemeldet' | 'admin' | 'admin-anmelden'
+  >('angemeldet');
   /** Newsletter Admin-Abmeldung: Bestätigung per Checkbox vor Speichern */
   const [newsletterAdminAbmeldungBestaetigt, setNewsletterAdminAbmeldungBestaetigt] = useState(false);
+  /** Newsletter Admin-Anmeldung (nur Admins): Bestätigung per Checkbox vor Speichern */
+  const [newsletterAdminAnmeldungBestaetigt, setNewsletterAdminAnmeldungBestaetigt] = useState(false);
   /** Nur Demo/Preview: Ansicht im Anruf-Modal (Standard / Admin) */
-  const [anrufDemoModus, setAnrufDemoModus] = useState<'telefonie-aktiv' | 'abgemeldet' | 'admin'>('telefonie-aktiv');
-  /** Telefonie abgemeldet: Wunsch wieder anzumelden (Demo, Checkbox vor Speichern) */
-  const [anrufWunschTelefonieAnmelden, setAnrufWunschTelefonieAnmelden] = useState(false);
+  const [anrufDemoModus, setAnrufDemoModus] = useState<
+    'telefonie-aktiv' | 'abgemeldet' | 'admin' | 'admin-anmelden'
+  >('telefonie-aktiv');
   /** Telefonie Admin-Abmeldung: Bestätigung per Checkbox vor Speichern */
   const [anrufAdminTelefonieAbmeldungBestaetigt, setAnrufAdminTelefonieAbmeldungBestaetigt] = useState(false);
+  /** Telefonie Admin-Anmeldung (nur Admins): Bestätigung per Checkbox vor Speichern */
+  const [anrufAdminTelefonieAnmeldungBestaetigt, setAnrufAdminTelefonieAnmeldungBestaetigt] = useState(false);
   /** Landingpage Schritt 3 – Anruf-Einstellungen (nur echte CRM-Admins, Demo-Zustand) */
   const [anrufLandingEinstellungen, setAnrufLandingEinstellungen] = useState({
     regelmaessigkeit: 'regelmaessig' as 'regelmaessig' | 'halbjaehrlich' | 'jaehrlich',
@@ -833,20 +837,20 @@ const AnfrageSitzlift: React.FC = () => {
   }, [isAktionenDropdownOpen]);
 
   useEffect(() => {
-    if (isNewsletterEinstellungenModalOpen && newsletterDemoModus === 'nicht-angemeldet') {
-      setNewsletterWunschErhalten(false);
-    }
     if (isNewsletterEinstellungenModalOpen && newsletterDemoModus === 'admin') {
       setNewsletterAdminAbmeldungBestaetigt(false);
+    }
+    if (isNewsletterEinstellungenModalOpen && newsletterDemoModus === 'admin-anmelden') {
+      setNewsletterAdminAnmeldungBestaetigt(false);
     }
   }, [isNewsletterEinstellungenModalOpen, newsletterDemoModus]);
 
   useEffect(() => {
-    if (isAnrufEinstellungenModalOpen && anrufDemoModus === 'abgemeldet') {
-      setAnrufWunschTelefonieAnmelden(false);
-    }
     if (isAnrufEinstellungenModalOpen && anrufDemoModus === 'admin') {
       setAnrufAdminTelefonieAbmeldungBestaetigt(false);
+    }
+    if (isAnrufEinstellungenModalOpen && anrufDemoModus === 'admin-anmelden') {
+      setAnrufAdminTelefonieAnmeldungBestaetigt(false);
     }
   }, [isAnrufEinstellungenModalOpen, anrufDemoModus]);
 
@@ -981,25 +985,16 @@ const AnfrageSitzlift: React.FC = () => {
     setPhoneValidationError('');
   };
 
-  const handleNewsletterEinstellungenSpeichern = () => {
-    if (!newsletterWunschErhalten) return;
-    setNewsletterDemoModus('angemeldet');
-    setIsNewsletterEinstellungenModalOpen(false);
-    showAppToast('email');
-  };
-
   const handleNewsletterAdminAbmeldungSpeichern = () => {
     if (!newsletterAdminAbmeldungBestaetigt) return;
     setNewsletterDemoModus('nicht-angemeldet');
     setIsNewsletterEinstellungenModalOpen(false);
-    showAppToast('email');
   };
 
-  const handleAnrufEinstellungenSpeichernTelefonieAnmelden = () => {
-    if (!anrufWunschTelefonieAnmelden) return;
-    setAnrufDemoModus('telefonie-aktiv');
-    setIsAnrufEinstellungenModalOpen(false);
-    showAppToast('email');
+  const handleNewsletterAdminNewsletterAnmeldungSpeichern = () => {
+    if (!newsletterAdminAnmeldungBestaetigt) return;
+    setNewsletterDemoModus('angemeldet');
+    setIsNewsletterEinstellungenModalOpen(false);
   };
 
   const handleAnrufEinstellungenSpeichernAdminAbmeldung = () => {
@@ -1007,6 +1002,12 @@ const AnfrageSitzlift: React.FC = () => {
     setAnrufDemoModus('abgemeldet');
     setIsAnrufEinstellungenModalOpen(false);
     showAppToast('email');
+  };
+
+  const handleAnrufEinstellungenSpeichernAdminTelefonieAnmeldung = () => {
+    if (!anrufAdminTelefonieAnmeldungBestaetigt) return;
+    setAnrufDemoModus('telefonie-aktiv');
+    setIsAnrufEinstellungenModalOpen(false);
   };
 
   const handleAnrufLandingEinstellungenZuruecksetzen = () => {
@@ -2615,8 +2616,8 @@ const AnfrageSitzlift: React.FC = () => {
               <div className="klient-loeschen-admin-hinweise">
                 <div className="newsletter-admin-abmelden klient-loeschen-admin-block">
                   <p className="newsletter-admin-abmelden-text">
-                    <strong>Admin:</strong> Endgültige Löschung der Klientendaten und zugehöriger Anfragen im CRM (wird
-                    protokolliert).
+                    <strong>Admin:</strong> Endgültige Löschung des Klienten und aller personenbezogenen Daten? Dem
+                    Klienten wird eine Löschbestätigung zugesendet.
                   </p>
                   <label className="newsletter-wahl-checkbox newsletter-admin-abmelden-checkbox">
                     <input
@@ -2641,8 +2642,7 @@ const AnfrageSitzlift: React.FC = () => {
                 </div>
                 <div className="newsletter-admin-abmelden klient-loeschen-admin-block klient-loeschen-admin-block--duplikat">
                   <p className="newsletter-admin-abmelden-text">
-                    <strong>Admin:</strong> Endgültige Löschung nur dieser Dublette (Hauptklient bleibt erhalten) (wird
-                    protokolliert).
+                    <strong>Admin:</strong> Endgültige Löschung dieses mehrfach angelegten Klienten (Dublette)?
                   </p>
                   <label className="newsletter-wahl-checkbox newsletter-admin-abmelden-checkbox">
                     <input
@@ -2741,52 +2741,48 @@ const AnfrageSitzlift: React.FC = () => {
                   >
                     Admin
                   </button>
+                  <button
+                    type="button"
+                    className={newsletterDemoModus === 'admin-anmelden' ? 'is-active' : ''}
+                    onClick={() => setNewsletterDemoModus('admin-anmelden')}
+                    title="Nur für CRM-Admins: Klient zum Newsletter anmelden"
+                  >
+                    Admin Anmeldung
+                  </button>
                 </div>
               </div>
             </div>
             <p className="einstellungen-status-kopf">
               {(newsletterDemoModus === 'angemeldet' || newsletterDemoModus === 'admin') && (
                 <>
-                  Der Klient ist aktuell <strong>zum Newsletter</strong> angemeldet.
+                  Der Klient ist aktuell <strong>zum Newsletter angemeldet</strong>.
                 </>
               )}
-              {newsletterDemoModus === 'nicht-angemeldet' && (
+              {(newsletterDemoModus === 'nicht-angemeldet' || newsletterDemoModus === 'admin-anmelden') && (
                 <>
-                  Der Klient ist aktuell <strong>nicht zum Newsletter</strong> angemeldet.
+                  Der Klient ist aktuell <strong>nicht zum Newsletter angemeldet</strong>.
                 </>
               )}
             </p>
 
-            {newsletterDemoModus === 'nicht-angemeldet' ? (
-              <div className="newsletter-einfach-block" onClick={(e) => e.stopPropagation()}>
-                <label className="newsletter-wahl-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={newsletterWunschErhalten}
-                    onChange={(e) => setNewsletterWunschErhalten(e.target.checked)}
-                  />
-                  <span>Klient möchte Newsletter erhalten</span>
-                </label>
-              </div>
-            ) : (
+            {newsletterDemoModus !== 'nicht-angemeldet' && (
               <div className="klient-loeschen-sections">
-                <div className="klient-loeschen-row">
-                  <div className="klient-loeschen-row-label">
-                    {(newsletterDemoModus === 'angemeldet' || newsletterDemoModus === 'admin') &&
-                      'Klient möchte vom Newsletter abgemeldet werden:'}
+                {(newsletterDemoModus === 'angemeldet' || newsletterDemoModus === 'admin') && (
+                  <div className="klient-loeschen-row">
+                    <div className="klient-loeschen-row-label">Klient möchte vom Newsletter abgemeldet werden:</div>
+                    <div className="klient-loeschen-row-body">
+                      Weise den Klienten darauf hin, dass er sich über den <strong>Abmeldelink im Newsletter</strong> vom
+                      Newsletter abmelden kann. Der Link befindet sich am Ende des Newsletters.
+                    </div>
                   </div>
-                  <div className="klient-loeschen-row-body">
-                    {(newsletterDemoModus === 'angemeldet' || newsletterDemoModus === 'admin') && (
-                      <>
-                        Weise den Klienten darauf hin, dass er sich über den <strong>Abmeldelink im Newsletter</strong> vom Newsletter abmelden kann.
-                      </>
-                    )}
-                  </div>
-                </div>
+                )}
                 {newsletterDemoModus === 'admin' && (
-                  <div className="newsletter-admin-abmelden" onClick={(e) => e.stopPropagation()}>
+                  <div
+                    className="newsletter-admin-abmelden klient-loeschen-admin-block"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <p className="newsletter-admin-abmelden-text">
-                      <strong>Admin:</strong> Bei berechtigtem Anlass kann der Klient hier direkt vom Newsletter abgemeldet werden (wird protokolliert).
+                      <strong>Admin:</strong> Fordert der Klient die Abmeldung vom Newsletter?
                     </p>
                     <label className="newsletter-wahl-checkbox newsletter-admin-abmelden-checkbox">
                       <input
@@ -2796,38 +2792,56 @@ const AnfrageSitzlift: React.FC = () => {
                       />
                       <span>Ich bestätige die Abmeldung des Klienten vom Newsletter.</span>
                     </label>
+                    <button
+                      type="button"
+                      className="btn-red klient-loeschen-action-btn"
+                      disabled={!newsletterAdminAbmeldungBestaetigt}
+                      onClick={handleNewsletterAdminAbmeldungSpeichern}
+                    >
+                      Speichern
+                    </button>
+                  </div>
+                )}
+                {newsletterDemoModus === 'admin-anmelden' && (
+                  <div
+                    className="newsletter-admin-newsletter-anmeldung klient-loeschen-admin-block"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <p className="newsletter-admin-newsletter-anmeldung-text">
+                      <strong>Admin:</strong> Soll der Klient zum Newsletter angemeldet werden?
+                    </p>
+                    <label className="newsletter-wahl-checkbox newsletter-admin-newsletter-anmeldung-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={newsletterAdminAnmeldungBestaetigt}
+                        onChange={(e) => setNewsletterAdminAnmeldungBestaetigt(e.target.checked)}
+                      />
+                      <span>Ich bestätige die Anmeldung des Klienten zum Newsletter.</span>
+                    </label>
+                    <button
+                      type="button"
+                      className="btn-green klient-loeschen-action-btn"
+                      disabled={!newsletterAdminAnmeldungBestaetigt}
+                      onClick={handleNewsletterAdminNewsletterAnmeldungSpeichern}
+                    >
+                      Speichern
+                    </button>
                   </div>
                 )}
               </div>
             )}
 
-            <div className="klient-loeschen-grund-line klient-loeschen-footer-line" aria-hidden="true" />
+            {newsletterDemoModus !== 'nicht-angemeldet' && (
+              <div className="klient-loeschen-grund-line klient-loeschen-footer-line" aria-hidden="true" />
+            )}
 
             <div className="klient-loeschen-actions">
-              {(newsletterDemoModus === 'nicht-angemeldet' || newsletterDemoModus === 'admin') && (
-                <button
-                  type="button"
-                  className="btn-blue klient-loeschen-action-btn"
-                  disabled={
-                    newsletterDemoModus === 'nicht-angemeldet'
-                      ? !newsletterWunschErhalten
-                      : !newsletterAdminAbmeldungBestaetigt
-                  }
-                  onClick={
-                    newsletterDemoModus === 'nicht-angemeldet'
-                      ? handleNewsletterEinstellungenSpeichern
-                      : handleNewsletterAdminAbmeldungSpeichern
-                  }
-                >
-                  Speichern
-                </button>
-              )}
               <button
                 type="button"
                 className="btn-orange klient-loeschen-action-btn"
                 onClick={() => setIsNewsletterEinstellungenModalOpen(false)}
               >
-                Abbrechen
+                Schließen
               </button>
             </div>
           </div>
@@ -2869,49 +2883,41 @@ const AnfrageSitzlift: React.FC = () => {
                   >
                     Admin
                   </button>
+                  <button
+                    type="button"
+                    className={anrufDemoModus === 'admin-anmelden' ? 'is-active' : ''}
+                    onClick={() => setAnrufDemoModus('admin-anmelden')}
+                    title="Nur für CRM-Admins: Klient zur Telefonie anmelden"
+                  >
+                    Admin Anmeldung
+                  </button>
                 </div>
               </div>
             </div>
             <p className="einstellungen-status-kopf">
               {(anrufDemoModus === 'telefonie-aktiv' || anrufDemoModus === 'admin') && (
                 <>
-                  Der Klient ist aktuell <strong>zur Telefonie</strong> angemeldet.
+                  Der Klient ist aktuell <strong>zur Telefonie angemeldet</strong>.
                 </>
               )}
-              {anrufDemoModus === 'abgemeldet' && (
+              {(anrufDemoModus === 'abgemeldet' || anrufDemoModus === 'admin-anmelden') && (
                 <>
                   Der Klient ist aktuell <strong>von der Telefonie abgemeldet</strong> und wird nicht angerufen.
                 </>
               )}
             </p>
 
-            {anrufDemoModus === 'abgemeldet' ? (
-              <div className="newsletter-einfach-block" onClick={(e) => e.stopPropagation()}>
-                <label className="newsletter-wahl-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={anrufWunschTelefonieAnmelden}
-                    onChange={(e) => setAnrufWunschTelefonieAnmelden(e.target.checked)}
-                  />
-                  <span>Klient möchte wieder zur Telefonie angemeldet werden</span>
-                </label>
-              </div>
-            ) : (
+            {anrufDemoModus !== 'abgemeldet' && (
               <div className="klient-loeschen-sections">
-                <div className="klient-loeschen-row">
-                  <div className="klient-loeschen-row-label">
-                    {(anrufDemoModus === 'telefonie-aktiv' || anrufDemoModus === 'admin') &&
-                      'Klient möchte nicht mehr angerufen werden:'}
+                {(anrufDemoModus === 'telefonie-aktiv' || anrufDemoModus === 'admin') && (
+                  <div className="klient-loeschen-row">
+                    <div className="klient-loeschen-row-label">Klient möchte nicht mehr angerufen werden:</div>
+                    <div className="klient-loeschen-row-body">
+                      Der Klient kann seine <strong>Anrufeinstellungen</strong> über eine <strong>Landingpage</strong>{' '}
+                      anpassen. Bitte E-Mail mit Link zur Landingpage versenden.
+                    </div>
                   </div>
-                  <div className="klient-loeschen-row-body">
-                    {(anrufDemoModus === 'telefonie-aktiv' || anrufDemoModus === 'admin') && (
-                      <>
-                        Der Klient kann seine <strong>Anrufeinstellungen</strong> über eine <strong>Landingpage</strong>{' '}
-                        anpassen. Bitte E-Mail mit Link zur Landingpage versenden.
-                      </>
-                    )}
-                  </div>
-                </div>
+                )}
                 {isCrmAdminUser() && anrufDemoModus === 'admin' && (
                   <div className="anruf-admin-lp-panel" onClick={(e) => e.stopPropagation()}>
                     <h3 className="anruf-admin-lp-panel-title">
@@ -3113,7 +3119,8 @@ const AnfrageSitzlift: React.FC = () => {
                 {anrufDemoModus === 'admin' && (
                   <div className="newsletter-admin-abmelden" onClick={(e) => e.stopPropagation()}>
                     <p className="newsletter-admin-abmelden-text">
-                      <strong>Admin:</strong> Bei berechtigtem Anlass kann der Klient hier direkt von der Telefonie abgemeldet werden (wird protokolliert).
+                      <strong>Admin:</strong> Fordert der Klient von der Telefonie abgemeldet zu werden? Hinweis: Es werden
+                      alle geplanten Nachbetreuungstermine für diesen Klienten gelöscht.
                     </p>
                     <label className="newsletter-wahl-checkbox newsletter-admin-abmelden-checkbox">
                       <input
@@ -3125,6 +3132,32 @@ const AnfrageSitzlift: React.FC = () => {
                     </label>
                   </div>
                 )}
+                {anrufDemoModus === 'admin-anmelden' && (
+                  <div
+                    className="newsletter-admin-newsletter-anmeldung klient-loeschen-admin-block"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <p className="newsletter-admin-newsletter-anmeldung-text">
+                      <strong>Admin:</strong> Soll der Klient zur Telefonie angemeldet werden?
+                    </p>
+                    <label className="newsletter-wahl-checkbox newsletter-admin-newsletter-anmeldung-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={anrufAdminTelefonieAnmeldungBestaetigt}
+                        onChange={(e) => setAnrufAdminTelefonieAnmeldungBestaetigt(e.target.checked)}
+                      />
+                      <span>Ich bestätige die Anmeldung des Klienten zur Telefonie.</span>
+                    </label>
+                    <button
+                      type="button"
+                      className="btn-green klient-loeschen-action-btn"
+                      disabled={!anrufAdminTelefonieAnmeldungBestaetigt}
+                      onClick={handleAnrufEinstellungenSpeichernAdminTelefonieAnmeldung}
+                    >
+                      Speichern
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -3134,7 +3167,9 @@ const AnfrageSitzlift: React.FC = () => {
               </p>
             )}
 
-            <div className="klient-loeschen-grund-line klient-loeschen-footer-line" aria-hidden="true" />
+            {anrufDemoModus !== 'abgemeldet' && (
+              <div className="klient-loeschen-grund-line klient-loeschen-footer-line" aria-hidden="true" />
+            )}
 
             <div className="klient-loeschen-actions">
               {anrufDemoModus === 'telefonie-aktiv' && (
@@ -3149,20 +3184,12 @@ const AnfrageSitzlift: React.FC = () => {
                   E-Mail mit Link zur Landingpage versenden
                 </button>
               )}
-              {(anrufDemoModus === 'abgemeldet' || anrufDemoModus === 'admin') && (
+              {anrufDemoModus === 'admin' && (
                 <button
                   type="button"
                   className="btn-blue klient-loeschen-action-btn"
-                  disabled={
-                    anrufDemoModus === 'abgemeldet'
-                      ? !anrufWunschTelefonieAnmelden
-                      : !anrufAdminTelefonieAbmeldungBestaetigt
-                  }
-                  onClick={
-                    anrufDemoModus === 'abgemeldet'
-                      ? handleAnrufEinstellungenSpeichernTelefonieAnmelden
-                      : handleAnrufEinstellungenSpeichernAdminAbmeldung
-                  }
+                  disabled={!anrufAdminTelefonieAbmeldungBestaetigt}
+                  onClick={handleAnrufEinstellungenSpeichernAdminAbmeldung}
                 >
                   Speichern
                 </button>
@@ -3172,7 +3199,7 @@ const AnfrageSitzlift: React.FC = () => {
                 className="btn-orange klient-loeschen-action-btn"
                 onClick={() => setIsAnrufEinstellungenModalOpen(false)}
               >
-                Abbrechen
+                Schließen
               </button>
             </div>
           </div>
