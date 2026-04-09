@@ -712,7 +712,14 @@ const AnfrageSitzlift: React.FC = () => {
   ]);
   const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
   const [isWeiterleitenModalOpen, setIsWeiterleitenModalOpen] = useState(false);
-  const [isSchliessenModalOpen, setIsSchliessenModalOpen] = useState(false);
+  /** Abschluss-Check-Popup: Layout-Varianten (Demo/Vorschau) */
+  const [weiterleitenPopupVersion, setWeiterleitenPopupVersion] = useState<1 | 2>(1);
+  /** Variante 2: Tool-Häkchen; „Kein akuter Bedarf …“ mit festem ✓; abschließend „Kontakt-Präferenzen“ (nie vorausgewählt) */
+  const [weiterleitenV3Tools, setWeiterleitenV3Tools] = useState({
+    pflegegradChecked: true,
+    pflegezuschuesseChecked: true,
+    kontaktPraeferenzenChecked: false,
+  });
   const [isKlientLoeschenModalOpen, setIsKlientLoeschenModalOpen] = useState(false);
   /** Nur Demo: Klient-löschen-Modal Berater-Ansicht vs. Admin-Ansicht */
   const [klientLoeschenDemoModus, setKlientLoeschenDemoModus] = useState<'berater' | 'admin'>('berater');
@@ -756,11 +763,10 @@ const AnfrageSitzlift: React.FC = () => {
     /** Kein Ein-/Ausblend- oder Icon-Animation (z. B. Admin-Direktlöschung → Dashboard) */
     instant?: boolean;
   } | null>(null);
-  const [schliessenTyp, setSchliessenTyp] = useState<'kein-akut' | 'info-mail'>('info-mail');
-  const [schliessenNachbetreuungDatum, setSchliessenNachbetreuungDatum] = useState('30.03.26');
-  const [schliessenNachbetreuungZeit, setSchliessenNachbetreuungZeit] = useState('14:10');
   const [erreichbarkeit, setErreichbarkeit] = useState({ ganztägig: false, vormittags: false, nachmittags: false, abends: false });
   const [zustimmungKontaktweitergabe, setZustimmungKontaktweitergabe] = useState(false);
+  /** Abschluss-Check Weiterleiten: zweite Pflicht-Zustimmung (Nachgespräch / Beratung) */
+  const [zustimmungNachgespraechBeratung, setZustimmungNachgespraechBeratung] = useState(false);
   const [editingPhoneId, setEditingPhoneId] = useState<string | null>(null);
   const [phoneModalData, setPhoneModalData] = useState({
     type: 'Mobil',
@@ -882,6 +888,15 @@ const AnfrageSitzlift: React.FC = () => {
     setKlientLoeschenAdminKlientBestaetigt(false);
     setKlientLoeschenAdminDuplikatBestaetigt(false);
   }, [isKlientLoeschenModalOpen, klientLoeschenDemoModus]);
+
+  useEffect(() => {
+    if (!isWeiterleitenModalOpen || weiterleitenPopupVersion !== 2) return;
+    setWeiterleitenV3Tools({
+      pflegegradChecked: true,
+      pflegezuschuesseChecked: true,
+      kontaktPraeferenzenChecked: false,
+    });
+  }, [isWeiterleitenModalOpen, weiterleitenPopupVersion]);
 
   useEffect(() => {
     return () => {
@@ -1150,22 +1165,57 @@ const AnfrageSitzlift: React.FC = () => {
     return flagMap[countryCode] || null;
   };
 
-  const weiterleitenAbschickenEnabled =
-    zustimmungKontaktweitergabe &&
-    (erreichbarkeit.ganztägig ||
-      erreichbarkeit.vormittags ||
-      erreichbarkeit.nachmittags ||
-      erreichbarkeit.abends);
+  const weiterleitenV3KontaktSichtbar =
+    weiterleitenPopupVersion === 2 &&
+    !weiterleitenV3Tools.pflegegradChecked &&
+    !weiterleitenV3Tools.pflegezuschuesseChecked;
 
-  /** Modals, die die Gesprächshilfen ausgrauen (nicht das Weiterleiten-/„Speichern und weiter“-Popup) */
+  /** Variante 2: Nachgespräch/E-Mail-Zustimmung nur Pflicht, wenn mindestens ein Tool angehakt; nur „Kein akuter Bedarf …“ → optional */
+  const weiterleitenV3NachgespraechZustimmungErforderlich =
+    weiterleitenPopupVersion === 2 &&
+    (weiterleitenV3Tools.pflegegradChecked || weiterleitenV3Tools.pflegezuschuesseChecked);
+
+  const weiterleitenAbschickenEnabled =
+    weiterleitenPopupVersion === 1
+      ? zustimmungKontaktweitergabe &&
+        zustimmungNachgespraechBeratung &&
+        (erreichbarkeit.ganztägig ||
+          erreichbarkeit.vormittags ||
+          erreichbarkeit.nachmittags ||
+          erreichbarkeit.abends)
+      : weiterleitenV3NachgespraechZustimmungErforderlich
+        ? zustimmungNachgespraechBeratung
+        : true;
+
+  const toggleWeiterleitenV3Pflegegrad = () => {
+    setWeiterleitenV3Tools((prev) => ({
+      ...prev,
+      pflegegradChecked: !prev.pflegegradChecked,
+    }));
+  };
+
+  const toggleWeiterleitenV3Pflegezuschuesse = () => {
+    setWeiterleitenV3Tools((prev) => ({
+      ...prev,
+      pflegezuschuesseChecked: !prev.pflegezuschuesseChecked,
+    }));
+  };
+
+  const toggleWeiterleitenV3KontaktPraeferenzen = () => {
+    setWeiterleitenV3Tools((prev) => ({
+      ...prev,
+      kontaktPraeferenzenChecked: !prev.kontaktPraeferenzenChecked,
+    }));
+  };
+
+  /** Modals, die die Gesprächshilfen ausgrauen (nicht das Weiterleiten-/„Abschluss-Check“-Popup) */
   const guidanceSidebarObscuredByOtherModal =
-    isSchliessenModalOpen ||
     isKlientLoeschenModalOpen ||
     isNewsletterEinstellungenModalOpen ||
     isAnrufEinstellungenModalOpen ||
     isPhoneModalOpen;
 
-  /** Während „Speichern und weiter“ (Weiterleiten) offen ist: immer volle Gesprächshilfen, nie ausgrauen */
+  /** Während „Abschluss-Check“ (Weiterleiten) offen ist: immer volle Gesprächshilfen, nie ausgrauen */
   const guidanceSidebarObscured =
     guidanceSidebarObscuredByOtherModal && !isWeiterleitenModalOpen;
 
@@ -1297,45 +1347,75 @@ const AnfrageSitzlift: React.FC = () => {
                 obscured={guidanceSidebarObscured}
               />
 
-              {/* Anfrage weiterleiten / „Speichern und weiter“ */}
+              {/* Anfrage weiterleiten / „Abschluss-Check“ */}
               {isWeiterleitenModalOpen && (
                 <div
                   className="main-content-modal-overlay"
                   onClick={() => setIsWeiterleitenModalOpen(false)}
                 >
-                  <div className="modal-content weiterleiten-modal" onClick={(e) => e.stopPropagation()}>
-            <h2 className="modal-title">Speichern und weiter</h2>
+                  <div
+                    className={`modal-content weiterleiten-modal weiterleiten-modal--v${weiterleitenPopupVersion}`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+            <div className="weiterleiten-modal-kopfzeile">
+              <h2 className="modal-title modal-title-weiterleiten-kopf">Abschluss-Check</h2>
+              <div className="weiterleiten-version-toggle" title="Variante des Popups (Vorschau)">
+                <span className="weiterleiten-version-toggle-label">Variante</span>
+                <div className="einstellungen-demo-segment-buttons" role="group" aria-label="Abschluss-Check Variante">
+                  <button
+                    type="button"
+                    className={weiterleitenPopupVersion === 1 ? 'is-active' : ''}
+                    onClick={() => setWeiterleitenPopupVersion(1)}
+                  >
+                    1
+                  </button>
+                  <button
+                    type="button"
+                    className={weiterleitenPopupVersion === 2 ? 'is-active' : ''}
+                    onClick={() => setWeiterleitenPopupVersion(2)}
+                  >
+                    2
+                  </button>
+                </div>
+              </div>
+            </div>
 
-            <div className="weiterleiten-grid">
-              <div className="weiterleiten-column-title">Sitzlift</div>
-              <div className="weiterleiten-anbieter-card selected">
-                <div className="anbieter-head">
-                  <span className="anbieter-name">Sonilift GmbH</span>
-                  <span className="anbieter-check">✓</span>
-                </div>
-                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
-              </div>
-              <div className="weiterleiten-anbieter-card selected">
-                <div className="anbieter-head">
-                  <span className="anbieter-name">SANA Treppenlifte</span>
-                  <span className="anbieter-check">✓</span>
-                </div>
-                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
-              </div>
-              <div className="weiterleiten-anbieter-card selected">
-                <div className="anbieter-head">
-                  <span className="anbieter-name">Expertlift GmbH</span>
-                  <span className="anbieter-check">✓</span>
-                </div>
-                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
-              </div>
-              <div className="weiterleiten-anbieter-card selected">
-                <div className="anbieter-head">
-                  <span className="anbieter-name">Fairlifi Treppenlifte GmbH</span>
-                  <span className="anbieter-check">✓</span>
-                </div>
-                <div className="anbieter-status">Kriterien Check erfolgreich!</div>
-              </div>
+            <div
+              className={`weiterleiten-grid${weiterleitenPopupVersion !== 1 ? ' weiterleiten-grid--ohne-sitzlift-zeile' : ''}`}
+            >
+              {weiterleitenPopupVersion === 1 && (
+                <>
+                  <div className="weiterleiten-column-title">Sitzlift</div>
+                  <div className="weiterleiten-anbieter-card selected">
+                    <div className="anbieter-head">
+                      <span className="anbieter-name">Sonilift GmbH</span>
+                      <span className="anbieter-check">✓</span>
+                    </div>
+                    <div className="anbieter-status">Kriterien Check erfolgreich!</div>
+                  </div>
+                  <div className="weiterleiten-anbieter-card selected">
+                    <div className="anbieter-head">
+                      <span className="anbieter-name">SANA Treppenlifte</span>
+                      <span className="anbieter-check">✓</span>
+                    </div>
+                    <div className="anbieter-status">Kriterien Check erfolgreich!</div>
+                  </div>
+                  <div className="weiterleiten-anbieter-card selected">
+                    <div className="anbieter-head">
+                      <span className="anbieter-name">Expertlift GmbH</span>
+                      <span className="anbieter-check">✓</span>
+                    </div>
+                    <div className="anbieter-status">Kriterien Check erfolgreich!</div>
+                  </div>
+                  <div className="weiterleiten-anbieter-card selected">
+                    <div className="anbieter-head">
+                      <span className="anbieter-name">Fairlifi Treppenlifte GmbH</span>
+                      <span className="anbieter-check">✓</span>
+                    </div>
+                    <div className="anbieter-status">Kriterien Check erfolgreich!</div>
+                  </div>
+                </>
+              )}
 
               <div className="weiterleiten-column-title weiterleiten-column-title--tools">
                 <span className="weiterleiten-tools-heading">Tools &amp; Informationen</span>
@@ -1344,18 +1424,74 @@ const AnfrageSitzlift: React.FC = () => {
               <div className="weiterleiten-anbieter-card selected weiterleiten-tool-card">
                 <div className="anbieter-head">
                   <span className="anbieter-name">Pflegegrad-Rechner</span>
-                  <span className="anbieter-check">✓</span>
+                  {weiterleitenPopupVersion === 2 ? (
+                    <button
+                      type="button"
+                      className={`anbieter-check${weiterleitenV3Tools.pflegegradChecked ? '' : ' anbieter-check--unchecked'}`}
+                      onClick={toggleWeiterleitenV3Pflegegrad}
+                      aria-pressed={weiterleitenV3Tools.pflegegradChecked}
+                      aria-label="Pflegegrad-Rechner in die E-Mail-Auswahl aufnehmen"
+                    >
+                      {weiterleitenV3Tools.pflegegradChecked ? '✓' : ''}
+                    </button>
+                  ) : (
+                    <span className="anbieter-check" aria-hidden="true">
+                      ✓
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="weiterleiten-anbieter-card selected weiterleiten-tool-card">
                 <div className="anbieter-head">
                   <span className="anbieter-name">Pflegezuschüsse &amp; -Leistungen</span>
-                  <span className="anbieter-check">✓</span>
+                  {weiterleitenPopupVersion === 2 ? (
+                    <button
+                      type="button"
+                      className={`anbieter-check${weiterleitenV3Tools.pflegezuschuesseChecked ? '' : ' anbieter-check--unchecked'}`}
+                      onClick={toggleWeiterleitenV3Pflegezuschuesse}
+                      aria-pressed={weiterleitenV3Tools.pflegezuschuesseChecked}
+                      aria-label="Pflegezuschüsse und -Leistungen in die E-Mail-Auswahl aufnehmen"
+                    >
+                      {weiterleitenV3Tools.pflegezuschuesseChecked ? '✓' : ''}
+                    </button>
+                  ) : (
+                    <span className="anbieter-check" aria-hidden="true">
+                      ✓
+                    </span>
+                  )}
                 </div>
               </div>
+              {weiterleitenV3KontaktSichtbar && (
+                <>
+                  <div className="weiterleiten-anbieter-card selected weiterleiten-tool-card weiterleiten-kontakt-praeferenzen-box">
+                    <div className="anbieter-head">
+                      <span className="anbieter-name">Kein akuter Bedarf: E-Mail-Strecke</span>
+                      <span
+                        className="anbieter-check anbieter-check--vorausgewaehlt-readonly"
+                        role="img"
+                        aria-label="Kein akuter Bedarf: E-Mail-Strecke ist vorausgewählt. Zum Entfernen mindestens eines der beiden Tools (Pflegegrad-Rechner oder Pflegezuschüsse) wieder anhaken."
+                      >
+                        ✓
+                      </span>
+                    </div>
+                  </div>
+                  <div className="weiterleiten-anbieter-card selected weiterleiten-tool-card weiterleiten-v3-kontakt-praeferenzen-kachel">
+                    <div className="anbieter-head">
+                      <span className="anbieter-name">Kontakt-Präferenzen</span>
+                      <button
+                        type="button"
+                        className={`anbieter-check${weiterleitenV3Tools.kontaktPraeferenzenChecked ? '' : ' anbieter-check--unchecked'}`}
+                        onClick={toggleWeiterleitenV3KontaktPraeferenzen}
+                        aria-pressed={weiterleitenV3Tools.kontaktPraeferenzenChecked}
+                        aria-label="Kontakt-Präferenzen in die E-Mail-Auswahl aufnehmen"
+                      >
+                        {weiterleitenV3Tools.kontaktPraeferenzenChecked ? '✓' : ''}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
-
-            <div className="weiterleiten-separator" />
 
             <div className="weiterleiten-klient-block">
               <div className="weiterleiten-klient-title">Klient / Interessent</div>
@@ -1384,59 +1520,75 @@ const AnfrageSitzlift: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="weiterleiten-klient-erreichbarkeit">
-                <div className="weiterleiten-options-title">Beste telefonische Erreichbarkeit</div>
-                <div className="weiterleiten-options">
-                  <label className={!erreichbarkeit.ganztägig ? 'weiterleiten-option-unchecked' : ''}>
-                    <input
-                      type="checkbox"
-                      checked={erreichbarkeit.ganztägig}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        setErreichbarkeit((prev) => ({
-                          ...prev,
-                          ganztägig: checked,
-                          ...(checked ? { vormittags: true, nachmittags: true, abends: true } : {})
-                        }));
-                      }}
-                    />
-                    Ganztägig
-                  </label>
-                  <span className="weiterleiten-option-separator" aria-hidden="true" />
-                  <label className={!erreichbarkeit.vormittags ? 'weiterleiten-option-unchecked' : ''}>
-                    <input
-                      type="checkbox"
-                      checked={erreichbarkeit.vormittags}
-                      onChange={(e) => setErreichbarkeit((prev) => ({ ...prev, vormittags: e.target.checked }))}
-                    />
-                    Vormittags
-                  </label>
-                  <label className={!erreichbarkeit.nachmittags ? 'weiterleiten-option-unchecked' : ''}>
-                    <input
-                      type="checkbox"
-                      checked={erreichbarkeit.nachmittags}
-                      onChange={(e) => setErreichbarkeit((prev) => ({ ...prev, nachmittags: e.target.checked }))}
-                    />
-                    Nachmittags
-                  </label>
-                  <label className={!erreichbarkeit.abends ? 'weiterleiten-option-unchecked' : ''}>
-                    <input
-                      type="checkbox"
-                      checked={erreichbarkeit.abends}
-                      onChange={(e) => setErreichbarkeit((prev) => ({ ...prev, abends: e.target.checked }))}
-                    />
-                    Abends
-                  </label>
+              {weiterleitenPopupVersion === 1 && (
+                <div className="weiterleiten-klient-erreichbarkeit">
+                  <div className="weiterleiten-options-title">Beste telefonische Erreichbarkeit</div>
+                  <div className="weiterleiten-options">
+                    <label className={!erreichbarkeit.ganztägig ? 'weiterleiten-option-unchecked' : ''}>
+                      <input
+                        type="checkbox"
+                        checked={erreichbarkeit.ganztägig}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          setErreichbarkeit((prev) => ({
+                            ...prev,
+                            ganztägig: checked,
+                            ...(checked ? { vormittags: true, nachmittags: true, abends: true } : {})
+                          }));
+                        }}
+                      />
+                      Ganztägig
+                    </label>
+                    <span className="weiterleiten-option-separator" aria-hidden="true" />
+                    <label className={!erreichbarkeit.vormittags ? 'weiterleiten-option-unchecked' : ''}>
+                      <input
+                        type="checkbox"
+                        checked={erreichbarkeit.vormittags}
+                        onChange={(e) => setErreichbarkeit((prev) => ({ ...prev, vormittags: e.target.checked }))}
+                      />
+                      Vormittags
+                    </label>
+                    <label className={!erreichbarkeit.nachmittags ? 'weiterleiten-option-unchecked' : ''}>
+                      <input
+                        type="checkbox"
+                        checked={erreichbarkeit.nachmittags}
+                        onChange={(e) => setErreichbarkeit((prev) => ({ ...prev, nachmittags: e.target.checked }))}
+                      />
+                      Nachmittags
+                    </label>
+                    <label className={!erreichbarkeit.abends ? 'weiterleiten-option-unchecked' : ''}>
+                      <input
+                        type="checkbox"
+                        checked={erreichbarkeit.abends}
+                        onChange={(e) => setErreichbarkeit((prev) => ({ ...prev, abends: e.target.checked }))}
+                      />
+                      Abends
+                    </label>
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="weiterleiten-klient-zustimmung">
-                <label className={`weiterleiten-consent ${!zustimmungKontaktweitergabe ? 'weiterleiten-option-unchecked' : ''}`}>
+                {weiterleitenPopupVersion === 1 && (
+                  <label className={`weiterleiten-consent ${!zustimmungKontaktweitergabe ? 'weiterleiten-option-unchecked' : ''}`}>
+                    <input
+                      type="checkbox"
+                      checked={zustimmungKontaktweitergabe}
+                      onChange={(e) => setZustimmungKontaktweitergabe(e.target.checked)}
+                    />
+                    Die genannten Anbieter werden Sie in den kommenden Tagen kontaktieren.
+                  </label>
+                )}
+                <label
+                  className={`weiterleiten-consent ${!zustimmungNachgespraechBeratung ? 'weiterleiten-option-unchecked' : ''}${weiterleitenPopupVersion === 2 && !weiterleitenV3NachgespraechZustimmungErforderlich ? ' weiterleiten-consent--optional' : ''}`}
+                >
                   <input
                     type="checkbox"
-                    checked={zustimmungKontaktweitergabe}
-                    onChange={(e) => setZustimmungKontaktweitergabe(e.target.checked)}
+                    checked={zustimmungNachgespraechBeratung}
+                    onChange={(e) => setZustimmungNachgespraechBeratung(e.target.checked)}
+                    aria-required={weiterleitenPopupVersion !== 2 || weiterleitenV3NachgespraechZustimmungErforderlich}
                   />
-                  Zustimmung zur Kontaktweitergabe &amp; -aufnahme durch die genannten Anbieter
+                  Wir werden uns per E-Mail bei Ihnen melden und in den nächsten Wochen ein Nachgespräch sowie eine weitere
+                  Beratung anbieten.
                 </label>
               </div>
             </div>
@@ -1455,10 +1607,13 @@ const AnfrageSitzlift: React.FC = () => {
                 </div>
               </div>
             </div>
-
             <div className="weiterleiten-footer weiterleiten-footer--stacked">
               <div className="weiterleiten-footer-trailing">
-                <div className="weiterleiten-note">Super - die umsatzstärkste Anbieterauswahl wurde ausgewählt!</div>
+                {weiterleitenPopupVersion === 1 && (
+                  <div className="weiterleiten-note">
+                    Super - die umsatzstärkste Anbieterauswahl wurde ausgewählt!
+                  </div>
+                )}
                 <div className="weiterleiten-actions">
                   <button
                     type="button"
@@ -1594,16 +1749,6 @@ const AnfrageSitzlift: React.FC = () => {
               <button className="btn-green">
                 <span className="icon">+</span>
                 <span>Senior hinzufügen</span>
-              </button>
-              <button
-                type="button"
-                className="btn-orange"
-                onClick={() => {
-                  setIsWeiterleitenModalOpen(false);
-                  setIsSchliessenModalOpen(true);
-                }}
-              >
-                Schließen
               </button>
               <button className="btn-blue">
                 <span>Freigeben</span>
@@ -2494,90 +2639,10 @@ const AnfrageSitzlift: React.FC = () => {
           <button
             type="button"
             className="btn-green"
-            onClick={() => {
-              setIsSchliessenModalOpen(false);
-              setIsWeiterleitenModalOpen(true);
-            }}
+            onClick={() => setIsWeiterleitenModalOpen(true)}
           >
-            Speichern und weiter
+            Abschluss-Check
           </button>
-        </div>
-      )}
-
-      {/* Anfrage schließen Modal */}
-      {isSchliessenModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsSchliessenModalOpen(false)}>
-          <div className="modal-content weiterleiten-modal schliessen-modal" onClick={(e) => e.stopPropagation()}>
-            <h2 className="modal-title modal-title-schliessen">Anfrage schließen</h2>
-
-            <div className="schliessen-typ-row" role="group" aria-label="Abschlussart">
-              <button
-                type="button"
-                className={`schliessen-typ-btn ${schliessenTyp === 'kein-akut' ? 'selected' : ''}`}
-                onClick={() => setSchliessenTyp('kein-akut')}
-              >
-                <span className="schliessen-typ-label">Kein akuter Bedarf</span>
-              </button>
-              <button
-                type="button"
-                className={`schliessen-typ-btn ${schliessenTyp === 'info-mail' ? 'selected' : ''}`}
-                onClick={() => setSchliessenTyp('info-mail')}
-              >
-                <span className="schliessen-typ-label">Allgemeine Informationsmail</span>
-              </button>
-            </div>
-
-            <div className="schliessen-main-grid">
-              <div className="schliessen-followup-col">
-                <div className="schliessen-followup-block">
-                  <div className="weiterleiten-followup-fields schliessen-followup-fields weiterleiten-followup-stacked">
-                    <div className="weiterleiten-followup-field">
-                      <div className="weiterleiten-followup-field-label">Nachbetreuung am</div>
-                      <input
-                        type="text"
-                        value={schliessenNachbetreuungDatum}
-                        onChange={(e) => setSchliessenNachbetreuungDatum(e.target.value)}
-                        aria-label="Nachbetreuung am"
-                      />
-                    </div>
-                    <div className="weiterleiten-followup-field">
-                      <div className="weiterleiten-followup-field-label">Uhrzeit</div>
-                      <div className="schliessen-time-field">
-                        <input
-                          type="text"
-                          value={schliessenNachbetreuungZeit}
-                          onChange={(e) => setSchliessenNachbetreuungZeit(e.target.value)}
-                          aria-label="Uhrzeit"
-                        />
-                        <span className="schliessen-time-icon" aria-hidden="true">
-                          🕐
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="weiterleiten-footer schliessen-footer">
-              <div className="schliessen-footer-spacer" />
-              <div className="weiterleiten-actions schliessen-footer-actions">
-                <button
-                  type="button"
-                  className="btn-blue"
-                  onClick={() => {
-                    showAppToast('email');
-                    setIsSchliessenModalOpen(false);
-                  }}
-                >
-                  Abschicken
-                </button>
-                <button type="button" className="btn-orange" onClick={() => setIsSchliessenModalOpen(false)}>
-                  Abbrechen
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       )}
 

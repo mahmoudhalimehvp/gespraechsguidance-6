@@ -237,7 +237,7 @@
   overflow-x: hidden;
 }
 
-/* „Speichern und weiter“: nur den rechten Bereich abdunkeln; Höhe = Viewport (nicht volle Formularhöhe), sonst wandert die Box nach unten */
+/* „Abschluss-Check“ (Weiterleiten): nur den rechten Bereich abdunkeln; Höhe = Viewport (nicht volle Formularhöhe), sonst wandert die Box nach unten */
 .main-content-modal-overlay {
   position: fixed;
   top: 52px;
@@ -2604,6 +2604,48 @@
   padding: 16px;
 }
 
+.weiterleiten-modal-kopfzeile {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.modal-title-weiterleiten-kopf {
+  margin: 0;
+  flex: 1;
+  min-width: 200px;
+}
+
+.weiterleiten-version-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.weiterleiten-version-toggle-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 1100px) {
+  .weiterleiten-modal-kopfzeile {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .weiterleiten-version-toggle {
+    align-items: flex-start;
+  }
+}
+
 .weiterleiten-grid {
   display: grid;
   grid-template-columns: 190px repeat(4, 1fr);
@@ -2611,8 +2653,8 @@
   margin-bottom: 12px;
 }
 
-/* Zeile 2 (Tools): Trennlinie zur Anbieter-Zeile */
-.weiterleiten-grid > *:nth-child(n + 6) {
+/* Zeile 2 (Tools): Trennlinie zur Anbieter-Zeile (nur wenn Sitzlift-Zeile vorhanden) */
+.weiterleiten-grid:not(.weiterleiten-grid--ohne-sitzlift-zeile) > *:nth-child(n + 6) {
   border-top: 1px solid #d6d6d6;
 }
 
@@ -2695,6 +2737,24 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+button.anbieter-check {
+  margin: 0;
+  padding: 0;
+  border: none;
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* Variante 2 Tools: gleiche Kachel, Kästchen sichtbar aber ohne Häkchen (nicht angehakt) */
+.anbieter-check--unchecked {
+  background: #fff;
+  border: 1px solid #94a3b8;
+  color: transparent;
 }
 
 .anbieter-status {
@@ -2722,12 +2782,23 @@
   margin-bottom: 0;
 }
 
-.weiterleiten-separator {
-  height: 8px;
-  border: 1px solid #d6d6d6;
-  border-radius: 20px;
-  background: linear-gradient(to bottom, #f8f8f8, #eeeeee);
-  margin-bottom: 12px;
+/* Variante 2: „Kein akuter Bedarf: E-Mail-Strecke“ – gleicher grüner Tool-Kachel-Hintergrund wie die Nachbarn */
+.weiterleiten-kontakt-praeferenzen-box .anbieter-name {
+  text-align: left;
+}
+
+.weiterleiten-v3-kontakt-praeferenzen-kachel.weiterleiten-tool-card,
+.weiterleiten-v3-kontakt-praeferenzen-kachel.weiterleiten-tool-card.selected {
+  background: #fde8e8 !important;
+}
+
+.weiterleiten-v3-kontakt-praeferenzen-kachel .anbieter-name {
+  text-align: left;
+}
+
+/* Vorausgewähltes Häkchen, nicht per Klick abwählbar (nur über erneutes Anhaken der Tools) */
+.anbieter-check--vorausgewaehlt-readonly {
+  cursor: default;
 }
 
 /* Klient / Interessent – Klient-Daten zurückhaltend, Erreichbarkeit & Zustimmung hervorgehoben */
@@ -2899,6 +2970,10 @@
   color: #dc2626;
 }
 
+.weiterleiten-klient-block .weiterleiten-consent.weiterleiten-consent--optional.weiterleiten-option-unchecked {
+  color: #4b5563;
+}
+
 .weiterleiten-klient-block .weiterleiten-consent input[type="checkbox"] {
   margin-top: 2px;
   flex-shrink: 0;
@@ -2993,16 +3068,6 @@
   box-sizing: border-box;
 }
 
-.weiterleiten-followup-field .schliessen-time-field {
-  position: relative;
-  width: 100%;
-  min-width: 0;
-}
-
-.weiterleiten-followup-field .schliessen-time-field input {
-  padding-right: 28px;
-}
-
 .weiterleiten-footer {
   display: flex;
   align-items: center;
@@ -3051,116 +3116,6 @@
 
 .weiterleiten-actions .btn-blue:disabled:hover {
   opacity: 0.45;
-}
-
-/* Anfrage schließen Modal */
-.modal-title-schliessen {
-  font-size: 18px;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 14px;
-}
-
-.schliessen-modal {
-  padding-bottom: 14px;
-}
-
-.schliessen-typ-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  border: 1px solid #d6d6d6;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 14px;
-}
-
-.schliessen-typ-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 52px;
-  padding: 12px 16px;
-  border: none;
-  border-right: 1px solid #d6d6d6;
-  background: #fff;
-  font-size: 14px;
-  font-weight: 700;
-  color: #111827;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.schliessen-typ-btn:last-child {
-  border-right: none;
-}
-
-.schliessen-typ-btn.selected {
-  background: #d6ead3;
-}
-
-.schliessen-typ-label {
-  display: block;
-  width: 100%;
-  text-align: center;
-}
-
-.schliessen-main-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  align-items: start;
-  border-top: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 12px 0 14px;
-  margin-bottom: 12px;
-  min-width: 0;
-}
-
-.schliessen-followup-col {
-  min-width: 0;
-  padding-top: 0;
-}
-
-.schliessen-followup-block {
-  border-left: none;
-  padding-left: 0;
-  min-height: 0;
-  min-width: 0;
-  overflow: hidden;
-}
-
-.schliessen-followup-fields {
-  flex-wrap: nowrap;
-}
-
-.schliessen-time-icon {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 14px;
-  pointer-events: none;
-  opacity: 0.75;
-}
-
-.schliessen-footer {
-  margin-top: 0;
-}
-
-.schliessen-footer-spacer {
-  flex: 1;
-  min-width: 8px;
-}
-
-.schliessen-footer-actions {
-  flex-shrink: 0;
-}
-
-@media (max-width: 900px) {
-  .schliessen-main-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* Klienten löschen Modal */
