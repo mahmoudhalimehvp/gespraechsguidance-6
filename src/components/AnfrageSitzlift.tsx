@@ -216,8 +216,7 @@ const guidanceData: GuidanceSection[] = [
         items: [
           'Wie sieht denn die Pflegesituation aktuell bei Ihnen aus?',
           'Welcher Pflegegrad liegt aktuell vor und gab es zuletzt eine Veränderung?',
-          'Welche Sturzgefahren gibt es aktuell im Wohnbereich, die den Alltag erschweren?',
-          'Welche Hilfsmittel oder Pflegeprodukte werden aktuell genutzt?'
+          'Welche Sturzgefahren gibt es aktuell im Wohnbereich, die den Alltag erschweren?'
         ]
       },
       {
@@ -226,19 +225,19 @@ const guidanceData: GuidanceSection[] = [
         entries: [
           {
             title: 'Hat sich erledigt',
-            text: 'Das freut mich zu hören. Inwiefern hat es sich erledigt? Wie wird die Pflege aktuell sichergestellt?'
+            text: 'Das freut mich zu hören. Welche Lösung haben Sie denn gefunden? Haben Sie sich passende Vergleichsangebote einholen können?'
           },
           {
             title: 'Keine Zeit',
-            text: 'Danke für Ihre Offenheit. Ich verstehe, dass Ihre Zeit knapp ist. Lassen Sie uns gerade deshalb einen kurzen Moment Zeit nehmen, damit wir sicher gehen können, dass die pflegerische Versorgung Ihrer Angehörigen effizient genutzt ist. Was kostet Ihnen im Moment am meisten Zeit?'
+            text: 'Da verstehe ich Sie. Ich möchte nur sichergehen, dass die pflegerische Versorgung bestmöglich sichergestellt ist. Wie ist denn die aktuelle Versorgung gewährleistet?'
           },
           {
             title: 'Keine Erinnerung',
-            text: 'Wir sind eine kostenfreie Pflegeberatung. Wir beraten sie neutral, kostenfrei und effizient und helfen Ihnen damit die pflegerische Versorgung sicher zu stellen. Wie sieht denn die Pflegesituation aus?'
+            text: 'Wir sind eine kostenfreie Pflegeberatung. Wir helfen Ihnen, die pflegerische Versorgung sicherzustellen. Wie sieht denn die Pflegesituation aktuell aus?'
           },
           {
             title: 'Kein Interesse',
-            text: 'Danke für Ihre Offenheit. Ich verstehe, dass Ihre Zeit knapp ist. Lassen Sie uns gerade deshalb einen kurzen Moment Zeit nehmen, damit wir sicher gehen können, dass die pflegerische Versorgung Ihrer Angehörigen effizient genutzt ist. Was kostet Ihnen im Moment am meisten Zeit? Danke für Ihre Offenheit. Wir haben die Erfahrung gemacht, dass viele unserer Klienten nicht wissen, was Ihnen mit einem Pflegegrad alles zusteht. Nutzen Sie schon alle Budgets?'
+            text: 'Danke für Ihre Offenheit. Wir haben die Erfahrung gemacht, dass viele unserer Klienten nicht wissen, was Ihnen mit einem Pflegegrad alles zusteht. Welche Unterstützungsleistungen nutzen Sie bereits?'
           }
         ]
       }
@@ -255,19 +254,19 @@ const guidanceData: GuidanceSection[] = [
         entries: [
           {
             title: 'Hat sich erledigt',
-            text: 'Das freut mich zu hören. Inwiefern hat es sich erledigt? Wie wird die Pflege aktuell sichergestellt?'
+            text: 'Das freut mich zu hören. Welche Lösung haben Sie denn gefunden? Haben Sie sich passende Vergleichsangebote einholen können?'
           },
           {
             title: 'Keine Zeit',
-            text: 'Danke für Ihre Offenheit. Ich verstehe, dass Ihre Zeit knapp ist. Lassen Sie uns gerade deshalb einen kurzen Moment Zeit nehmen, damit wir sicher gehen können, dass die pflegerische Versorgung Ihrer Angehörigen effizient genutzt ist. Was kostet Ihnen im Moment am meisten Zeit?'
+            text: 'Da verstehe ich Sie. Ich möchte nur sichergehen, dass die pflegerische Versorgung bestmöglich sichergestellt ist. Wie ist denn die aktuelle Versorgung gewährleistet?'
           },
           {
             title: 'Keine Erinnerung',
-            text: 'Wir sind eine kostenfreie Pflegeberatung. Wir beraten sie neutral, kostenfrei und effizient und helfen Ihnen damit die pflegerische Versorgung sicher zu stellen. Wie sieht denn die Pflegesituation aus?'
+            text: 'Wir sind eine kostenfreie Pflegeberatung. Wir helfen Ihnen, die pflegerische Versorgung sicherzustellen. Wie sieht denn die Pflegesituation aktuell aus?'
           },
           {
             title: 'Kein Interesse',
-            text: 'Danke für Ihre Offenheit. Ich verstehe, dass Ihre Zeit knapp ist. Lassen Sie uns gerade deshalb einen kurzen Moment Zeit nehmen, damit wir sicher gehen können, dass die pflegerische Versorgung Ihrer Angehörigen effizient genutzt ist. Was kostet Ihnen im Moment am meisten Zeit? Danke für Ihre Offenheit. Wir haben die Erfahrung gemacht, dass viele unserer Klienten nicht wissen, was Ihnen mit einem Pflegegrad alles zusteht. Nutzen Sie schon alle Budgets?'
+            text: 'Danke für Ihre Offenheit. Wir haben die Erfahrung gemacht, dass viele unserer Klienten nicht wissen, was Ihnen mit einem Pflegegrad alles zusteht. Welche Unterstützungsleistungen nutzen Sie bereits?'
           }
         ]
       },
@@ -276,23 +275,23 @@ const guidanceData: GuidanceSection[] = [
         entries: [
           {
             title: 'Zu teuer',
-            text: 'Das verstehe ich gut, die Kosten sind für viele ein wichtiger Punkt. Genau deshalb ist es sinnvoll, die Zuschüsse der Pflegekasse zu nutzen und mehrere unverbindliche Angebote zu vergleichen, damit Sie eine bezahlbare Lösung finden. Wie klingt das für Sie, erst einmal kostenfrei Angebote einzuholen und in Ruhe zu vergleichen?'
+            text: 'Das verstehe ich gut. Die Kosten sind für viele ein wichtiger Punkt. Genau deshalb ist es sinnvoll, die Zuschüsse der Pflegekasse zu nutzen und mehrere unverbindliche Angebote zu vergleichen, damit Sie eine bezahlbare Lösung finden. Was halten Sie davon, erst einmal kostenfrei Angebote einzuholen und in Ruhe zu vergleichen?'
           },
           {
             title: 'Zu früh',
-            text: 'Das kann ich gut nachvollziehen, viele sagen das, solange noch alles einigermaßen gut läuft. Genau deshalb ist Vorsorge so wichtig. Denn falls plötzlich etwas passiert, hat man oft keine Zeit mehr, um ruhig zu vergleichen und schnell zu reagieren. Deswegen wäre jetzt das Einholen von Angeboten für eine gute Vorsorge wichtig. Einmal angenommen, es passiert unerwartet etwas, wäre es beruhigend für Sie zu wissen, dass alles schon vorbereitet ist?'
+            text: 'Das kann ich gut nachvollziehen. Das sagen viele, solange noch alles einigermaßen gut läuft. Genau deshalb ist Vorsorge so wichtig. Denn falls plötzlich etwas passiert, hat man oft keine Zeit mehr, um in Ruhe zu vergleichen. Deswegen wäre jetzt das Einholen von Angeboten für eine gute Vorsorge wichtig. Was halten Sie davon?'
           },
           {
             title: 'Zeit zum Nachdenken',
-            text: 'Das ist absolut verständlich, niemand möchte vorschnell entscheiden. Genau deshalb geht es ja nicht um eine Entscheidung, sondern erst einmal um unverbindliche Angebote, die Ihnen Vergleichbarkeit und Sicherheit geben. Wäre das ein guter erster Schritt für Sie?'
+            text: 'Das ist absolut verständlich. Niemand möchte vorschnell wichtige Entscheidungen treffen. Genau deshalb geht es heute ja nicht um eine finale Entscheidung, sondern erst einmal um unverbindliche Angebote, die Ihnen die Möglichkeit für eine gute Entscheidung geben. Was halten Sie davon?'
           },
           {
             title: 'Senior möchte nicht',
-            text: 'Das kann ich gut verstehen, das erleben wir sehr häufig. Genau deshalb ist es oft hilfreich, erst einmal unverbindliche Angebote und fachliche Beratung einzuholen, damit Sie die richtigen Argumente an der Hand haben, um die betroffene Person zu überzeugen. Glauben Sie auch, dass zusätzliche Informationen und Vergleichsangebote von Experten dabei helfen könnte?'
+            text: 'Das kann ich gut verstehen, das erleben wir sehr häufig. Genau deshalb ist es hilfreich, erst einmal unverbindliche Angebote und fachliche Beratung einzuholen, damit Sie die richtigen Argumente an der Hand haben, um die betroffene Person zu überzeugen. Glauben Sie auch, dass zusätzliche Informationen und Vergleichsangebote von Experten dabei helfen könnten?'
           },
           {
             title: 'Lokaler Anbieter',
-            text: 'Das verstehe ich gut, der Wunsch nach einem lokalen Anbieter ist völlig nachvollziehbar. Gerade deshalb lohnt sich ein unverbindlicher Vergleich, damit Sie sehen, ob ein größerer Anbieter Ihnen vielleicht bessere Konditionen oder mehr Leistungen bieten kann. Wie klingt das für Sie, erst einmal kostenfrei zu vergleichen und danach ganz in Ruhe zu entscheiden, welcher Anbieter für Sie der richtige ist?'
+            text: 'Das verstehe ich gut. Der Wunsch nach einer lokalen Lösung ist völlig nachvollziehbar. Gerade deshalb fragen wir nach Ihrer Postleitzahl, damit wir ermitteln können, ob ein anderer Dienstleister in Ihrer Region Ihnen vielleicht bessere Konditionen oder mehr Leistungen bieten kann. Was halten Sie davon, erst einmal kostenfrei zu vergleichen und danach ganz in Ruhe zu entscheiden, welcher Anbieter für Sie wirklich der richtige ist?'
           }
         ]
       },
@@ -304,31 +303,39 @@ const guidanceData: GuidanceSection[] = [
             text: '[Anrede] [Nachname], wir haben die Erfahrung gemacht, dass viele unserer Klienten nicht wissen, welche Unterstützung Ihnen mit einem Pflegegrad zusteht und welche Möglichkeiten sich dafür eröffnen. Lassen Sie uns hierfür noch kurz Zeit nehmen.'
           },
           {
-            title: 'Sitzlift & Badewanne zur Dusch',
-            text: 'Nutzen Sie schon die 4.180€, die es Ihnen ermöglicht Ihr zu Hause barrierefrei zu gestalten, entweder durch einen Treppenlift oder ein barrierefreies Bad?'
+            title: '24h-Betreuung, Std. Betreuung & Pflegedienst',
+            text: 'Über den Pflegegrad erhalten Sie finanzielle Unterstützung, um die Pflege & Betreuung sicher zu stellen. Nutzen Sie hierfür bereits alle Möglichkeiten?'
+          },
+          {
+            title: 'Sitzlift & Badewanne zu Dusche',
+            text: 'Nutzen Sie schon die 4.180 €, die es Ihnen ermöglichen, Ihr Zuhause barrierefrei zu gestalten, entweder durch einen Treppenlift oder ein barrierefreies Bad?'
           },
           {
             title: 'Hausnotruf',
             text: 'Haben Sie bereits den kostenlosen Hausnotruf, der die Sicherheit in den eigenen vier Wänden sicherstellt?'
           },
           {
-            title: 'Pfelgehilfsmittel',
-            text: 'Beziehen Sie schon die kostenfreien Pflegehilfsmittel wie Bettschutzeinlagen, Einmalhandschuhe oder Desinfektionsmittel?'
+            title: 'Haushaltshilfe',
+            text: 'Erhalten Sie bereits hauswirtschaftliche Unterstützung, die Sie durch den Entlastungsbetrag in Höhe von 131€ im Monat kostenfrei erhalten?'
           },
           {
-            title: 'Haushaltshilfe',
-            text: 'Erhalten Sie bereits hauswirtschaftliche Unterstützung, die sie durch den Entlastungsbetrag in Höhe von 132€ im Monat kostenfrei erhalten?'
+            title: 'Pflegehilfsmittel',
+            text: 'Beziehen Sie schon die kostenfreien Pflegehilfsmittel, wie Bettschutzeinlagen, Einmalhandschuhe oder Desinfektionsmittel?'
           },
           {
             title: 'Hörtest',
-            text: 'Kennen Sie bereits den kostenlosen Hörtest zu Hause? So können Sie prüfen, wie gut Ihr Hören noch ist und frühzeitig Vorsorge treffen?'
+            text: 'Wann war denn die letzte Hörvorsorge? Bekannterweise ist es wichtig, ein gesundes Hörvermögen zu haben, um Demenz und Sturzgefahren vorzubeugen.'
+          },
+          {
+            title: 'Elektromobil',
+            text: 'Wissen Sie bereits, dass Sie mit einem Rezept kostenlos ein Elektromobil erhalten?'
           }
         ]
       },
       {
         title: 'Abschluss',
         items: [
-          'Vielen Dank. Dann haben wir nun alle wichtigen Informationen zusammen, damit ich Ihnen für "Sitzlift" die passenden Ansprechpartner an die Hand geben kann.'
+          'Vielen Dank. Dann haben wir nun alle wichtigen Informationen zusammen, damit ich Ihnen die passenden Ansprechpartner an die Hand geben kann.'
         ]
       }
     ]
@@ -337,7 +344,7 @@ const guidanceData: GuidanceSection[] = [
 
 /** Weiterleiten-Modus: Standard-Abschluss (Anbieter-Kontakt) */
 const ABSCHLUSS_WEITERLEITEN_DEFAULT =
-  'Vielen Dank. Ich habe einmal die Kapazitäten unseres Pflegenetzwerks geprüft und werde nun für Sie den Kontakt zu den Anbietern Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Diese werden sich in den nächsten Minuten oder Stunden telefonisch bei Ihnen melden. Deshalb ist wichtig, dass Sie telefonisch erreichbar bleiben.';
+  'Vielen Dank. Ich werde nun für Sie die Kapazitäten prüfen und Ihnen den Kontakt zu Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Dafür reserviere ich für Sie jetzt die kostenfreien Erstgespräche. Die Anbieter werden sich nun in den nächsten Minuten, spätestens im Laufe des Tages bei Ihnen melden. Bleiben Sie deshalb bitte telefonisch erreichbar, um die nächsten Schritte abzusprechen.';
 
 /** Alternative Abschlüsse, wenn kein passender Anbieter – Demo per Toggle */
 const ABSCHLUSS_TEXT_WARTELISTE = `Ich habe Sie jetzt auf die Warteliste gesetzt.
@@ -405,54 +412,24 @@ const Gespraechsguidance: React.FC<{
       title: 'Einwandbehandlung',
       entries: [
         {
-          title: 'Ich möchte nicht mit so vielen sprechen',
-          text: `Die Partner melden sich nicht gleichzeitig bei Ihnen, sondern nacheinander.
-
-Sie können ganz in Ruhe mit jedem sprechen und entscheiden dann selbst, wer am besten zu Ihnen passt.
-
-Der Vorteil ist, dass Sie vergleichen können und nicht vom ersten Angebot abhängig sind.
-
-Ich gebe Ihnen die passenden Partner mit.`
+          title: 'Zu viele Anrufe',
+          text: 'Da verstehe ich Sie vollkommen. Mal abgesehen davon, dass Sie heute etwas Zeit und Aufwand investieren, hätten Sie auf lange Sicht viel Zeit und Aufwand gespart und sichergestellt, dass Sie auch wirklich die beste Lösung haben. Was halten Sie davon?'
         },
         {
-          title: 'Mir reicht ein Anbieter',
-          text: `Ein Partner kann nicht immer direkt die passende Lösung haben.
-
-Mit mehreren Partnern stellen wir sicher, dass Sie wirklich jemanden finden, der zu Ihrer Situation passt und verfügbar ist.
-
-So vermeiden Sie Wartezeiten.
-
-Ich nehme Ihnen mehrere passende Partner mit rein.`
+          title: 'Nur ein Anbieter',
+          text: 'Das kann ich verstehen. Damit Sie eine gute Entscheidung treffen und vor allem die verschiedenen Dienstleistungen und Preise miteinander vergleichen können, lohnt sich der Vergleich von verschiedenen Anbietern. Was halten Sie davon?'
         },
         {
-          title: 'Ich habe keine Zeit für mehrere Gespräche',
-          text: `Die Gespräche sind in der Regel kurz und Sie können direkt den Vor Ort/Telefon-Termin ausmachen.
-
-Das spart Ihnen am Ende Zeit, weil Sie nicht mehrfach neu suchen müssen, falls es beim ersten Partner nicht passt.
-
-So kommen Sie schneller zu einer guten Lösung.
-
-Ich gebe Ihnen die passenden Partner mit.`
+          title: 'Zeit zum Nachdenken',
+          text: 'Das ist absolut verständlich. Niemand möchte vorschnell wichtige Entscheidungen treffen. Genau deshalb geht es heute ja nicht um eine finale Entscheidung, sondern erst einmal um unverbindliche Angebote, die Ihnen die Möglichkeit für eine gute Entscheidung geben. Was halten Sie davon?'
         },
         {
-          title: 'Ich entscheide mich lieber direkt für einen Anbieter',
-          text: `Das verstehe ich gut.
-
-Nur ohne Vergleich fehlt Ihnen die Sicherheit, ob es wirklich die beste Lösung ist.
-
-Mit mehreren Partnern bekommen Sie einen direkten Überblick und können dann eine sichere Entscheidung treffen.
-
-Ich stelle Ihnen die passenden Partner zusammen.`
+          title: 'Nur regionale Anbieter',
+          text: 'Das verstehe ich gut. Der Wunsch nach einer lokalen Lösung ist völlig nachvollziehbar. Gerade deshalb fragen wir nach Ihrer Postleitzahl, damit wir ermitteln können, ob ein anderer Dienstleister in Ihrer Region Ihnen vielleicht bessere Konditionen oder mehr Leistungen bieten kann. Was halten Sie davon, erst einmal kostenfrei zu vergleichen und danach ganz in Ruhe zu entscheiden, welcher Anbieter für Sie wirklich der richtige ist?'
         },
         {
-          title: 'Ich möchte erstmal schauen und mich dann entscheiden',
-          text: `Genau dafür sind die Partner da.
-
-Sie bekommen einen direkten Einblick und können danach in Ruhe entscheiden, was für Sie am besten passt.
-
-So haben Sie eine klare Grundlage für Ihre Entscheidung.
-
-Ich gebe Ihnen die passenden Kontakte mit.`
+          title: 'Will selbst anrufen',
+          text: 'Das kann ich verstehen. Gerne behält man in Ihrer Situation selbst die Kontrolle. Genau deshalb suchen unsere Partner den direkten Kontakt zu Ihnen, weil es in der Pflege häufig schnell gehen muss und die Verfügbarkeiten sich unmittelbar ändern können. So stellen wir eine schnelle Versorgung sicher. Wie klingt das für Sie?'
         }
       ]
     }
