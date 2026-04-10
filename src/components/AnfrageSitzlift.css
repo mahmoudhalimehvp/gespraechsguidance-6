@@ -239,7 +239,7 @@
   overflow-x: clip;
 }
 
-/* „Abschluss-Check“ (Weiterleiten): nur den rechten Bereich abdunkeln; Höhe = Viewport (nicht volle Formularhöhe), sonst wandert die Box nach unten */
+/* „Speichern und weiter“ / „Anfrage abschicken“ (Weiterleiten): nur den rechten Bereich abdunkeln; Höhe = Viewport (nicht volle Formularhöhe), sonst wandert die Box nach unten */
 .main-content-modal-overlay {
   position: fixed;
   top: 52px;

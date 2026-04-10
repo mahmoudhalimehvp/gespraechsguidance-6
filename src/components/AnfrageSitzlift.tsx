@@ -675,14 +675,6 @@ const AnfrageSitzlift: React.FC = () => {
   ]);
   const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
   const [isWeiterleitenModalOpen, setIsWeiterleitenModalOpen] = useState(false);
-  /** Abschluss-Check-Popup: Layout-Varianten (Demo/Vorschau) */
-  const [weiterleitenPopupVersion, setWeiterleitenPopupVersion] = useState<1 | 2 | 3>(1);
-  /** Variante 2: Tool-Häkchen; „Kein akuter Bedarf …“ mit festem ✓; „Kontakt-Präferenzen“ nur in derselben Sichtbarkeitslage, optional per Häkchen */
-  const [weiterleitenV3Tools, setWeiterleitenV3Tools] = useState({
-    pflegegradChecked: true,
-    pflegezuschuesseChecked: true,
-    kontaktPraeferenzenChecked: false,
-  });
   const [isKlientLoeschenModalOpen, setIsKlientLoeschenModalOpen] = useState(false);
   /** Nur Demo: Klient-löschen-Modal Berater-Ansicht vs. Admin-Ansicht */
   const [klientLoeschenDemoModus, setKlientLoeschenDemoModus] = useState<'berater' | 'admin'>('berater');
@@ -728,8 +720,6 @@ const AnfrageSitzlift: React.FC = () => {
   } | null>(null);
   const [erreichbarkeit, setErreichbarkeit] = useState({ ganztägig: false, vormittags: false, nachmittags: false, abends: false });
   const [zustimmungKontaktweitergabe, setZustimmungKontaktweitergabe] = useState(false);
-  /** Abschluss-Check Weiterleiten: zweite Pflicht-Zustimmung (Nachgespräch / Beratung) */
-  const [zustimmungNachgespraechBeratung, setZustimmungNachgespraechBeratung] = useState(false);
   const [editingPhoneId, setEditingPhoneId] = useState<string | null>(null);
   const [phoneModalData, setPhoneModalData] = useState({
     type: 'Mobil',
@@ -851,15 +841,6 @@ const AnfrageSitzlift: React.FC = () => {
     setKlientLoeschenAdminKlientBestaetigt(false);
     setKlientLoeschenAdminDuplikatBestaetigt(false);
   }, [isKlientLoeschenModalOpen, klientLoeschenDemoModus]);
-
-  useEffect(() => {
-    if (!isWeiterleitenModalOpen || weiterleitenPopupVersion !== 2) return;
-    setWeiterleitenV3Tools({
-      pflegegradChecked: true,
-      pflegezuschuesseChecked: true,
-      kontaktPraeferenzenChecked: false,
-    });
-  }, [isWeiterleitenModalOpen, weiterleitenPopupVersion]);
 
   useEffect(() => {
     return () => {
@@ -1128,60 +1109,21 @@ const AnfrageSitzlift: React.FC = () => {
     return flagMap[countryCode] || null;
   };
 
-  /** Variante 2: „Kein akuter Bedarf: E-Mail-Strecke“ – unveränderte Logik. „Kontakt-Präferenzen“ nutzt dieselbe Sichtbarkeit. */
-  const weiterleitenV2EmailStreckeSichtbar =
-    weiterleitenPopupVersion === 2 &&
-    !weiterleitenV3Tools.pflegegradChecked &&
-    !weiterleitenV3Tools.pflegezuschuesseChecked;
-
-  /** Variante 2: Nachgespräch/E-Mail-Zustimmung nur Pflicht, wenn mindestens ein Tool angehakt; nur „Kein akuter Bedarf …“ → optional */
-  const weiterleitenV3NachgespraechZustimmungErforderlich =
-    weiterleitenPopupVersion === 2 &&
-    (weiterleitenV3Tools.pflegegradChecked || weiterleitenV3Tools.pflegezuschuesseChecked);
-
   const weiterleitenAbschickenEnabled =
-    weiterleitenPopupVersion === 1
-      ? zustimmungKontaktweitergabe &&
-        zustimmungNachgespraechBeratung &&
-        (erreichbarkeit.ganztägig ||
-          erreichbarkeit.vormittags ||
-          erreichbarkeit.nachmittags ||
-          erreichbarkeit.abends)
-      : weiterleitenPopupVersion === 2
-        ? weiterleitenV3NachgespraechZustimmungErforderlich
-          ? zustimmungNachgespraechBeratung
-          : true
-        : zustimmungNachgespraechBeratung;
+    zustimmungKontaktweitergabe &&
+    (erreichbarkeit.ganztägig ||
+      erreichbarkeit.vormittags ||
+      erreichbarkeit.nachmittags ||
+      erreichbarkeit.abends);
 
-  const toggleWeiterleitenV3Pflegegrad = () => {
-    setWeiterleitenV3Tools((prev) => ({
-      ...prev,
-      pflegegradChecked: !prev.pflegegradChecked,
-    }));
-  };
-
-  const toggleWeiterleitenV3Pflegezuschuesse = () => {
-    setWeiterleitenV3Tools((prev) => ({
-      ...prev,
-      pflegezuschuesseChecked: !prev.pflegezuschuesseChecked,
-    }));
-  };
-
-  const toggleWeiterleitenV3KontaktPraeferenzen = () => {
-    setWeiterleitenV3Tools((prev) => ({
-      ...prev,
-      kontaktPraeferenzenChecked: !prev.kontaktPraeferenzenChecked,
-    }));
-  };
-
-  /** Modals, die die Gesprächshilfen ausgrauen (nicht das Weiterleiten-/„Abschluss-Check“-Popup) */
+  /** Modals, die die Gesprächshilfen ausgrauen (nicht das „Anfrage abschicken“-/Weiterleiten-Popup) */
   const guidanceSidebarObscuredByOtherModal =
     isKlientLoeschenModalOpen ||
     isNewsletterEinstellungenModalOpen ||
     isAnrufEinstellungenModalOpen ||
     isPhoneModalOpen;
 
-  /** Während „Abschluss-Check“ (Weiterleiten) offen ist: immer volle Gesprächshilfen, nie ausgrauen */
+  /** Während „Anfrage abschicken“ (Weiterleiten) offen ist: immer volle Gesprächshilfen, nie ausgrauen */
   const guidanceSidebarObscured =
     guidanceSidebarObscuredByOtherModal && !isWeiterleitenModalOpen;
 
@@ -1313,51 +1255,21 @@ const AnfrageSitzlift: React.FC = () => {
                 obscured={guidanceSidebarObscured}
               />
 
-              {/* Anfrage weiterleiten / „Abschluss-Check“ */}
+              {/* Anfrage weiterleiten / „Anfrage abschicken“ */}
               {isWeiterleitenModalOpen && (
                 <div
                   className="main-content-modal-overlay"
                   onClick={() => setIsWeiterleitenModalOpen(false)}
                 >
                   <div
-                    className={`modal-content weiterleiten-modal weiterleiten-modal--v${weiterleitenPopupVersion}`}
+                    className="modal-content weiterleiten-modal weiterleiten-modal--v1"
                     onClick={(e) => e.stopPropagation()}
                   >
             <div className="weiterleiten-modal-kopfzeile">
-              <h2 className="modal-title modal-title-weiterleiten-kopf">Abschluss-Check</h2>
-              <div className="weiterleiten-version-toggle" title="Variante des Popups (Vorschau)">
-                <span className="weiterleiten-version-toggle-label">Variante</span>
-                <div className="einstellungen-demo-segment-buttons" role="group" aria-label="Abschluss-Check Variante">
-                  <button
-                    type="button"
-                    className={weiterleitenPopupVersion === 1 ? 'is-active' : ''}
-                    onClick={() => setWeiterleitenPopupVersion(1)}
-                  >
-                    1
-                  </button>
-                  <button
-                    type="button"
-                    className={weiterleitenPopupVersion === 2 ? 'is-active' : ''}
-                    onClick={() => setWeiterleitenPopupVersion(2)}
-                  >
-                    2
-                  </button>
-                  <button
-                    type="button"
-                    className={weiterleitenPopupVersion === 3 ? 'is-active' : ''}
-                    onClick={() => setWeiterleitenPopupVersion(3)}
-                  >
-                    3
-                  </button>
-                </div>
-              </div>
+              <h2 className="modal-title modal-title-weiterleiten-kopf">Anfrage abschicken</h2>
             </div>
 
-            <div
-              className={`weiterleiten-grid${weiterleitenPopupVersion !== 1 ? ' weiterleiten-grid--ohne-sitzlift-zeile' : ''}`}
-            >
-              {weiterleitenPopupVersion === 1 && (
-                <>
+            <div className="weiterleiten-grid">
                   <div className="weiterleiten-column-title">Sitzlift</div>
                   <div className="weiterleiten-anbieter-card selected">
                     <div className="anbieter-head">
@@ -1387,8 +1299,6 @@ const AnfrageSitzlift: React.FC = () => {
                     </div>
                     <div className="anbieter-status">Kriterien Check erfolgreich!</div>
                   </div>
-                </>
-              )}
 
               <div className="weiterleiten-column-title weiterleiten-column-title--tools">
                 <span className="weiterleiten-tools-heading">Tools &amp; Informationen</span>
@@ -1397,73 +1307,19 @@ const AnfrageSitzlift: React.FC = () => {
               <div className="weiterleiten-anbieter-card selected weiterleiten-tool-card">
                 <div className="anbieter-head">
                   <span className="anbieter-name">Pflegegrad-Rechner</span>
-                  {weiterleitenPopupVersion === 2 ? (
-                    <button
-                      type="button"
-                      className={`anbieter-check${weiterleitenV3Tools.pflegegradChecked ? '' : ' anbieter-check--unchecked'}`}
-                      onClick={toggleWeiterleitenV3Pflegegrad}
-                      aria-pressed={weiterleitenV3Tools.pflegegradChecked}
-                      aria-label="Pflegegrad-Rechner in die E-Mail-Auswahl aufnehmen"
-                    >
-                      {weiterleitenV3Tools.pflegegradChecked ? '✓' : ''}
-                    </button>
-                  ) : (
-                    <span className="anbieter-check" aria-hidden="true">
-                      ✓
-                    </span>
-                  )}
+                  <span className="anbieter-check" aria-hidden="true">
+                    ✓
+                  </span>
                 </div>
               </div>
               <div className="weiterleiten-anbieter-card selected weiterleiten-tool-card">
                 <div className="anbieter-head">
                   <span className="anbieter-name">Pflegezuschüsse &amp; -Leistungen</span>
-                  {weiterleitenPopupVersion === 2 ? (
-                    <button
-                      type="button"
-                      className={`anbieter-check${weiterleitenV3Tools.pflegezuschuesseChecked ? '' : ' anbieter-check--unchecked'}`}
-                      onClick={toggleWeiterleitenV3Pflegezuschuesse}
-                      aria-pressed={weiterleitenV3Tools.pflegezuschuesseChecked}
-                      aria-label="Pflegezuschüsse und -Leistungen in die E-Mail-Auswahl aufnehmen"
-                    >
-                      {weiterleitenV3Tools.pflegezuschuesseChecked ? '✓' : ''}
-                    </button>
-                  ) : (
-                    <span className="anbieter-check" aria-hidden="true">
-                      ✓
-                    </span>
-                  )}
+                  <span className="anbieter-check" aria-hidden="true">
+                    ✓
+                  </span>
                 </div>
               </div>
-              {weiterleitenV2EmailStreckeSichtbar && (
-                <div className="weiterleiten-anbieter-card selected weiterleiten-tool-card weiterleiten-kontakt-praeferenzen-box">
-                  <div className="anbieter-head">
-                    <span className="anbieter-name">Kein akuter Bedarf: E-Mail-Strecke</span>
-                    <span
-                      className="anbieter-check anbieter-check--vorausgewaehlt-readonly"
-                      role="img"
-                      aria-label="Kein akuter Bedarf: E-Mail-Strecke ist vorausgewählt. Zum Entfernen mindestens eines der beiden Tools (Pflegegrad-Rechner oder Pflegezuschüsse) wieder anhaken."
-                    >
-                      ✓
-                    </span>
-                  </div>
-                </div>
-              )}
-              {weiterleitenV2EmailStreckeSichtbar && (
-                <div className="weiterleiten-anbieter-card selected weiterleiten-tool-card weiterleiten-v3-kontakt-praeferenzen-kachel">
-                  <div className="anbieter-head">
-                    <span className="anbieter-name">Kontakt-Präferenzen</span>
-                    <button
-                      type="button"
-                      className={`anbieter-check${weiterleitenV3Tools.kontaktPraeferenzenChecked ? '' : ' anbieter-check--unchecked'}`}
-                      onClick={toggleWeiterleitenV3KontaktPraeferenzen}
-                      aria-pressed={weiterleitenV3Tools.kontaktPraeferenzenChecked}
-                      aria-label="Kontakt-Präferenzen in die E-Mail-Auswahl aufnehmen"
-                    >
-                      {weiterleitenV3Tools.kontaktPraeferenzenChecked ? '✓' : ''}
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
 
             <div className="weiterleiten-klient-block">
@@ -1493,8 +1349,7 @@ const AnfrageSitzlift: React.FC = () => {
                   </div>
                 </div>
               </div>
-              {weiterleitenPopupVersion === 1 && (
-                <div className="weiterleiten-klient-erreichbarkeit">
+              <div className="weiterleiten-klient-erreichbarkeit">
                   <div className="weiterleiten-options-title">Beste telefonische Erreichbarkeit</div>
                   <div className="weiterleiten-options">
                     <label className={!erreichbarkeit.ganztägig ? 'weiterleiten-option-unchecked' : ''}>
@@ -1539,29 +1394,14 @@ const AnfrageSitzlift: React.FC = () => {
                     </label>
                   </div>
                 </div>
-              )}
               <div className="weiterleiten-klient-zustimmung">
-                {weiterleitenPopupVersion === 1 && (
-                  <label className={`weiterleiten-consent ${!zustimmungKontaktweitergabe ? 'weiterleiten-option-unchecked' : ''}`}>
-                    <input
-                      type="checkbox"
-                      checked={zustimmungKontaktweitergabe}
-                      onChange={(e) => setZustimmungKontaktweitergabe(e.target.checked)}
-                    />
-                    Die genannten Anbieter werden Sie in den kommenden Tagen kontaktieren.
-                  </label>
-                )}
-                <label
-                  className={`weiterleiten-consent ${!zustimmungNachgespraechBeratung ? 'weiterleiten-option-unchecked' : ''}${weiterleitenPopupVersion === 2 && !weiterleitenV3NachgespraechZustimmungErforderlich ? ' weiterleiten-consent--optional' : ''}`}
-                >
+                <label className={`weiterleiten-consent ${!zustimmungKontaktweitergabe ? 'weiterleiten-option-unchecked' : ''}`}>
                   <input
                     type="checkbox"
-                    checked={zustimmungNachgespraechBeratung}
-                    onChange={(e) => setZustimmungNachgespraechBeratung(e.target.checked)}
-                    aria-required={weiterleitenPopupVersion !== 2 || weiterleitenV3NachgespraechZustimmungErforderlich}
+                    checked={zustimmungKontaktweitergabe}
+                    onChange={(e) => setZustimmungKontaktweitergabe(e.target.checked)}
                   />
-                  Wir werden uns per E-Mail bei Ihnen melden und in den nächsten Wochen ein Nachgespräch sowie eine weitere
-                  Beratung anbieten.
+                  Zustimmung zur Kontaktweitergabe &amp; -aufnahme durch die genannten Anbieter
                 </label>
               </div>
             </div>
@@ -1582,11 +1422,9 @@ const AnfrageSitzlift: React.FC = () => {
             </div>
             <div className="weiterleiten-footer weiterleiten-footer--stacked">
               <div className="weiterleiten-footer-trailing">
-                {weiterleitenPopupVersion === 1 && (
-                  <div className="weiterleiten-note">
-                    Super - die umsatzstärkste Anbieterauswahl wurde ausgewählt!
-                  </div>
-                )}
+                <div className="weiterleiten-note">
+                  Super - die umsatzstärkste Anbieterauswahl wurde ausgewählt!
+                </div>
                 <div className="weiterleiten-actions">
                   <button
                     type="button"
@@ -1631,6 +1469,51 @@ const AnfrageSitzlift: React.FC = () => {
                 </button>
                 {isAktionenDropdownOpen && (
                   <div className="aktionen-dropdown-menu" role="menu">
+                    <div className="aktionen-dropdown-section" role="none">
+                      <button
+                        type="button"
+                        className="aktionen-dropdown-item aktionen-dropdown-item--danger"
+                        role="menuitem"
+                        onClick={() => {
+                          setIsKlientLoeschenModalOpen(true);
+                          setIsAktionenDropdownOpen(false);
+                        }}
+                      >
+                        <span className="aktionen-dropdown-icon" aria-hidden="true">
+                          🗑️
+                        </span>
+                        Klient löschen
+                      </button>
+                      <button
+                        type="button"
+                        className="aktionen-dropdown-item"
+                        role="menuitem"
+                        onClick={() => {
+                          setIsNewsletterEinstellungenModalOpen(true);
+                          setIsAktionenDropdownOpen(false);
+                        }}
+                      >
+                        <span className="aktionen-dropdown-icon" aria-hidden="true">
+                          ✉️
+                        </span>
+                        Newsletter-Einstellungen
+                      </button>
+                      <button
+                        type="button"
+                        className="aktionen-dropdown-item"
+                        role="menuitem"
+                        onClick={() => {
+                          setIsAnrufEinstellungenModalOpen(true);
+                          setIsAktionenDropdownOpen(false);
+                        }}
+                      >
+                        <span className="aktionen-dropdown-icon" aria-hidden="true">
+                          📞
+                        </span>
+                        Anruf-Einstellungen
+                      </button>
+                    </div>
+                    <div className="aktionen-dropdown-divider" role="separator" />
                     <div className="aktionen-dropdown-section" role="none">
                       <button type="button" className="aktionen-dropdown-item" role="menuitem" onClick={() => setIsAktionenDropdownOpen(false)}>
                         <span className="aktionen-dropdown-icon" aria-hidden="true">📞</span>
@@ -1680,6 +1563,13 @@ const AnfrageSitzlift: React.FC = () => {
               <button className="btn-green">
                 <span className="icon">+</span>
                 <span>Senior hinzufügen</span>
+              </button>
+              <button
+                type="button"
+                className="btn-orange"
+                onClick={() => setCrmMainView('dashboard')}
+              >
+                Schließen
               </button>
               <button className="btn-blue">
                 <span>Freigeben</span>
@@ -2572,7 +2462,7 @@ const AnfrageSitzlift: React.FC = () => {
             className="btn-green"
             onClick={() => setIsWeiterleitenModalOpen(true)}
           >
-            Abschluss-Check
+            Speichern und weiter
           </button>
         </div>
       )}
