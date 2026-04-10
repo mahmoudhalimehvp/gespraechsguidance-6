@@ -342,35 +342,65 @@ const guidanceData: GuidanceSection[] = [
   }
 ];
 
-/** Weiterleiten-Modus: Standard-Abschluss (Anbieter-Kontakt) */
-const ABSCHLUSS_WEITERLEITEN_DEFAULT =
-  'Vielen Dank. Ich werde nun für Sie die Kapazitäten prüfen und Ihnen den Kontakt zu Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Dafür reserviere ich für Sie jetzt die kostenfreien Erstgespräche. Die Anbieter werden sich nun in den nächsten Minuten, spätestens im Laufe des Tages bei Ihnen melden. Bleiben Sie deshalb bitte telefonisch erreichbar, um die nächsten Schritte abzusprechen.';
+/** Eintrag für Weiterleiten-Modal „Abschluss“ (Überschrift + Fließtext) */
+interface AbschlussWeiterleitenVariant {
+  heading: string;
+  body: string;
+}
 
-/** Alternative Abschlüsse, wenn kein passender Anbieter – Demo per Toggle */
-const ABSCHLUSS_TEXT_WARTELISTE = `Ich habe Sie jetzt auf die Warteliste gesetzt.
+/**
+ * Weiterleiten-Modal „Abschluss“: 9 Textvarianten (Demo: ein/mehrere Kapa, WL, Kombi, T&I).
+ * 1 Nur ein Kapa · 2 Mehrere Kapa · 3 Nur ein WL · 4 Mehrere WL · 5 Kapa & WL ·
+ * 6 Kapa & Tools · 7 Warteliste & Tools · 8 Alles mit T&I · 9 Nur T&I
+ */
+const ABSCHLUSS_WEITERLEITEN_VARIANTS: readonly AbschlussWeiterleitenVariant[] = [
+  {
+    heading: 'Nur ein Kapa Produkt',
+    body: `Ich werde nun für Sie die aktuellen Verfügbarkeiten prüfen und Ihnen den Kontakt zu Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Dafür reserviere ich für Sie jetzt die kostenfreien Erstgespräche. Die Anbieter werden sich nun in den nächsten Minuten, spätestens im Laufe des Tages bei Ihnen melden. Bleiben Sie deshalb bitte telefonisch erreichbar, um die nächsten Schritte abzusprechen.`
+  },
+  {
+    heading: 'Mehrere Kapa Produkte',
+    body: `Ich werde nun für Sie die aktuellen Verfügbarkeiten prüfen und Ihnen für Sitzlift den Kontakt zu Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH und für Hausnotruf den Kontakt zu Deutsche Hausnotruf AG und Pflegemittelbox herstellen. Dafür reserviere ich für Sie jetzt die kostenfreien Erstgespräche. Die Anbieter werden sich nun in den nächsten Minuten, spätestens im Laufe des Tages bei Ihnen melden. Bleiben Sie deshalb bitte telefonisch erreichbar, um die nächsten Schritte abzusprechen.`
+  },
+  {
+    heading: 'Nur ein WL Produkt',
+    body: `Für Vollstationäre Pflege haben wir aktuell keine Verfügbarkeiten. Ich frage für Sie deshalb zusätzlich bei weiteren Dienstleistern an. Das sind Kasteler Krankenhaus-Verein, Seniorenzentrum Stockstadt und Pflegehilfe für Senioren. Diese melden sich telefonisch bei Ihnen, insofern sie aktuell freie Verfügbarkeiten haben.`
+  },
+  {
+    heading: 'Mehrere WL Produkte',
+    body: `Für Vollstationäre Pflege & Pflegedienst haben wir aktuell keine Verfügbarkeiten. Ich frage für Sie deshalb zusätzlich bei weiteren Dienstleistern an. Das sind für Vollstationäre Pflege Kasteler Krankenhaus-Verein, Seniorenzentrum Stockstadt und Pflegehilfe für Senioren und für Pflegedienst simCura Wiesbaden Ost, Antara Ambulanter Pflegedienst GmbH und Pflegedienst Gemeinsam GmbH. Diese melden sich telefonisch bei Ihnen, insofern sie aktuell freie Verfügbarkeiten haben.`
+  },
+  {
+    heading: 'Kombi Kapa & WL',
+    body: `Ich werde nun für Sie die aktuellen Verfügbarkeiten prüfen und Ihnen den Kontakt zu Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Dafür reserviere ich für Sie jetzt die kostenfreien Erstgespräche. Die Anbieter werden sich nun in den nächsten Minuten, spätestens im Laufe des Tages bei Ihnen melden. Bleiben Sie deshalb bitte telefonisch erreichbar, um die nächsten Schritte abzusprechen.
 
-Sobald sich bei einem passenden Partner etwas ergibt, meldet sich dieser direkt bei Ihnen.
+Für Vollstationäre Pflege haben wir aktuell keine Verfügbarkeiten. Ich frage für Sie deshalb zusätzlich bei weiteren Dienstleistern an. Das sind Kasteler Krankenhaus-Verein, Seniorenzentrum Stockstadt und Pflegehilfe für Senioren. Diese melden sich telefonisch bei Ihnen, insofern sie aktuell freie Verfügbarkeiten haben.`
+  },
+  {
+    heading: 'Kapa & Tools',
+    body: `Ich werde nun für Sie die aktuellen Verfügbarkeiten prüfen und Ihnen den Kontakt zu Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Dafür reserviere ich für Sie jetzt die kostenfreien Erstgespräche. Die Anbieter werden sich nun in den nächsten Minuten, spätestens im Laufe des Tages bei Ihnen melden. Bleiben Sie deshalb bitte telefonisch erreichbar, um die nächsten Schritte abzusprechen.
 
-Parallel behalten wir Ihre Situation im Blick und unterstützen Sie weiterhin, sobald sich etwas verändert.`;
+Zusätzlich sende ich Ihnen noch passende Infobroschüren zu. Dazu bleiben wir in Kontakt und schauen dann gemeinsam, wie sich Ihre Situation entwickelt und welche nächsten Schritte sinnvoll sind.`
+  },
+  {
+    heading: 'Warteliste & Tools',
+    body: `Für Vollstationäre Pflege haben wir aktuell keine Verfügbarkeiten. Ich frage für Sie deshalb zusätzlich bei weiteren Dienstleistern an. Das sind Kasteler Krankenhaus-Verein, Seniorenzentrum Stockstadt und Pflegehilfe für Senioren. Diese melden sich telefonisch bei Ihnen, insofern sie aktuell freie Verfügbarkeiten haben.
 
-const ABSCHLUSS_TEXT_TOOLS_INFOS = `Ich sende Ihnen im Anschluss passende Informationen und hilfreiche Tools zu.
+Zusätzlich sende ich Ihnen noch passende Infobroschüren zu. Dazu bleiben wir in Kontakt und schauen dann gemeinsam, wie sich Ihre Situation entwickelt und welche nächsten Schritte sinnvoll sind.`
+  },
+  {
+    heading: 'Alles mit T&I',
+    body: `Ich werde nun für Sie die aktuellen Verfügbarkeiten prüfen und Ihnen den Kontakt zu Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Dafür reserviere ich für Sie jetzt die kostenfreien Erstgespräche. Die Anbieter werden sich nun in den nächsten Minuten, spätestens im Laufe des Tages bei Ihnen melden. Bleiben Sie deshalb bitte telefonisch erreichbar, um die nächsten Schritte abzusprechen.
 
-Wir bleiben in Kontakt und schauen gemeinsam, wie sich Ihre Situation entwickelt und welche nächsten Schritte sinnvoll sind.`;
+Für Vollstationäre Pflege haben wir aktuell keine Verfügbarkeiten. Ich frage für Sie deshalb zusätzlich bei weiteren Dienstleistern an. Das sind Kasteler Krankenhaus-Verein, Seniorenzentrum Stockstadt und Pflegehilfe für Senioren. Diese melden sich telefonisch bei Ihnen, insofern sie aktuell freie Verfügbarkeiten haben.
 
-/** Version 2 – alternative Formulierungen (bei Bedarf in der Datei anpassen) */
-const ABSCHLUSS_V2_WEITERLEITEN_DEFAULT = `Vielen Dank. Wir haben in unserem Netzwerk passende Anbieter für das Produkt/die Produkte []. Für Produkt [x] sind das die Anbieter [yz]. Für Produkt [y] sind das die Anbieter [xy].
-
-Ich werde Ihre Kontaktdaten nun einmal an die genannten Anbieter übermitteln. Diese werden sich dann in den nächsten Minuten oder Stunden telefonisch bei Ihnen melden. Deshalb ist wichtig, dass Sie telefonisch erreichbar bleiben.`;
-
-const ABSCHLUSS_V2_TEXT_WARTELISTE = `Sie stehen bei uns auf der Warteliste.
-
-Sobald sich bei einem passenden Partner etwas ergibt, meldet sich dieser direkt bei Ihnen.
-
-Wir behalten Ihre Situation mit im Blick und unterstützen Sie, sobald sich etwas verändert.`;
-
-const ABSCHLUSS_V2_TEXT_TOOLS_INFOS = `Ich schicke Ihnen gleich passende Informationen und hilfreiche Tools zu.
-
-Wir bleiben in Kontakt und klären gemeinsam, wie sich Ihre Situation entwickelt und welche nächsten Schritte für Sie sinnvoll sind.`;
+Zusätzlich sende ich Ihnen noch passende Infobroschüren zu. Dazu bleiben wir in Kontakt und schauen dann gemeinsam, wie sich Ihre Situation entwickelt und welche nächsten Schritte sinnvoll sind.`
+  },
+  {
+    heading: 'Nur T&I',
+    body: `Zusätzlich sende ich Ihnen noch passende Infobroschüren zu. Dazu bleiben wir in Kontakt und schauen dann gemeinsam, wie sich Ihre Situation entwickelt und welche nächsten Schritte sinnvoll sind.`
+  }
+];
 
 const Gespraechsguidance: React.FC<{
   klientDisplayName: string;
@@ -400,7 +430,9 @@ const Gespraechsguidance: React.FC<{
   const weiterleitenModeGroups: GuidanceGroup[] = [
     {
       title: 'Abschluss',
-      items: [ABSCHLUSS_WEITERLEITEN_DEFAULT]
+      items: [
+        `${ABSCHLUSS_WEITERLEITEN_VARIANTS[0].heading}\n\n${ABSCHLUSS_WEITERLEITEN_VARIANTS[0].body}`
+      ]
     },
     {
       title: 'Verabschiedung',
@@ -447,25 +479,8 @@ const Gespraechsguidance: React.FC<{
     vorwandbehandlungIndex >= 0 ? vorwandbehandlungIndex : null
   );
   const [openEntryKey, setOpenEntryKey] = useState<string | null>(null);
-  /** Demo: Textversion Abschluss (1 / 2) */
-  const [abschlussTextVersion, setAbschlussTextVersion] = useState<1 | 2>(1);
-  /** Demo: Fall Standard / Warteliste / Tools */
-  const [demoAbschlussVariant, setDemoAbschlussVariant] = useState<
-    'default' | 'warteliste' | 'tools'
-  >('default');
-
-  const abschlussDemoText =
-    abschlussTextVersion === 1
-      ? {
-          default: ABSCHLUSS_WEITERLEITEN_DEFAULT,
-          warteliste: ABSCHLUSS_TEXT_WARTELISTE,
-          tools: ABSCHLUSS_TEXT_TOOLS_INFOS
-        }
-      : {
-          default: ABSCHLUSS_V2_WEITERLEITEN_DEFAULT,
-          warteliste: ABSCHLUSS_V2_TEXT_WARTELISTE,
-          tools: ABSCHLUSS_V2_TEXT_TOOLS_INFOS
-        };
+  /** Weiterleiten-Modal: gewählte Abschluss-Demo-Variante (0–8 → Anzeige 1–9) */
+  const [abschlussVariantIndex, setAbschlussVariantIndex] = useState(0);
 
   const handleGroupSummaryClick = (index: number) => {
     setOpenGroupIndex((prev) => (prev === index ? null : index));
@@ -517,75 +532,46 @@ const Gespraechsguidance: React.FC<{
                   isWeiterleitenMode && group.title === 'Abschluss' ? (
                     <div className="guidance-collapsible-content">
                       <div
-                        className="guidance-abschluss-demo"
+                        className="guidance-abschluss-demo guidance-abschluss-demo--minimal"
                         role="group"
-                        aria-label="Abschluss Demo: Version und Fall"
+                        aria-label="Abschluss: Demo-Variante"
                       >
                         <div
-                          className="guidance-abschluss-version-compact"
-                          role="group"
-                          aria-label="Textversion"
+                          className="guidance-abschluss-variant-strip"
+                          role="tablist"
+                          aria-label="Textvariante wählen"
                         >
-                          <span className="guidance-abschluss-version-hint">Texte</span>
-                          <div className="guidance-abschluss-version-segment">
+                          {ABSCHLUSS_WEITERLEITEN_VARIANTS.map((v, i) => (
                             <button
+                              key={i}
                               type="button"
+                              role="tab"
+                              aria-selected={abschlussVariantIndex === i}
                               className={
-                                abschlussTextVersion === 1 ? 'is-active' : ''
+                                abschlussVariantIndex === i ? 'is-active' : ''
                               }
-                              onClick={() => setAbschlussTextVersion(1)}
+                              onClick={() => setAbschlussVariantIndex(i)}
+                              title={`${v.heading} (Variante ${i + 1})`}
                             >
-                              V1
+                              {i + 1}
                             </button>
-                            <button
-                              type="button"
-                              className={
-                                abschlussTextVersion === 2 ? 'is-active' : ''
-                              }
-                              onClick={() => setAbschlussTextVersion(2)}
-                            >
-                              V2
-                            </button>
-                          </div>
-                        </div>
-                        <span className="guidance-abschluss-demo-label">Demo</span>
-                        <div className="guidance-abschluss-demo-toggle">
-                          <button
-                            type="button"
-                            className={
-                              demoAbschlussVariant === 'default'
-                                ? 'is-active'
-                                : ''
-                            }
-                            onClick={() => setDemoAbschlussVariant('default')}
-                          >
-                            Standard (Anbieter)
-                          </button>
-                          <button
-                            type="button"
-                            className={
-                              demoAbschlussVariant === 'warteliste'
-                                ? 'is-active'
-                                : ''
-                            }
-                            onClick={() => setDemoAbschlussVariant('warteliste')}
-                          >
-                            Nur Warteliste
-                          </button>
-                          <button
-                            type="button"
-                            className={
-                              demoAbschlussVariant === 'tools' ? 'is-active' : ''
-                            }
-                            onClick={() => setDemoAbschlussVariant('tools')}
-                          >
-                            Tools &amp; Infos
-                          </button>
+                          ))}
                         </div>
                       </div>
                       <div className="guidance-group-items">
-                        <div className="guidance-group-item guidance-group-item-preline">
-                          {abschlussDemoText[demoAbschlussVariant]}
+                        <div className="guidance-abschluss-variant-block">
+                          <div className="guidance-abschluss-variant-heading">
+                            {
+                              ABSCHLUSS_WEITERLEITEN_VARIANTS[abschlussVariantIndex]
+                                .heading
+                            }
+                          </div>
+                          <div className="guidance-group-item guidance-group-item-preline guidance-abschluss-variant-body">
+                            {
+                              ABSCHLUSS_WEITERLEITEN_VARIANTS[abschlussVariantIndex]
+                                .body
+                            }
+                          </div>
                         </div>
                       </div>
                     </div>
