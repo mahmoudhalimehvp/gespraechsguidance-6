@@ -3345,9 +3345,8 @@ button.anbieter-check {
   }
 }
 
-/* Anruf-Einstellungen & Newsletter-Einstellungen Modal (Zweispalter) */
-.anruf-einstellungen-modal .klient-loeschen-row,
-.newsletter-einstellungen-modal .klient-loeschen-row {
+/* Anruf-Einstellungen Modal (Zweispalter) */
+.anruf-einstellungen-modal .klient-loeschen-row {
   grid-template-columns: minmax(200px, 280px) 1fr;
 }
 

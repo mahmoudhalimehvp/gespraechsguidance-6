@@ -681,15 +681,6 @@ const AnfrageSitzlift: React.FC = () => {
   const [klientLoeschenAdminKlientBestaetigt, setKlientLoeschenAdminKlientBestaetigt] = useState(false);
   const [klientLoeschenAdminDuplikatBestaetigt, setKlientLoeschenAdminDuplikatBestaetigt] = useState(false);
   const [isAnrufEinstellungenModalOpen, setIsAnrufEinstellungenModalOpen] = useState(false);
-  const [isNewsletterEinstellungenModalOpen, setIsNewsletterEinstellungenModalOpen] = useState(false);
-  /** Nur Demo/Preview: Ansicht im Newsletter-Modal (Standard / Admin-Abmeldung / Admin-Anmeldung) */
-  const [newsletterDemoModus, setNewsletterDemoModus] = useState<
-    'angemeldet' | 'nicht-angemeldet' | 'admin' | 'admin-anmelden'
-  >('angemeldet');
-  /** Newsletter Admin-Abmeldung: Bestätigung per Checkbox vor Speichern */
-  const [newsletterAdminAbmeldungBestaetigt, setNewsletterAdminAbmeldungBestaetigt] = useState(false);
-  /** Newsletter Admin-Anmeldung (nur Admins): Bestätigung per Checkbox vor Speichern */
-  const [newsletterAdminAnmeldungBestaetigt, setNewsletterAdminAnmeldungBestaetigt] = useState(false);
   /** Nur Demo/Preview: Ansicht im Anruf-Modal (Standard / Admin) */
   const [anrufDemoModus, setAnrufDemoModus] = useState<
     'telefonie-aktiv' | 'abgemeldet' | 'admin' | 'admin-anmelden'
@@ -817,15 +808,6 @@ const AnfrageSitzlift: React.FC = () => {
     if (isAktionenDropdownOpen) document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isAktionenDropdownOpen]);
-
-  useEffect(() => {
-    if (isNewsletterEinstellungenModalOpen && newsletterDemoModus === 'admin') {
-      setNewsletterAdminAbmeldungBestaetigt(false);
-    }
-    if (isNewsletterEinstellungenModalOpen && newsletterDemoModus === 'admin-anmelden') {
-      setNewsletterAdminAnmeldungBestaetigt(false);
-    }
-  }, [isNewsletterEinstellungenModalOpen, newsletterDemoModus]);
 
   useEffect(() => {
     if (isAnrufEinstellungenModalOpen && anrufDemoModus === 'admin') {
@@ -965,18 +947,6 @@ const AnfrageSitzlift: React.FC = () => {
     setPhoneModalData({ type: 'Mobil', number: '', countryCode: '+49' });
     setEditingPhoneId(null);
     setPhoneValidationError('');
-  };
-
-  const handleNewsletterAdminAbmeldungSpeichern = () => {
-    if (!newsletterAdminAbmeldungBestaetigt) return;
-    setNewsletterDemoModus('nicht-angemeldet');
-    setIsNewsletterEinstellungenModalOpen(false);
-  };
-
-  const handleNewsletterAdminNewsletterAnmeldungSpeichern = () => {
-    if (!newsletterAdminAnmeldungBestaetigt) return;
-    setNewsletterDemoModus('angemeldet');
-    setIsNewsletterEinstellungenModalOpen(false);
   };
 
   const handleAnrufEinstellungenSpeichernAdminAbmeldung = () => {
@@ -1119,7 +1089,6 @@ const AnfrageSitzlift: React.FC = () => {
   /** Modals, die die Gesprächshilfen ausgrauen (nicht das „Anfrage abschicken“-/Weiterleiten-Popup) */
   const guidanceSidebarObscuredByOtherModal =
     isKlientLoeschenModalOpen ||
-    isNewsletterEinstellungenModalOpen ||
     isAnrufEinstellungenModalOpen ||
     isPhoneModalOpen;
 
@@ -1483,20 +1452,6 @@ const AnfrageSitzlift: React.FC = () => {
                           🗑️
                         </span>
                         Klient löschen
-                      </button>
-                      <button
-                        type="button"
-                        className="aktionen-dropdown-item"
-                        role="menuitem"
-                        onClick={() => {
-                          setIsNewsletterEinstellungenModalOpen(true);
-                          setIsAktionenDropdownOpen(false);
-                        }}
-                      >
-                        <span className="aktionen-dropdown-icon" aria-hidden="true">
-                          ✉️
-                        </span>
-                        Newsletter-Einstellungen
                       </button>
                       <button
                         type="button"
@@ -2612,143 +2567,6 @@ const AnfrageSitzlift: React.FC = () => {
                 type="button"
                 className="btn-orange klient-loeschen-action-btn"
                 onClick={() => setIsKlientLoeschenModalOpen(false)}
-              >
-                Schließen
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Newsletter-Einstellungen Modal */}
-      {isNewsletterEinstellungenModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsNewsletterEinstellungenModalOpen(false)}>
-          <div className="modal-content klient-loeschen-modal newsletter-einstellungen-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="einstellungen-modal-kopfzeile">
-              <h2 className="klient-loeschen-title einstellungen-modal-title">Newsletter-Einstellungen</h2>
-              <div className="einstellungen-demo-segment" title="Darstellung wechseln (nur Demo)">
-                <span className="einstellungen-demo-toggle-label">Demo</span>
-                <div className="einstellungen-demo-segment-buttons" role="group" aria-label="Demo-Ansicht Newsletter">
-                  <button
-                    type="button"
-                    className={newsletterDemoModus === 'angemeldet' ? 'is-active' : ''}
-                    onClick={() => setNewsletterDemoModus('angemeldet')}
-                  >
-                    angemeldet
-                  </button>
-                  <button
-                    type="button"
-                    className={newsletterDemoModus === 'nicht-angemeldet' ? 'is-active' : ''}
-                    onClick={() => setNewsletterDemoModus('nicht-angemeldet')}
-                  >
-                    nicht angemeldet
-                  </button>
-                  <button
-                    type="button"
-                    className={newsletterDemoModus === 'admin' ? 'is-active' : ''}
-                    onClick={() => setNewsletterDemoModus('admin')}
-                  >
-                    Admin
-                  </button>
-                  <button
-                    type="button"
-                    className={newsletterDemoModus === 'admin-anmelden' ? 'is-active' : ''}
-                    onClick={() => setNewsletterDemoModus('admin-anmelden')}
-                    title="Nur für CRM-Admins: Klient zum Newsletter anmelden"
-                  >
-                    Admin Anmeldung
-                  </button>
-                </div>
-              </div>
-            </div>
-            <p className="einstellungen-status-kopf">
-              {(newsletterDemoModus === 'angemeldet' || newsletterDemoModus === 'admin') && (
-                <>
-                  Der Klient ist aktuell <strong>zum Newsletter angemeldet</strong>.
-                </>
-              )}
-              {(newsletterDemoModus === 'nicht-angemeldet' || newsletterDemoModus === 'admin-anmelden') && (
-                <>
-                  Der Klient ist aktuell <strong>nicht zum Newsletter angemeldet</strong>.
-                </>
-              )}
-            </p>
-
-            {newsletterDemoModus !== 'nicht-angemeldet' && (
-              <div className="klient-loeschen-sections">
-                {(newsletterDemoModus === 'angemeldet' || newsletterDemoModus === 'admin') && (
-                  <div className="klient-loeschen-row">
-                    <div className="klient-loeschen-row-label">Klient möchte vom Newsletter abgemeldet werden:</div>
-                    <div className="klient-loeschen-row-body">
-                      Weise den Klienten darauf hin, dass er sich über den <strong>Abmeldelink im Newsletter</strong> vom
-                      Newsletter abmelden kann. Der Link befindet sich am Ende des Newsletters.
-                    </div>
-                  </div>
-                )}
-                {newsletterDemoModus === 'admin' && (
-                  <div
-                    className="newsletter-admin-abmelden klient-loeschen-admin-block"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <p className="newsletter-admin-abmelden-text">
-                      <strong>Admin:</strong> Fordert der Klient die Abmeldung vom Newsletter?
-                    </p>
-                    <label className="newsletter-wahl-checkbox newsletter-admin-abmelden-checkbox">
-                      <input
-                        type="checkbox"
-                        checked={newsletterAdminAbmeldungBestaetigt}
-                        onChange={(e) => setNewsletterAdminAbmeldungBestaetigt(e.target.checked)}
-                      />
-                      <span>Ich bestätige die Abmeldung des Klienten vom Newsletter.</span>
-                    </label>
-                    <button
-                      type="button"
-                      className="btn-red klient-loeschen-action-btn"
-                      disabled={!newsletterAdminAbmeldungBestaetigt}
-                      onClick={handleNewsletterAdminAbmeldungSpeichern}
-                    >
-                      Speichern
-                    </button>
-                  </div>
-                )}
-                {newsletterDemoModus === 'admin-anmelden' && (
-                  <div
-                    className="newsletter-admin-newsletter-anmeldung klient-loeschen-admin-block"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <p className="newsletter-admin-newsletter-anmeldung-text">
-                      <strong>Admin:</strong> Soll der Klient zum Newsletter angemeldet werden?
-                    </p>
-                    <label className="newsletter-wahl-checkbox newsletter-admin-newsletter-anmeldung-checkbox">
-                      <input
-                        type="checkbox"
-                        checked={newsletterAdminAnmeldungBestaetigt}
-                        onChange={(e) => setNewsletterAdminAnmeldungBestaetigt(e.target.checked)}
-                      />
-                      <span>Ich bestätige die Anmeldung des Klienten zum Newsletter.</span>
-                    </label>
-                    <button
-                      type="button"
-                      className="btn-green klient-loeschen-action-btn"
-                      disabled={!newsletterAdminAnmeldungBestaetigt}
-                      onClick={handleNewsletterAdminNewsletterAnmeldungSpeichern}
-                    >
-                      Speichern
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {newsletterDemoModus !== 'nicht-angemeldet' && (
-              <div className="klient-loeschen-grund-line klient-loeschen-footer-line" aria-hidden="true" />
-            )}
-
-            <div className="klient-loeschen-actions">
-              <button
-                type="button"
-                className="btn-orange klient-loeschen-action-btn"
-                onClick={() => setIsNewsletterEinstellungenModalOpen(false)}
               >
                 Schließen
               </button>
