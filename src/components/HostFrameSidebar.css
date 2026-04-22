@@ -1,0 +1,292 @@
+/* Vollständige Simulation des Twilio-Flex-Panels links (nur Optik) */
+.host-frame {
+  --host-navy: #0a1628;
+  --host-blue: #0055ff;
+  --host-red: #d12d2d;
+  --host-border: #e1e1e1;
+  --host-text: #1a2744;
+  --host-muted: #5c6b7e;
+  /* +5% schmaler (×0,95) */
+  --host-rail: 35px;
+  width: min(261px, 23.74vw);
+  min-width: 175px;
+  max-width: 261px;
+  flex-shrink: 0;
+  align-self: stretch;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-right: 1px solid var(--host-border);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, sans-serif;
+  font-size: 13px;
+  color: var(--host-text);
+  z-index: 1;
+  overflow: hidden;
+}
+
+.host-frame__body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  min-width: 0;
+}
+
+.host-frame__rail {
+  width: var(--host-rail);
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid var(--host-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0 20px;
+  gap: 18px;
+  overflow: hidden;
+}
+
+.host-frame__rail-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  color: #2d3748;
+}
+
+.host-frame__rail-icon svg {
+  width: 21px;
+  height: 21px;
+  display: block;
+}
+
+.host-frame__rail-icon--active {
+  color: var(--host-blue);
+}
+
+.host-frame__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.host-frame__notice {
+  border-top: 3px solid #e85d04;
+  background: #fffaf5;
+  padding: 8px 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #4a4a4a;
+}
+
+.host-frame__notice-icon {
+  flex-shrink: 0;
+  color: #c2410c;
+  margin-top: 1px;
+}
+
+.host-frame__callbar {
+  background: #eceff1;
+  border-bottom: 1px solid var(--host-border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+.host-frame__phone-blue {
+  flex-shrink: 0;
+  color: var(--host-blue);
+  display: flex;
+}
+
+.host-frame__callbar-mid {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.host-frame__num-small {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--host-text);
+}
+
+.host-frame__status {
+  font-size: 11px;
+  color: var(--host-muted);
+}
+
+.host-frame__hang-sm {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--host-red);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  padding: 0;
+}
+
+.host-frame__hang-sm svg {
+  width: 14px;
+  height: 14px;
+  color: #fff;
+}
+
+.host-frame__spacer {
+  flex: 0 0 auto;
+  min-height: 40px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  position: relative;
+}
+
+.host-frame__grip {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 4px;
+  background: #d0d4d8;
+  border-radius: 2px;
+  opacity: 0.85;
+}
+
+.host-frame__status-block {
+  padding: 12px 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.host-frame__klingel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--host-muted);
+  margin-bottom: 2px;
+}
+
+.host-frame__timer {
+  font-size: 20px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--host-text);
+  margin-bottom: 8px;
+}
+
+.host-frame__num-lg {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0d1f4a;
+  margin-bottom: 8px;
+}
+
+.host-frame__tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--host-border);
+  margin: 0 -4px 0 0;
+}
+
+.host-frame__tab {
+  background: none;
+  border: none;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px 8px 0;
+  margin-right: 8px;
+  color: var(--host-muted);
+  cursor: default;
+  position: relative;
+}
+
+.host-frame__tab--active {
+  color: var(--host-blue);
+}
+
+.host-frame__tab--active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 8px;
+  bottom: -1px;
+  height: 2px;
+  background: var(--host-blue);
+}
+
+.host-frame__connecting {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px 10px 20px;
+  overflow: hidden;
+}
+
+.host-frame__connecting-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--host-blue);
+  margin-bottom: 12px;
+}
+
+.host-frame__connecting-ico {
+  color: var(--host-blue);
+  margin-bottom: 12px;
+}
+
+.host-frame__connecting-num {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--host-text);
+  margin-bottom: 8px;
+}
+
+.host-frame__meta {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--host-muted);
+  margin-bottom: 24px;
+  max-width: 100%;
+}
+
+.host-frame__hang-lg {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--host-red);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(209, 45, 45, 0.35);
+}
+
+.host-frame__hang-lg svg {
+  width: 28px;
+  height: 28px;
+  color: #fff;
+}

@@ -1,9 +1,56 @@
-.App {
-  width: 100%;
-  min-height: 100vh;
+:root {
+  /* Gleiche Höhe wie früher .host-frame__top — für Modals/Offsets im CRM */
+  --host-twilio-topbar-height: 48px;
+  /* Breite des simulierten Host-Panels (HostFrameSidebar.css, .host-frame) */
+  --host-sim-chrome-w: min(261px, 23.74vw);
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  padding: 0;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Zeile 1: Twilio-Balken durchgehend | Zeile 2: Host-Panel + CRM */
+.app-layout {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.app-layout__body {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  overflow: hidden;
+}
+
+.app-layout__main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }

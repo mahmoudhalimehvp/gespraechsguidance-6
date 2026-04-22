@@ -5,12 +5,21 @@
 }
 
 .anfrage-container {
-  min-height: 100vh;
+  flex: 1;
+  min-height: 0;
+  max-height: 100%;
   background-color: #f5f5f5;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  --guidance-width: 550px;
+  /* Kompaktere Innenränder + etwas schmalere Spalte → mehr Platz für Formular rechts */
+  --guidance-width: 396px;
+  /* Abstand Kästen ↔ Spaltenrand: gleich links (Gesprächshilfen) und rechts (Hauptinhalt) */
+  --column-edge-pad-y: 16px;
+  --column-edge-pad-x: 10px;
+  /* Top-Nav (Pflegehilfe) — mit vollem Twilio-Balken in App.css */
+  --crm-top-nav-h: 52px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* Top Navigation */
@@ -146,6 +155,7 @@
   min-height: 0;
   width: 100%;
   min-width: 0;
+  overflow: hidden;
 }
 
 .crm-sidebar {
@@ -155,7 +165,7 @@
   color: #e8e8e8;
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 52px);
+  min-height: calc(100vh - var(--host-twilio-topbar-height, 48px) - var(--crm-top-nav-h, 52px));
 }
 
 .crm-sidebar-nav {
@@ -211,39 +221,42 @@
 .crm-main {
   flex: 1;
   min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .crm-main--anfrage {
   flex-direction: row;
   align-items: stretch;
-  min-height: calc(100vh - 52px);
+  overflow: hidden;
 }
 
 .crm-main--dashboard {
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
   background: #e8e8e8;
 }
 
-/* Main Content Wrapper - Gesprächsguidance + Formular */
+/* Main Content Wrapper - Gesprächsguidance + Formular: nur rechter Block scrollt */
 .main-content-wrapper {
   position: relative;
   display: flex;
   flex: 1;
-  align-items: flex-start;
-  min-height: calc(100vh - 52px);
+  align-items: stretch;
+  min-height: 0;
   width: 100%;
   min-width: 0;
-  /* clip statt hidden: verhindert, dass sticky an der Sidebar durch einen Scroll-Container gebrochen wird */
+  overflow: hidden;
   overflow-x: clip;
 }
 
-/* „Speichern und weiter“ / „Anfrage abschicken“ (Weiterleiten): nur den rechten Bereich abdunkeln; Höhe = Viewport (nicht volle Formularhöhe), sonst wandert die Box nach unten */
+/* „Speichern und weiter“ / „Anfrage abschicken“ (Weiterleiten): nur den rechten Formularbereich abdunkeln — nicht Host-Panel, nicht Gesprächshilfen */
 .main-content-modal-overlay {
   position: fixed;
-  top: 52px;
-  left: var(--guidance-width, 550px);
+  top: calc(var(--host-twilio-topbar-height, 48px) + var(--crm-top-nav-h, 52px));
+  left: calc(var(--host-sim-chrome-w, 0px) + var(--guidance-width, 396px));
   right: 0;
   bottom: 0;
   z-index: 2100;
@@ -257,28 +270,28 @@
 }
 
 .main-content-modal-overlay .weiterleiten-modal {
-  max-height: calc(100vh - 52px - 40px);
+  max-height: calc(100vh - var(--host-twilio-topbar-height, 48px) - var(--crm-top-nav-h, 52px) - 40px);
   overflow-y: auto;
   flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
+  /* Gesprächshilfen aus; Overlay nur über Hauptinhalt, nicht über Host-Chrome */
   .main-content-modal-overlay {
-    left: 0;
+    left: var(--host-sim-chrome-w, 0px);
   }
 }
 
-/* Gesprächsguidance Sidebar – bleibt beim Seiten-Scroll unter der Top-Nav sichtbar */
+/* Gesprächsguidance: feste Spalte (kein Mitscrollen der Seite); nur ggf. interner Scroll bei langen Texten */
 .guidance-sidebar {
-  position: sticky;
-  top: 52px;
-  width: var(--guidance-width, 550px);
+  position: relative;
+  width: var(--guidance-width, 396px);
   background-color: #f8f9fa;
   border-right: 1px solid #e0e0e0;
   flex-shrink: 0;
-  padding: 24px;
-  align-self: flex-start;
-  max-height: calc(100vh - 52px);
+  padding: var(--column-edge-pad-y) var(--column-edge-pad-x);
+  align-self: stretch;
+  min-height: 0;
   overflow-y: auto;
   z-index: 1;
   -webkit-overflow-scrolling: touch;
@@ -286,11 +299,10 @@
 
 /* Gesprächshilfen: Platzhalter-Spalte wenn ein anderes Modal den Inhalt verdeckt */
 .guidance-sidebar--obscured {
-  position: sticky;
-  top: 52px;
-  align-self: flex-start;
-  max-height: calc(100vh - 52px);
+  position: relative;
+  align-self: stretch;
   min-height: 200px;
+  min-width: 0;
   background: #e4e7eb;
   border-right: 1px solid #d1d5db;
   padding: 0;
@@ -304,7 +316,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 18px;
-  padding: 10px 14px;
+  padding: 8px 10px;
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
@@ -327,8 +339,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
   border-bottom: 2px solid #4caf50;
 }
 
@@ -346,13 +358,13 @@
 .guidance-content {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .guidance-section-block {
   border: 1px solid #e5e5e5;
   border-radius: 8px;
-  padding: 8px;
+  padding: 6px;
   background-color: #fff;
 }
 
@@ -364,8 +376,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 12px;
-  padding: 8px 12px;
+  margin-bottom: 10px;
+  padding: 6px 8px;
   background-color: #e8f5e9;
   border-radius: 6px;
 }
@@ -384,14 +396,14 @@
 .guidance-tips {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .guidance-tip {
   background-color: white;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 14px 16px;
+  padding: 10px 10px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.2s ease;
 }
@@ -404,8 +416,8 @@
   font-size: 15px;
   font-weight: 600;
   color: #1565c0;
-  margin-bottom: 8px;
-  padding-bottom: 8px;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
   border-bottom: 1px solid #e3f2fd;
   line-height: 1.4;
 }
@@ -429,8 +441,8 @@
 
 /* Demo: alternative Abschluss-Texte (Weiterleiten) */
 .guidance-abschluss-demo {
-  margin-bottom: 10px;
-  padding: 8px 10px;
+  margin-bottom: 8px;
+  padding: 6px 8px;
   background: #f0f7ff;
   border: 1px solid #bbdefb;
   border-radius: 8px;
@@ -605,7 +617,7 @@
 }
 
 .guidance-entry-collapsible summary.guidance-entry-summary {
-  padding: 8px 12px;
+  padding: 6px 8px;
   font-size: 14px;
   font-weight: 500;
   color: #1f2937;
@@ -628,7 +640,7 @@
 }
 
 .guidance-entry-collapsible .guidance-group-entry-text {
-  padding: 12px 14px 14px;
+  padding: 8px 8px 10px;
   font-size: 14px;
   line-height: 1.7;
   color: #1f2937;
@@ -677,7 +689,7 @@
   color: #666;
   margin-top: 6px;
   margin-bottom: 6px;
-  padding-left: 12px;
+  padding-left: 8px;
   border-left: 2px solid #e0e0e0;
 }
 
@@ -691,7 +703,7 @@
   line-height: 1.5;
   color: #666;
   margin-top: 8px;
-  padding: 8px;
+  padding: 6px 8px;
   background-color: #fff9e6;
   border-radius: 4px;
   border-left: 3px solid #ffc107;
@@ -708,8 +720,11 @@
 /* Main Content */
 .main-content {
   flex: 1;
-  padding: 24px;
+  padding: var(--column-edge-pad-y) var(--column-edge-pad-x);
   min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background-color: white;
   margin: 0;
 }
@@ -718,8 +733,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
   border-bottom: 2px solid #e0e0e0;
 }
 
@@ -738,8 +753,8 @@
   background-color: #e8f5e9;
   border: 1px solid #4caf50;
   border-radius: 6px;
-  padding: 10px 14px;
-  margin-bottom: 20px;
+  padding: 8px 10px;
+  margin-bottom: 12px;
   color: #2e7d32;
   font-size: 14px;
   font-weight: 500;
@@ -915,8 +930,8 @@
   background-color: white;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 20px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.2s ease;
 }
@@ -929,15 +944,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 14px;
-  padding-bottom: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
   border-bottom: 2px solid;
 }
 
 .section-header.green {
   background-color: #e8f5e9;
-  padding: 10px 14px;
-  margin: -16px -16px 14px -16px;
+  padding: 8px 10px;
+  margin: -10px -12px 10px -12px;
   border-radius: 8px 8px 0 0;
   border-bottom: 2px solid #4caf50;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -967,7 +982,7 @@
 .form-grid {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .klient-section .form-grid {
@@ -977,8 +992,8 @@
 .form-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-  padding: 2px 0;
+  gap: 8px;
+  padding: 0;
 }
 
 .form-row.three-columns {
@@ -1049,8 +1064,8 @@
   display: grid;
   grid-template-columns: 320px 500px 320px;
   grid-template-rows: auto auto;
-  row-gap: 16px;
-  column-gap: 8px;
+  row-gap: 12px;
+  column-gap: 6px;
   align-items: start;
   padding: 0;
 }
@@ -1097,7 +1112,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
-  margin-left: 12px;
+  margin-left: 6px;
 }
 
 .klient-persoenlich-container .form-group.klient-comment-field label {
@@ -1137,7 +1152,7 @@
   grid-template-columns: 320px 500px 320px;
   grid-template-rows: auto auto;
   row-gap: 6px;
-  column-gap: 8px;
+  column-gap: 6px;
   align-items: start;
   padding: 0;
 }
@@ -1602,14 +1617,14 @@
 .tools-section h3 {
   font-size: 16px;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
   color: #333;
 }
 
 .tools-buttons {
   display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .tool-btn {
@@ -1667,13 +1682,13 @@
 
 /* Produktauswahl – Reiter für Produkte */
 .produktauswahl-section {
-  margin-top: 16px;
-  margin-bottom: 20px;
+  margin-top: 10px;
+  margin-bottom: 12px;
 }
 
 /* Produktreiter: klassische Reiter-Optik (Tab-Leiste + Inhalt) */
 .produkt-reiter-container {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   border: 1px solid #bbb;
   border-radius: 6px;
   overflow: hidden;
@@ -1687,7 +1702,7 @@
   align-items: stretch;
   gap: 0;
   min-height: 44px;
-  padding: 8px 12px 0;
+  padding: 6px 8px 0;
   background-color: #e8e8e8;
   border-bottom: 2px solid #bbb;
   position: relative;
@@ -1701,7 +1716,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 8px 12px;
   margin: 0 2px 0 0;
   background-color: #d0d0d0;
   color: #444;
@@ -1840,7 +1855,7 @@
 }
 
 .produkt-inhalt-label {
-  padding: 12px 16px 8px;
+  padding: 8px 12px 6px;
   font-size: 13px;
   font-weight: 600;
   color: #1565c0;
@@ -1857,7 +1872,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .produkt-tab {
@@ -1907,7 +1922,7 @@
 
 .produkt-tab-content {
   min-height: 80px;
-  padding: 16px;
+  padding: 12px;
   background-color: #f9f9f9;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
@@ -1917,7 +1932,7 @@
   border: none;
   border-radius: 0;
   margin: 0;
-  padding: 16px;
+  padding: 12px;
   border-radius: 0;
 }
 
@@ -1929,8 +1944,8 @@
 .reiter-unter-plz {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 16px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .reiter-unter-plz-header {
@@ -1938,7 +1953,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 12px 16px;
+  padding: 10px 12px;
   background-color: #e8e8e8;
   color: #333;
   border: 1px solid #ddd;
@@ -1975,8 +1990,8 @@
 .accordion-section {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 16px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .accordion-item {
@@ -1989,7 +2004,7 @@
 }
 
 .accordion-content {
-  padding: 12px 16px;
+  padding: 10px 12px;
   background-color: #f9f9f9;
   border: 1px solid #e0e0e0;
   border-top: none;
@@ -2006,12 +2021,12 @@
 }
 
 .produktkriterien-content .produktkriterien-cards {
-  padding: 12px 0 0;
+  padding: 8px 0 0;
 }
 
 /* Produktkriterien: graue Überschrift wie „Informationen“, alle Kriterien fix darunter */
 .produktkriterien-section {
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 .produktkriterien-header {
@@ -2253,8 +2268,8 @@
 }
 
 .produkt-inhalt-bereich .produkt-tab-content .bottom-actions {
-  margin-top: 20px;
-  padding-top: 20px;
+  margin-top: 12px;
+  padding-top: 12px;
 }
 
 .produkt-tab-placeholder {
@@ -2273,7 +2288,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px;
+  padding: 8px 10px;
   background-color: #f9f9f9;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
@@ -2299,8 +2314,8 @@
 
 .floating-save-box {
   position: fixed;
-  right: 24px;
-  bottom: 24px;
+  right: 14px;
+  bottom: 14px;
   z-index: 1500;
   display: flex;
   flex-direction: column;
@@ -2355,35 +2370,38 @@
 /* Responsive Design */
 @media (max-width: 1400px) {
   .anfrage-container {
-    --guidance-width: 480px;
+    --guidance-width: 340px;
+    --column-edge-pad-y: 14px;
+    --column-edge-pad-x: 10px;
   }
   .guidance-sidebar {
-    width: 480px;
-    padding: 20px;
+    width: 340px;
   }
 }
 
 @media (max-width: 1200px) {
   .anfrage-container {
-    --guidance-width: 400px;
+    --guidance-width: 280px;
+    --column-edge-pad-y: 12px;
+    --column-edge-pad-x: 8px;
   }
   .guidance-sidebar {
-    width: 400px;
-    padding: 16px;
+    width: 280px;
   }
 }
 
 @media (max-width: 968px) {
   .anfrage-container {
-    --guidance-width: 350px;
+    --guidance-width: 240px;
+    --column-edge-pad-y: 10px;
+    --column-edge-pad-x: 6px;
   }
   .guidance-sidebar {
-    width: 350px;
-    padding: 14px;
+    width: 240px;
   }
   
   .guidance-tip {
-    padding: 10px;
+    padding: 8px 6px;
   }
   .floating-save-box {
     width: 210px;

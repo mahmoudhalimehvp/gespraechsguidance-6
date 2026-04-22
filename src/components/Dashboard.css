@@ -1,7 +1,7 @@
 .dashboard-page {
   padding: 20px 24px 32px;
   background: #e8e8e8;
-  min-height: calc(100vh - 52px);
+  min-height: calc(100vh - var(--host-twilio-topbar-height, 48px) - 52px);
   box-sizing: border-box;
 }
 
