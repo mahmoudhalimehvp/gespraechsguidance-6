@@ -214,9 +214,9 @@ const guidanceData: GuidanceSection[] = [
       {
         title: 'Bedarfsermittlung',
         items: [
-          'Wie sieht denn die Pflegesituation aktuell bei Ihnen aus?',
-          'Welcher Pflegegrad liegt aktuell vor und gab es zuletzt eine Veränderung?',
-          'Welche Sturzgefahren gibt es aktuell im Wohnbereich, die den Alltag erschweren?'
+          'Wie sieht denn die **Pflegesituation** aktuell bei Ihnen aus?',
+          'Welcher **Pflegegrad** liegt aktuell vor und gab es zuletzt eine **Veränderung**?',
+          'Welche **Sturzgefahren** gibt es aktuell im Wohnbereich, die den Alltag erschweren?'
         ]
       },
       {
@@ -225,19 +225,19 @@ const guidanceData: GuidanceSection[] = [
         entries: [
           {
             title: 'Hat sich erledigt',
-            text: 'Das freut mich zu hören. Welche Lösung haben Sie denn gefunden? Haben Sie sich passende Vergleichsangebote einholen können?'
+            text: 'Das freut mich zu hören. Welche **Lösung** haben Sie denn gefunden? Haben Sie sich **passende Vergleichsangebote** einholen können?'
           },
           {
             title: 'Keine Zeit',
-            text: 'Da verstehe ich Sie. Ich möchte nur sichergehen, dass die pflegerische Versorgung bestmöglich sichergestellt ist. Wie ist denn die aktuelle Versorgung gewährleistet?'
+            text: 'Da verstehe ich Sie. Ich möchte nur sichergehen, dass die **pflegerische Versorgung** bestmöglich sichergestellt ist. Wie ist denn die **aktuelle Versorgung** gewährleistet?'
           },
           {
             title: 'Keine Erinnerung',
-            text: 'Wir sind eine kostenfreie Pflegeberatung. Wir helfen Ihnen, die pflegerische Versorgung sicherzustellen. Wie sieht denn die Pflegesituation aktuell aus?'
+            text: 'Wir sind eine **kostenfreie Pflegeberatung**. Wir helfen Ihnen, die **pflegerische Versorgung** sicherzustellen. Wie sieht denn die **Pflegesituation** aktuell aus?'
           },
           {
             title: 'Kein Interesse',
-            text: 'Danke für Ihre Offenheit. Wir haben die Erfahrung gemacht, dass viele unserer Klienten nicht wissen, was Ihnen mit einem Pflegegrad alles zusteht. Welche Unterstützungsleistungen nutzen Sie bereits?'
+            text: 'Danke für Ihre Offenheit. Wir haben die Erfahrung gemacht, dass viele unserer Klienten nicht wissen, was Ihnen mit einem **Pflegegrad** alles zusteht. Welche **Unterstützungsleistungen** nutzen Sie bereits?'
           }
         ]
       }
@@ -254,19 +254,19 @@ const guidanceData: GuidanceSection[] = [
         entries: [
           {
             title: 'Hat sich erledigt',
-            text: 'Das freut mich zu hören. Welche Lösung haben Sie denn gefunden? Haben Sie sich passende Vergleichsangebote einholen können?'
+            text: 'Das freut mich zu hören. Welche **Lösung** haben Sie denn gefunden? Haben Sie sich **passende Vergleichsangebote** einholen können?'
           },
           {
             title: 'Keine Zeit',
-            text: 'Da verstehe ich Sie. Ich möchte nur sichergehen, dass die pflegerische Versorgung bestmöglich sichergestellt ist. Wie ist denn die aktuelle Versorgung gewährleistet?'
+            text: 'Da verstehe ich Sie. Ich möchte nur sichergehen, dass die **pflegerische Versorgung** bestmöglich sichergestellt ist. Wie ist denn die **aktuelle Versorgung** gewährleistet?'
           },
           {
             title: 'Keine Erinnerung',
-            text: 'Wir sind eine kostenfreie Pflegeberatung. Wir helfen Ihnen, die pflegerische Versorgung sicherzustellen. Wie sieht denn die Pflegesituation aktuell aus?'
+            text: 'Wir sind eine **kostenfreie Pflegeberatung**. Wir helfen Ihnen, die **pflegerische Versorgung** sicherzustellen. Wie sieht denn die **Pflegesituation** aktuell aus?'
           },
           {
             title: 'Kein Interesse',
-            text: 'Danke für Ihre Offenheit. Wir haben die Erfahrung gemacht, dass viele unserer Klienten nicht wissen, was Ihnen mit einem Pflegegrad alles zusteht. Welche Unterstützungsleistungen nutzen Sie bereits?'
+            text: 'Danke für Ihre Offenheit. Wir haben die Erfahrung gemacht, dass viele unserer Klienten nicht wissen, was Ihnen mit einem **Pflegegrad** alles zusteht. Welche **Unterstützungsleistungen** nutzen Sie bereits?'
           }
         ]
       },
@@ -275,23 +275,23 @@ const guidanceData: GuidanceSection[] = [
         entries: [
           {
             title: 'Zu teuer',
-            text: 'Das verstehe ich gut. Die Kosten sind für viele ein wichtiger Punkt. Genau deshalb ist es sinnvoll, die Zuschüsse der Pflegekasse zu nutzen und mehrere unverbindliche Angebote zu vergleichen, damit Sie eine bezahlbare Lösung finden. Was halten Sie davon, erst einmal kostenfrei Angebote einzuholen und in Ruhe zu vergleichen?'
+            text: 'Das verstehe ich gut. Die **Kosten** sind für viele ein wichtiger Punkt. Genau deshalb ist es sinnvoll, die **Zuschüsse der Pflegekasse** zu nutzen und mehrere **unverbindliche Angebote** zu vergleichen, damit Sie eine **bezahlbare Lösung** finden. Was halten Sie davon, erst einmal kostenfrei Angebote einzuholen und in Ruhe zu vergleichen?'
           },
           {
             title: 'Zu früh',
-            text: 'Das kann ich gut nachvollziehen. Das sagen viele, solange noch alles einigermaßen gut läuft. Genau deshalb ist Vorsorge so wichtig. Denn falls plötzlich etwas passiert, hat man oft keine Zeit mehr, um in Ruhe zu vergleichen. Deswegen wäre jetzt das Einholen von Angeboten für eine gute Vorsorge wichtig. Was halten Sie davon?'
+            text: 'Das kann ich gut nachvollziehen. Das sagen viele, solange noch alles einigermaßen gut läuft. Genau deshalb ist **Vorsorge** so wichtig. Denn falls plötzlich etwas passiert, hat man oft keine Zeit mehr, um in Ruhe zu vergleichen. Deswegen wäre jetzt das **Einholen von Angeboten** für eine gute Vorsorge wichtig. Was halten Sie davon?'
           },
           {
             title: 'Zeit zum Nachdenken',
-            text: 'Das ist absolut verständlich. Niemand möchte vorschnell wichtige Entscheidungen treffen. Genau deshalb geht es heute ja nicht um eine finale Entscheidung, sondern erst einmal um unverbindliche Angebote, die Ihnen die Möglichkeit für eine gute Entscheidung geben. Was halten Sie davon?'
+            text: 'Das ist absolut verständlich. Niemand möchte vorschnell wichtige **Entscheidungen** treffen. Genau deshalb geht es heute ja nicht um eine **finale Entscheidung**, sondern erst einmal um **unverbindliche Angebote**, die Ihnen die Möglichkeit für eine gute Entscheidung geben. Was halten Sie davon?'
           },
           {
             title: 'Senior möchte nicht',
-            text: 'Das kann ich gut verstehen, das erleben wir sehr häufig. Genau deshalb ist es hilfreich, erst einmal unverbindliche Angebote und fachliche Beratung einzuholen, damit Sie die richtigen Argumente an der Hand haben, um die betroffene Person zu überzeugen. Glauben Sie auch, dass zusätzliche Informationen und Vergleichsangebote von Experten dabei helfen könnten?'
+            text: 'Das kann ich gut verstehen, das erleben wir sehr häufig. Genau deshalb ist es hilfreich, erst einmal **unverbindliche Angebote** und **fachliche Beratung** einzuholen, damit Sie die richtigen **Argumente** an der Hand haben, um die betroffene Person zu überzeugen. Glauben Sie auch, dass zusätzliche **Informationen** und **Vergleichsangebote** von Experten dabei helfen könnten?'
           },
           {
             title: 'Lokaler Anbieter',
-            text: 'Das verstehe ich gut. Der Wunsch nach einer lokalen Lösung ist völlig nachvollziehbar. Gerade deshalb fragen wir nach Ihrer Postleitzahl, damit wir ermitteln können, ob ein anderer Dienstleister in Ihrer Region Ihnen vielleicht bessere Konditionen oder mehr Leistungen bieten kann. Was halten Sie davon, erst einmal kostenfrei zu vergleichen und danach ganz in Ruhe zu entscheiden, welcher Anbieter für Sie wirklich der richtige ist?'
+            text: 'Das verstehe ich gut. Der Wunsch nach einer **lokalen Lösung** ist völlig nachvollziehbar. Gerade deshalb fragen wir nach Ihrer **Postleitzahl**, damit wir ermitteln können, ob ein anderer **Dienstleister** in Ihrer Region Ihnen vielleicht **bessere Konditionen** oder mehr **Leistungen** bieten kann. Was halten Sie davon, erst einmal kostenfrei zu vergleichen und danach ganz in Ruhe zu entscheiden, welcher Anbieter für Sie wirklich der richtige ist?'
           }
         ]
       },
@@ -300,42 +300,42 @@ const guidanceData: GuidanceSection[] = [
         entries: [
           {
             title: 'Einstieg',
-            text: '[Anrede] [Nachname], wir haben die Erfahrung gemacht, dass viele unserer Klienten nicht wissen, welche Unterstützung Ihnen mit einem Pflegegrad zusteht und welche Möglichkeiten sich dafür eröffnen. Lassen Sie uns hierfür noch kurz Zeit nehmen.'
+            text: '[Anrede] [Nachname], wir haben die Erfahrung gemacht, dass viele unserer Klienten nicht wissen, welche **Unterstützung** Ihnen mit einem **Pflegegrad** zusteht und welche **Möglichkeiten** sich dafür eröffnen. Lassen Sie uns hierfür noch kurz Zeit nehmen.'
           },
           {
             title: '24h-Betreuung, Std. Betreuung & Pflegedienst',
-            text: 'Über den Pflegegrad erhalten Sie finanzielle Unterstützung, um die Pflege & Betreuung sicher zu stellen. Nutzen Sie hierfür bereits alle Möglichkeiten?'
+            text: 'Über den **Pflegegrad** erhalten Sie **finanzielle Unterstützung**, um die **Pflege & Betreuung** sicher zu stellen. Nutzen Sie hierfür bereits alle **Möglichkeiten**?'
           },
           {
             title: 'Sitzlift & Badewanne zu Dusche',
-            text: 'Nutzen Sie schon die 4.180 €, die es Ihnen ermöglichen, Ihr Zuhause barrierefrei zu gestalten, entweder durch einen Treppenlift oder ein barrierefreies Bad?'
+            text: 'Nutzen Sie schon die **4.180 €**, die es Ihnen ermöglichen, Ihr Zuhause **barrierefrei** zu gestalten, entweder durch einen **Treppenlift** oder ein **barrierefreies Bad**?'
           },
           {
             title: 'Hausnotruf',
-            text: 'Haben Sie bereits den kostenlosen Hausnotruf, der die Sicherheit in den eigenen vier Wänden sicherstellt?'
+            text: 'Haben Sie bereits den **kostenlosen Hausnotruf**, der die **Sicherheit** in den eigenen vier Wänden sicherstellt?'
           },
           {
             title: 'Haushaltshilfe',
-            text: 'Erhalten Sie bereits hauswirtschaftliche Unterstützung, die Sie durch den Entlastungsbetrag in Höhe von 131€ im Monat kostenfrei erhalten?'
+            text: 'Erhalten Sie bereits **hauswirtschaftliche Unterstützung**, die Sie durch den **Entlastungsbetrag** in Höhe von **131€ im Monat** kostenfrei erhalten?'
           },
           {
             title: 'Pflegehilfsmittel',
-            text: 'Beziehen Sie schon die kostenfreien Pflegehilfsmittel, wie Bettschutzeinlagen, Einmalhandschuhe oder Desinfektionsmittel?'
+            text: 'Beziehen Sie schon die **kostenfreien Pflegehilfsmittel**, wie **Bettschutzeinlagen**, **Einmalhandschuhe** oder **Desinfektionsmittel**?'
           },
           {
             title: 'Hörtest',
-            text: 'Wann war denn die letzte Hörvorsorge? Bekannterweise ist es wichtig, ein gesundes Hörvermögen zu haben, um Demenz und Sturzgefahren vorzubeugen.'
+            text: 'Wann war denn die letzte **Hörvorsorge**? Bekannterweise ist es wichtig, ein gesundes **Hörvermögen** zu haben, um **Demenz** und **Sturzgefahren** vorzubeugen.'
           },
           {
             title: 'Elektromobil',
-            text: 'Wissen Sie bereits, dass Sie mit einem Rezept kostenlos ein Elektromobil erhalten?'
+            text: 'Wissen Sie bereits, dass Sie mit einem **Rezept** kostenlos ein **Elektromobil** erhalten?'
           }
         ]
       },
       {
         title: 'Abschluss',
         items: [
-          'Vielen Dank. Dann haben wir nun alle wichtigen Informationen zusammen, damit ich Ihnen die passenden Ansprechpartner an die Hand geben kann.'
+          'Vielen Dank. Dann haben wir nun **alle wichtigen Informationen** zusammen, damit ich Ihnen die passenden **Ansprechpartner** an die Hand geben kann.'
         ]
       }
     ]
@@ -402,6 +402,34 @@ Zusätzlich sende ich Ihnen noch passende Infobroschüren zu. Dazu bleiben wir i
   }
 ];
 
+/** Wandelt **Fett** in hervorgehobenen Text um (Platzhalter davor per replaceKlientPlaceholders ersetzen). */
+function renderGuidanceEmphasisText(text: string): React.ReactNode {
+  if (text.length === 0) return null;
+  if (!text.includes('**')) {
+    return text;
+  }
+  const parts: React.ReactNode[] = [];
+  const re = /\*\*(.+?)\*\*/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  let key = 0;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) {
+      parts.push(text.slice(last, m.index));
+    }
+    parts.push(
+      <strong className="guidance-em" key={key++}>
+        {m[1]}
+      </strong>
+    );
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) {
+    parts.push(text.slice(last));
+  }
+  return <>{parts}</>;
+}
+
 const Gespraechsguidance: React.FC<{
   klientDisplayName: string;
   klientAnrede: string;
@@ -416,12 +444,11 @@ const Gespraechsguidance: React.FC<{
   isWeiterleitenMode,
   obscured = false
 }) => {
+  /* Ohne „Bedarfsermittlung“ und „Abschluss“ in der normalen Ansicht; „Abschluss“ nur bei offenem Weiterleiten-Modal (isWeiterleitenMode) */
   const groupOrder = [
     'Vorwandbehandlung',
-    'Bedarfsermittlung',
     'Einwandbehandlung',
     'Cross-Selling',
-    'Abschluss'
   ];
   const allGroups = guidanceData.flatMap((section) => section.groups ?? []);
   const defaultVisibleGroups = groupOrder
@@ -437,7 +464,7 @@ const Gespraechsguidance: React.FC<{
     {
       title: 'Verabschiedung',
       items: [
-        'Sie bekommen jetzt noch eine E-Mail von mir, da steht alles Wichtige auch noch einmal drin. Wenn noch etwas sein sollte, melden Sie sich gerne. Ansonsten werden wir sie in zwei Wochen noch einmal anrufen und Fragen, ob die Unterstützung hilfreich war.'
+        'Sie bekommen jetzt noch eine **E-Mail** von mir, da steht **alles Wichtige** auch noch einmal drin. Wenn noch etwas sein sollte, melden Sie sich gerne. Ansonsten werden wir sie in **zwei Wochen** noch einmal anrufen und fragen, ob die **Unterstützung** hilfreich war.'
       ]
     },
     {
@@ -445,23 +472,23 @@ const Gespraechsguidance: React.FC<{
       entries: [
         {
           title: 'Zu viele Anrufe',
-          text: 'Da verstehe ich Sie vollkommen. Mal abgesehen davon, dass Sie heute etwas Zeit und Aufwand investieren, hätten Sie auf lange Sicht viel Zeit und Aufwand gespart und sichergestellt, dass Sie auch wirklich die beste Lösung haben. Was halten Sie davon?'
+          text: 'Da verstehe ich Sie vollkommen. Mal abgesehen davon, dass Sie heute etwas **Zeit** und **Aufwand** investieren, hätten Sie auf lange Sicht viel **Zeit** und **Aufwand** gespart und sichergestellt, dass Sie auch wirklich die **beste Lösung** haben. Was halten Sie davon?'
         },
         {
           title: 'Nur ein Anbieter',
-          text: 'Das kann ich verstehen. Damit Sie eine gute Entscheidung treffen und vor allem die verschiedenen Dienstleistungen und Preise miteinander vergleichen können, lohnt sich der Vergleich von verschiedenen Anbietern. Was halten Sie davon?'
+          text: 'Das kann ich verstehen. Damit Sie eine gute **Entscheidung** treffen und vor allem die verschiedenen **Dienstleistungen** und **Preise** miteinander vergleichen können, lohnt sich der **Vergleich** von verschiedenen **Anbietern**. Was halten Sie davon?'
         },
         {
           title: 'Zeit zum Nachdenken',
-          text: 'Das ist absolut verständlich. Niemand möchte vorschnell wichtige Entscheidungen treffen. Genau deshalb geht es heute ja nicht um eine finale Entscheidung, sondern erst einmal um unverbindliche Angebote, die Ihnen die Möglichkeit für eine gute Entscheidung geben. Was halten Sie davon?'
+          text: 'Das ist absolut verständlich. Niemand möchte vorschnell wichtige **Entscheidungen** treffen. Genau deshalb geht es heute ja nicht um eine **finale Entscheidung**, sondern erst einmal um **unverbindliche Angebote**, die Ihnen die Möglichkeit für eine gute **Entscheidung** geben. Was halten Sie davon?'
         },
         {
           title: 'Nur regionale Anbieter',
-          text: 'Das verstehe ich gut. Der Wunsch nach einer lokalen Lösung ist völlig nachvollziehbar. Gerade deshalb fragen wir nach Ihrer Postleitzahl, damit wir ermitteln können, ob ein anderer Dienstleister in Ihrer Region Ihnen vielleicht bessere Konditionen oder mehr Leistungen bieten kann. Was halten Sie davon, erst einmal kostenfrei zu vergleichen und danach ganz in Ruhe zu entscheiden, welcher Anbieter für Sie wirklich der richtige ist?'
+          text: 'Das verstehe ich gut. Der Wunsch nach einer **lokalen Lösung** ist völlig nachvollziehbar. Gerade deshalb fragen wir nach Ihrer **Postleitzahl**, damit wir ermitteln können, ob ein anderer **Dienstleister** in Ihrer Region Ihnen vielleicht **bessere Konditionen** oder mehr **Leistungen** bieten kann. Was halten Sie davon, erst einmal kostenfrei zu vergleichen und danach ganz in Ruhe zu entscheiden, welcher Anbieter für Sie wirklich der richtige ist?'
         },
         {
           title: 'Will selbst anrufen',
-          text: 'Das kann ich verstehen. Gerne behält man in Ihrer Situation selbst die Kontrolle. Genau deshalb suchen unsere Partner den direkten Kontakt zu Ihnen, weil es in der Pflege häufig schnell gehen muss und die Verfügbarkeiten sich unmittelbar ändern können. So stellen wir eine schnelle Versorgung sicher. Wie klingt das für Sie?'
+          text: 'Das kann ich verstehen. Gerne behält man in Ihrer Situation selbst die **Kontrolle**. Genau deshalb suchen unsere **Partner** den **direkten Kontakt** zu Ihnen, weil es in der **Pflege** häufig schnell gehen muss und die **Verfügbarkeiten** sich unmittelbar ändern können. So stellen wir eine **schnelle Versorgung** sicher. Wie klingt das für Sie?'
         }
       ]
     }
@@ -474,10 +501,32 @@ const Gespraechsguidance: React.FC<{
       .replace(/[ \t]+/g, ' ')
       .trim();
 
-  const vorwandbehandlungIndex = visibleGroups.findIndex((g) => g.title === 'Vorwandbehandlung');
-  const [openGroupIndex, setOpenGroupIndex] = useState<number | null>(
-    vorwandbehandlungIndex >= 0 ? vorwandbehandlungIndex : null
-  );
+  const formatGuidanceText = (raw: string): React.ReactNode => {
+    const t = replaceKlientPlaceholders(raw);
+    if (!t) return null;
+    return renderGuidanceEmphasisText(t);
+  };
+
+  const [openGroupIndex, setOpenGroupIndex] = useState<number | null>(() => {
+    if (isWeiterleitenMode) {
+      return weiterleitenModeGroups.length > 0 ? 0 : null;
+    }
+    if (defaultVisibleGroups.length === 0) return null;
+    const vIdx = defaultVisibleGroups.findIndex(
+      (g) => g.title === 'Vorwandbehandlung'
+    );
+    return vIdx >= 0 ? vIdx : 0;
+  });
+  const prevWeiterleitenRef = useRef(isWeiterleitenMode);
+  useEffect(() => {
+    if (prevWeiterleitenRef.current && !isWeiterleitenMode) {
+      const vIdx = defaultVisibleGroups.findIndex(
+        (g) => g.title === 'Vorwandbehandlung'
+      );
+      if (vIdx >= 0) setOpenGroupIndex(vIdx);
+    }
+    prevWeiterleitenRef.current = isWeiterleitenMode;
+  }, [isWeiterleitenMode]);
   const [openEntryKey, setOpenEntryKey] = useState<string | null>(null);
   /** Weiterleiten-Modal: gewählte Abschluss-Demo-Variante (0–8 → Anzeige 1–9) */
   const [abschlussVariantIndex, setAbschlussVariantIndex] = useState(0);
@@ -503,13 +552,17 @@ const Gespraechsguidance: React.FC<{
 
   return (
     <div className="guidance-sidebar">
-      <div className="guidance-klient-line">
-        <span className="guidance-klient-label">Klient:</span>
-        <span className="guidance-klient-name">{klientDisplayName}</span>
-      </div>
-      <div className="guidance-header">
-        <span className="guidance-icon">💡</span>
-        <h3>Gesprächshilfen</h3>
+      <div className="guidance-sidebar-head" aria-label="Gesprächshilfen Kopf">
+        <div className="guidance-header">
+          <span className="guidance-header-icon-wrap" aria-hidden>
+            <span className="guidance-icon">💡</span>
+          </span>
+          <h3 className="guidance-header-title">Gesprächshilfen</h3>
+        </div>
+        <div className="guidance-klient-line">
+          <span className="guidance-klient-label">Klient</span>
+          <span className="guidance-klient-name">{klientDisplayName}</span>
+        </div>
       </div>
       <div className="guidance-content">
         <div className="guidance-tips">
@@ -567,10 +620,10 @@ const Gespraechsguidance: React.FC<{
                             }
                           </div>
                           <div className="guidance-group-item guidance-group-item-preline guidance-abschluss-variant-body">
-                            {
+                            {formatGuidanceText(
                               ABSCHLUSS_WEITERLEITEN_VARIANTS[abschlussVariantIndex]
                                 .body
-                            }
+                            )}
                           </div>
                         </div>
                       </div>
@@ -579,7 +632,7 @@ const Gespraechsguidance: React.FC<{
                     <div className="guidance-group-items guidance-collapsible-content">
                       {group.items.map((item, itemIndex) => (
                         <div key={itemIndex} className="guidance-group-item">
-                          {item}
+                          {formatGuidanceText(item)}
                         </div>
                       ))}
                     </div>
@@ -603,7 +656,7 @@ const Gespraechsguidance: React.FC<{
                           {entry.title}
                         </summary>
                         <div className="guidance-group-entry-text">
-                          {replaceKlientPlaceholders(entry.text) || (
+                          {formatGuidanceText(entry.text) ?? (
                             <span className="guidance-entry-placeholder">Text folgt.</span>
                           )}
                         </div>
