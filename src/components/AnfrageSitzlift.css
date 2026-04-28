@@ -297,10 +297,10 @@
   overflow-y: auto;
   z-index: 1;
   -webkit-overflow-scrolling: touch;
-  /* Lesbarkeit: ruhige UI-Schrift, etwas größer, Zeilenhöhe für Fließtext */
+  /* Lesbarkeit: ruhige UI-Schrift, Zeilenhöhe für Fließtext */
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 15px;
-  line-height: 1.55;
+  font-size: 13px;
+  line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -353,7 +353,7 @@
 }
 
 .guidance-klient-label {
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -362,7 +362,7 @@
 }
 
 .guidance-klient-name {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   color: #0f172a;
   line-height: 1.45;
@@ -396,13 +396,13 @@
 }
 
 .guidance-icon {
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1;
 }
 
 .guidance-header-title,
 .guidance-header h3 {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: #0f172a;
@@ -440,11 +440,11 @@
 }
 
 .section-icon {
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .guidance-section-header h4 {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: #1e293b;
   margin: 0;
@@ -471,7 +471,7 @@
 }
 
 .tip-title {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   color: #0f172a;
   margin-bottom: 6px;
@@ -488,7 +488,7 @@
 }
 
 .guidance-group-item {
-  font-size: 15px;
+  font-size: 13px;
   line-height: 1.65;
   color: #0a0a0a;
   letter-spacing: 0.01em;
@@ -536,7 +536,7 @@
   margin: 0;
   min-width: 1.5rem;
   padding: 2px 5px;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
   line-height: 1.25;
   color: #64748b;
@@ -567,7 +567,7 @@
 }
 
 .guidance-abschluss-variant-heading {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.45;
   color: #0a0a0a;
@@ -589,7 +589,7 @@
 
 .guidance-abschluss-version-hint {
   flex-shrink: 0;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   color: #9ca3af;
 }
@@ -605,7 +605,7 @@
 .guidance-abschluss-version-segment button {
   margin: 0;
   padding: 3px 9px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   line-height: 1.2;
   color: #6b7280;
@@ -633,7 +633,7 @@
 
 .guidance-abschluss-demo-label {
   display: block;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -649,7 +649,7 @@
 
 .guidance-abschluss-demo-toggle button {
   padding: 6px 10px;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 500;
   color: #374151;
   background: #fff;
@@ -689,7 +689,7 @@
 
 .guidance-entry-collapsible summary.guidance-entry-summary {
   padding: 6px 8px;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 500;
   line-height: 1.4;
   color: #0a0a0a;
@@ -714,7 +714,7 @@
 
 .guidance-entry-collapsible .guidance-group-entry-text {
   padding: 8px 8px 10px;
-  font-size: 15px;
+  font-size: 13px;
   line-height: 1.7;
   color: #0a0a0a;
   letter-spacing: 0.01em;
@@ -758,7 +758,7 @@
 }
 
 .tip-question {
-  font-size: 13px;
+  font-size: 11px;
   line-height: 1.5;
   color: #333;
   margin-bottom: 6px;
@@ -770,7 +770,7 @@
 }
 
 .tip-followup {
-  font-size: 12px;
+  font-size: 10px;
   line-height: 1.5;
   color: #666;
   margin-top: 6px;
@@ -785,7 +785,7 @@
 }
 
 .tip-hint {
-  font-size: 12px;
+  font-size: 10px;
   line-height: 1.5;
   color: #666;
   margin-top: 8px;
@@ -799,7 +799,7 @@
 }
 
 .hint-icon {
-  font-size: 14px;
+  font-size: 12px;
   flex-shrink: 0;
 }
 
