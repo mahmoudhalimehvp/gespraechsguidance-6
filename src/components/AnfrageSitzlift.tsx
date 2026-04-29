@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import './AnfrageSitzlift.css';
 import { isCrmAdminUser } from '../config/crmAdmin';
 import Dashboard from './Dashboard';
@@ -402,33 +403,150 @@ Zusätzlich sende ich Ihnen noch passende Infobroschüren zu. Dazu bleiben wir i
   }
 ];
 
-/** Wandelt **Fett** in hervorgehobenen Text um (Platzhalter davor per replaceKlientPlaceholders ersetzen). */
-function renderGuidanceEmphasisText(text: string): React.ReactNode {
-  if (text.length === 0) return null;
-  if (!text.includes('**')) {
-    return text;
-  }
-  const parts: React.ReactNode[] = [];
-  const re = /\*\*(.+?)\*\*/g;
-  let last = 0;
-  let m: RegExpExecArray | null;
-  let key = 0;
-  while ((m = re.exec(text)) !== null) {
-    if (m.index > last) {
-      parts.push(text.slice(last, m.index));
+const GUIDANCE_BUBBLE_HIDE_MS = 180;
+const BUBBLE_W = 456;
+
+/**
+ * Sprechblase per Portal; Pfeil + Kartenfläche am Trigger ausgerichtet, Volltext im Tooltip.
+ */
+const GuidanceSideBubble: React.FC<{
+  text: string;
+  className?: string;
+  children: React.ReactNode;
+}> = ({ text, className, children }) => {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const hideRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [open, setOpen] = useState(false);
+  const [bubbleState, setBubbleState] = useState<{
+    top: number;
+    left: number;
+    maxHeight: number;
+    tailOnRight: boolean;
+  } | null>(null);
+
+  const clearHide = () => {
+    if (hideRef.current) {
+      clearTimeout(hideRef.current);
+      hideRef.current = null;
     }
-    parts.push(
-      <strong className="guidance-em" key={key++}>
-        {m[1]}
-      </strong>
-    );
-    last = m.index + m[0].length;
-  }
-  if (last < text.length) {
-    parts.push(text.slice(last));
-  }
-  return <>{parts}</>;
-}
+  };
+
+  const recalc = useCallback(() => {
+    const el = wrapRef.current;
+    const t = text?.trim();
+    if (!el || !t) return;
+    const r = el.getBoundingClientRect();
+    const gap = 8;
+    const w = BUBBLE_W;
+    const maxH = Math.min(0.78 * window.innerHeight, window.innerHeight - 20);
+    const anchorY = r.top + r.height / 2;
+    let left: number;
+    let tailOnRight: boolean;
+    if (r.right + gap + w <= window.innerWidth - 6) {
+      left = r.right + gap;
+      tailOnRight = false;
+    } else {
+      left = r.left - gap - w;
+      if (left < 6) left = 6;
+      tailOnRight = true;
+    }
+    setBubbleState({
+      top: anchorY,
+      left,
+      maxHeight: maxH,
+      tailOnRight
+    });
+  }, [text]);
+
+  useLayoutEffect(() => {
+    if (open) recalc();
+  }, [open, recalc]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onScroll = () => recalc();
+    const onResize = () => recalc();
+    window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [open, recalc]);
+
+  useEffect(
+    () => () => {
+      if (hideRef.current) clearTimeout(hideRef.current);
+    },
+    []
+  );
+
+  const onEnterWrap = () => {
+    clearHide();
+    if (!text?.trim()) return;
+    setOpen(true);
+  };
+  const onLeaveWrap = () => {
+    hideRef.current = setTimeout(() => {
+      setOpen(false);
+      setBubbleState(null);
+    }, GUIDANCE_BUBBLE_HIDE_MS);
+  };
+  const onEnterBubble = () => clearHide();
+  const onLeaveBubble = () => {
+    hideRef.current = setTimeout(() => {
+      setOpen(false);
+      setBubbleState(null);
+    }, GUIDANCE_BUBBLE_HIDE_MS);
+  };
+
+  return (
+    <>
+      <div
+        ref={wrapRef}
+        className={className}
+        onMouseEnter={onEnterWrap}
+        onMouseLeave={onLeaveWrap}
+      >
+        {children}
+      </div>
+      {open &&
+        bubbleState &&
+        createPortal(
+          <div
+            className="guidance-speech-bubble-root"
+            style={
+              {
+                top: bubbleState.top,
+                left: bubbleState.left
+              } as React.CSSProperties
+            }
+            onMouseEnter={onEnterBubble}
+            onMouseLeave={onLeaveBubble}
+            role="tooltip"
+          >
+            {!bubbleState.tailOnRight && (
+              <div className="guidance-speech-bubble__sleeve" aria-hidden>
+                <div className="guidance-speech-bubble__point guidance-speech-bubble__point--to-left" />
+              </div>
+            )}
+            <div
+              className="guidance-speech-bubble__card"
+              style={{ maxHeight: bubbleState.maxHeight }}
+            >
+              <div className="guidance-speech-bubble__text">{text}</div>
+            </div>
+            {bubbleState.tailOnRight && (
+              <div className="guidance-speech-bubble__sleeve" aria-hidden>
+                <div className="guidance-speech-bubble__point guidance-speech-bubble__point--to-right" />
+              </div>
+            )}
+          </div>,
+          document.body
+        )}
+    </>
+  );
+};
 
 const Gespraechsguidance: React.FC<{
   klientDisplayName: string;
@@ -501,11 +619,9 @@ const Gespraechsguidance: React.FC<{
       .replace(/[ \t]+/g, ' ')
       .trim();
 
-  const formatGuidanceText = (raw: string): React.ReactNode => {
-    const t = replaceKlientPlaceholders(raw);
-    if (!t) return null;
-    return renderGuidanceEmphasisText(t);
-  };
+  /** Volltext für Sprechblase, ohne **-Hervorhebungen, mit Klient-Platzhaltern */
+  const toPlainTooltip = (raw: string): string =>
+    replaceKlientPlaceholders(raw).replace(/\*\*(.+?)\*\*/g, '$1').trim();
 
   const [openGroupIndex, setOpenGroupIndex] = useState<number | null>(() => {
     if (isWeiterleitenMode) {
@@ -527,18 +643,9 @@ const Gespraechsguidance: React.FC<{
     }
     prevWeiterleitenRef.current = isWeiterleitenMode;
   }, [isWeiterleitenMode]);
-  const [openEntryKey, setOpenEntryKey] = useState<string | null>(null);
-  /** Weiterleiten-Modal: gewählte Abschluss-Demo-Variante (0–8 → Anzeige 1–9) */
-  const [abschlussVariantIndex, setAbschlussVariantIndex] = useState(0);
 
   const handleGroupSummaryClick = (index: number) => {
     setOpenGroupIndex((prev) => (prev === index ? null : index));
-    setOpenEntryKey(null);
-  };
-
-  const handleEntrySummaryClick = (groupIndex: number, entryIndex: number) => {
-    const key = `${groupIndex}-${entryIndex}`;
-    setOpenEntryKey((prev) => (prev === key ? null : key));
   };
 
   if (obscured) {
@@ -550,20 +657,44 @@ const Gespraechsguidance: React.FC<{
     );
   }
 
+  const klientInitial =
+    (klientNachname && klientNachname.trim().charAt(0).toUpperCase()) ||
+    klientDisplayName
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .pop()
+      ?.charAt(0)
+      ?.toUpperCase() ||
+    '?';
+
   return (
     <div className="guidance-sidebar">
-      <div className="guidance-sidebar-head" aria-label="Gesprächshilfen Kopf">
-        <div className="guidance-header">
-          <span className="guidance-header-icon-wrap" aria-hidden>
-            <span className="guidance-icon">💡</span>
+      <header
+        className="guidance-panel-head"
+        aria-label="Gesprächshilfen und Klient"
+      >
+        <div className="guidance-panel-head__row">
+          <div className="guidance-panel-head__icon-wrap" aria-hidden="true">
+            <span className="guidance-panel-head__icon">💡</span>
+          </div>
+          <div className="guidance-panel-head__intro">
+            <h3 className="guidance-panel-head__title">Gesprächshilfen</h3>
+          </div>
+        </div>
+        <div
+          className="guidance-klient-chip"
+          title={`Klient: ${klientDisplayName}`}
+        >
+          <span className="guidance-klient-chip__avatar" aria-hidden="true">
+            {klientInitial}
           </span>
-          <h3 className="guidance-header-title">Gesprächshilfen</h3>
+          <div className="guidance-klient-chip__text">
+            <span className="guidance-klient-chip__label">Klient</span>
+            <span className="guidance-klient-chip__name">{klientDisplayName}</span>
+          </div>
         </div>
-        <div className="guidance-klient-line">
-          <span className="guidance-klient-label">Klient</span>
-          <span className="guidance-klient-name">{klientDisplayName}</span>
-        </div>
-      </div>
+      </header>
       <div className="guidance-content">
         <div className="guidance-tips">
           {visibleGroups.map((group, groupIndex) => (
@@ -587,53 +718,46 @@ const Gespraechsguidance: React.FC<{
                       <div
                         className="guidance-abschluss-demo guidance-abschluss-demo--minimal"
                         role="group"
-                        aria-label="Abschluss: Demo-Variante"
+                        aria-label="Abschluss: Textvarianten, Volltext in Sprechblase"
                       >
                         <div
                           className="guidance-abschluss-variant-strip"
-                          role="tablist"
-                          aria-label="Textvariante wählen"
+                          role="list"
+                          aria-label="Textvariante wählen, Volltext erscheint in der Sprechblase"
                         >
                           {ABSCHLUSS_WEITERLEITEN_VARIANTS.map((v, i) => (
-                            <button
+                            <GuidanceSideBubble
                               key={i}
-                              type="button"
-                              role="tab"
-                              aria-selected={abschlussVariantIndex === i}
-                              className={
-                                abschlussVariantIndex === i ? 'is-active' : ''
-                              }
-                              onClick={() => setAbschlussVariantIndex(i)}
-                              title={`${v.heading} (Variante ${i + 1})`}
+                              className="guidance-bubble-anchor guidance-bubble-anchor--abschluss"
+                              text={toPlainTooltip(
+                                `${v.heading} (Textvariante ${i + 1})\n\n${v.body}`
+                              )}
                             >
-                              {i + 1}
-                            </button>
+                              <button
+                                type="button"
+                                aria-label={`Textvariante ${i + 1}: ${v.heading}`}
+                              >
+                                {i + 1}
+                              </button>
+                            </GuidanceSideBubble>
                           ))}
-                        </div>
-                      </div>
-                      <div className="guidance-group-items">
-                        <div className="guidance-abschluss-variant-block">
-                          <div className="guidance-abschluss-variant-heading">
-                            {
-                              ABSCHLUSS_WEITERLEITEN_VARIANTS[abschlussVariantIndex]
-                                .heading
-                            }
-                          </div>
-                          <div className="guidance-group-item guidance-group-item-preline guidance-abschluss-variant-body">
-                            {formatGuidanceText(
-                              ABSCHLUSS_WEITERLEITEN_VARIANTS[abschlussVariantIndex]
-                                .body
-                            )}
-                          </div>
                         </div>
                       </div>
                     </div>
                   ) : (
                     <div className="guidance-group-items guidance-collapsible-content">
                       {group.items.map((item, itemIndex) => (
-                        <div key={itemIndex} className="guidance-group-item">
-                          {formatGuidanceText(item)}
-                        </div>
+                        <GuidanceSideBubble
+                          key={itemIndex}
+                          className="guidance-bubble-anchor"
+                          text={toPlainTooltip(item)}
+                        >
+                          <div className="guidance-group-item guidance-group-item--tooltip-only">
+                            <span className="guidance-item-faux-label">
+                              Textvorschlag {itemIndex + 1}
+                            </span>
+                          </div>
+                        </GuidanceSideBubble>
                       ))}
                     </div>
                   )
@@ -641,26 +765,21 @@ const Gespraechsguidance: React.FC<{
                 {group.entries && group.entries.length > 0 && (
                   <div className="guidance-group-entries guidance-collapsible-content">
                     {group.entries.map((entry, entryIndex) => (
-                      <details
+                      <div
                         key={entryIndex}
-                        className="guidance-entry-collapsible"
-                        open={openEntryKey === `${groupIndex}-${entryIndex}`}
+                        className="guidance-entry-collapsible guidance-entry--static"
                       >
-                        <summary
-                          className="guidance-entry-summary"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleEntrySummaryClick(groupIndex, entryIndex);
-                          }}
-                        >
-                          {entry.title}
-                        </summary>
-                        <div className="guidance-group-entry-text">
-                          {formatGuidanceText(entry.text) ?? (
-                            <span className="guidance-entry-placeholder">Text folgt.</span>
-                          )}
+                        <div className="guidance-entry-summary">
+                          <GuidanceSideBubble
+                            className="guidance-bubble-anchor"
+                            text={toPlainTooltip(entry.text)}
+                          >
+                            <span className="guidance-entry-row">
+                              {entry.title}
+                            </span>
+                          </GuidanceSideBubble>
                         </div>
-                      </details>
+                      </div>
                     ))}
                   </div>
                 )}
