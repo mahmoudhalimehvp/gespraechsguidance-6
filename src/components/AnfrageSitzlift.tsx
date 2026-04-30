@@ -213,14 +213,6 @@ const guidanceData: GuidanceSection[] = [
     icon: '👴',
     groups: [
       {
-        title: 'Bedarfsermittlung',
-        items: [
-          'Wie sieht denn die **Pflegesituation** aktuell bei Ihnen aus?',
-          'Welcher **Pflegegrad** liegt aktuell vor und gab es zuletzt eine **Veränderung**?',
-          'Welche **Sturzgefahren** gibt es aktuell im Wohnbereich, die den Alltag erschweren?'
-        ]
-      },
-      {
         title: 'Vorwandbehandlung',
         collapsible: true,
         entries: [
@@ -272,6 +264,21 @@ const guidanceData: GuidanceSection[] = [
         ]
       },
       {
+        title: 'Bedarfsermittlung',
+        entries: [
+          {
+            title: 'Senior',
+            text: [
+              'Wie sieht denn die **Pflegesituation** aktuell bei Ihnen aus?',
+              'Welche **körperlichen Einschränkungen** liegen vor?',
+              'Wie wird die **pflegerische Versorgung** aktuell gewährleistet?',
+              'Welcher **Pflegegrad** liegt aktuell vor und gab es zuletzt eine **Veränderung**?',
+              'Welche **Sturzgefahren** gibt es aktuell im Wohnbereich, die den Alltag erschweren?'
+            ].join('\n\n')
+          }
+        ]
+      },
+      {
         title: 'Einwandbehandlung',
         entries: [
           {
@@ -300,7 +307,7 @@ const guidanceData: GuidanceSection[] = [
         title: 'Cross-Selling',
         entries: [
           {
-            title: 'Einstieg',
+            title: 'Überleitung',
             text: '[Anrede] [Nachname], wir haben die Erfahrung gemacht, dass viele unserer Klienten nicht wissen, welche **Unterstützung** Ihnen mit einem **Pflegegrad** zusteht und welche **Möglichkeiten** sich dafür eröffnen. Lassen Sie uns hierfür noch kurz Zeit nehmen.'
           },
           {
@@ -330,6 +337,15 @@ const guidanceData: GuidanceSection[] = [
           {
             title: 'Elektromobil',
             text: 'Wissen Sie bereits, dass Sie mit einem **Rezept** kostenlos ein **Elektromobil** erhalten?'
+          }
+        ]
+      },
+      {
+        title: 'Zusammenfassung',
+        entries: [
+          {
+            title: 'Speichern & Weiter',
+            text: 'Vielen Dank. Dann haben wir nun **alle wichtigen Informationen** zusammen, damit ich Ihnen die passenden **Ansprechpartner** an die Hand geben kann.'
           }
         ]
       },
@@ -406,14 +422,38 @@ Zusätzlich sende ich Ihnen noch passende Infobroschüren zu. Dazu bleiben wir i
 const GUIDANCE_BUBBLE_HIDE_MS = 180;
 const BUBBLE_W = 456;
 
+const BUBBLE_BOLD = /\*\*(.+?)\*\*/g;
+
+/**
+ * `**Hervorhebung**` → fett, übriger Text normal (für Sprechblasen-Fließtext).
+ */
+function renderGuidanceBubbleRichText(source: string): React.ReactNode {
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let m: RegExpExecArray | null;
+  BUBBLE_BOLD.lastIndex = 0;
+  while ((m = BUBBLE_BOLD.exec(source)) !== null) {
+    if (m.index > lastIndex) {
+      parts.push(source.slice(lastIndex, m.index));
+    }
+    parts.push(<strong key={`b-${m.index}`}>{m[1]}</strong>);
+    lastIndex = BUBBLE_BOLD.lastIndex;
+  }
+  if (lastIndex < source.length) {
+    parts.push(source.slice(lastIndex));
+  }
+  return parts.length > 0 ? parts : source;
+}
+
 /**
  * Sprechblase per Portal; Pfeil + Kartenfläche am Trigger ausgerichtet, Volltext im Tooltip.
+ * `markdownText` ist Klient-Platzhalter-ersetzt und kann `**…**` für Fettdruck enthalten.
  */
 const GuidanceSideBubble: React.FC<{
-  text: string;
+  markdownText: string;
   className?: string;
   children: React.ReactNode;
-}> = ({ text, className, children }) => {
+}> = ({ markdownText, className, children }) => {
   const wrapRef = useRef<HTMLDivElement>(null);
   const hideRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [open, setOpen] = useState(false);
@@ -433,7 +473,7 @@ const GuidanceSideBubble: React.FC<{
 
   const recalc = useCallback(() => {
     const el = wrapRef.current;
-    const t = text?.trim();
+    const t = markdownText?.trim();
     if (!el || !t) return;
     const r = el.getBoundingClientRect();
     const gap = 8;
@@ -456,7 +496,7 @@ const GuidanceSideBubble: React.FC<{
       maxHeight: maxH,
       tailOnRight
     });
-  }, [text]);
+  }, [markdownText]);
 
   useLayoutEffect(() => {
     if (open) recalc();
@@ -483,7 +523,7 @@ const GuidanceSideBubble: React.FC<{
 
   const onEnterWrap = () => {
     clearHide();
-    if (!text?.trim()) return;
+    if (!markdownText?.trim()) return;
     setOpen(true);
   };
   const onLeaveWrap = () => {
@@ -534,7 +574,9 @@ const GuidanceSideBubble: React.FC<{
               className="guidance-speech-bubble__card"
               style={{ maxHeight: bubbleState.maxHeight }}
             >
-              <div className="guidance-speech-bubble__text">{text}</div>
+              <div className="guidance-speech-bubble__text">
+                {renderGuidanceBubbleRichText(markdownText)}
+              </div>
             </div>
             {bubbleState.tailOnRight && (
               <div className="guidance-speech-bubble__sleeve" aria-hidden>
@@ -562,11 +604,13 @@ const Gespraechsguidance: React.FC<{
   isWeiterleitenMode,
   obscured = false
 }) => {
-  /* Ohne „Bedarfsermittlung“ und „Abschluss“ in der normalen Ansicht; „Abschluss“ nur bei offenem Weiterleiten-Modal (isWeiterleitenMode) */
+  /* Ohne „Abschluss“ in der normalen Ansicht; „Abschluss“ nur bei offenem Weiterleiten-Modal (isWeiterleitenMode) */
   const groupOrder = [
     'Vorwandbehandlung',
+    'Bedarfsermittlung',
     'Einwandbehandlung',
     'Cross-Selling',
+    'Zusammenfassung',
   ];
   const allGroups = guidanceData.flatMap((section) => section.groups ?? []);
   const defaultVisibleGroups = groupOrder
@@ -612,16 +656,13 @@ const Gespraechsguidance: React.FC<{
     }
   ];
   const visibleGroups = isWeiterleitenMode ? weiterleitenModeGroups : defaultVisibleGroups;
+  /** Sprechblase: Platzhalter ersetzen; `**Wort**` in den Texten = fett in der Sprechblase. */
   const replaceKlientPlaceholders = (text: string) =>
     text
       .replace('[Anrede]', klientAnrede || '')
       .replace('[Nachname]', klientNachname || '')
       .replace(/[ \t]+/g, ' ')
       .trim();
-
-  /** Volltext für Sprechblase, ohne **-Hervorhebungen, mit Klient-Platzhaltern */
-  const toPlainTooltip = (raw: string): string =>
-    replaceKlientPlaceholders(raw).replace(/\*\*(.+?)\*\*/g, '$1').trim();
 
   const [openGroupIndex, setOpenGroupIndex] = useState<number | null>(() => {
     if (isWeiterleitenMode) {
@@ -729,7 +770,7 @@ const Gespraechsguidance: React.FC<{
                             <GuidanceSideBubble
                               key={i}
                               className="guidance-bubble-anchor guidance-bubble-anchor--abschluss"
-                              text={toPlainTooltip(
+                              markdownText={replaceKlientPlaceholders(
                                 `${v.heading} (Textvariante ${i + 1})\n\n${v.body}`
                               )}
                             >
@@ -750,7 +791,7 @@ const Gespraechsguidance: React.FC<{
                         <GuidanceSideBubble
                           key={itemIndex}
                           className="guidance-bubble-anchor"
-                          text={toPlainTooltip(item)}
+                          markdownText={replaceKlientPlaceholders(item)}
                         >
                           <div className="guidance-group-item guidance-group-item--tooltip-only">
                             <span className="guidance-item-faux-label">
@@ -772,7 +813,7 @@ const Gespraechsguidance: React.FC<{
                         <div className="guidance-entry-summary">
                           <GuidanceSideBubble
                             className="guidance-bubble-anchor"
-                            text={toPlainTooltip(entry.text)}
+                            markdownText={replaceKlientPlaceholders(entry.text)}
                           >
                             <span className="guidance-entry-row">
                               {entry.title}
