@@ -846,6 +846,31 @@
   margin-top: 8px;
 }
 
+/* Bedarfsermittlung / Zusammenfassung: gleiche Kartenhöhe wie zugeklappter Abschnitt; Tooltip bei Maus auf Überschrift/Kartenrand */
+.guidance-tip--flat-tooltip {
+  padding: 0;
+}
+
+.guidance-flat-tooltip-fullcard {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  margin: 0;
+  cursor: help;
+}
+
+.guidance-flat-tooltip-fullcard--static-title {
+  padding: 10px;
+  box-sizing: border-box;
+  cursor: default;
+}
+
+.guidance-tip-title--static {
+  cursor: inherit;
+  user-select: none;
+}
+
 /* Einwand-Zeilen: Karten-Look (grauer Kopf, Volltext nur per Tooltip) */
 .guidance-entry-collapsible {
   margin: 0;

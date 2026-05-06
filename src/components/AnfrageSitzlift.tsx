@@ -738,95 +738,155 @@ const Gespraechsguidance: React.FC<{
       </header>
       <div className="guidance-content">
         <div className="guidance-tips">
-          {visibleGroups.map((group, groupIndex) => (
-            <div key={groupIndex} className="guidance-tip">
-              <details
-                className="guidance-group-collapsible"
-                open={openGroupIndex === groupIndex}
+          {visibleGroups.map((group, groupIndex) => {
+            const isFlatGuidanceSection =
+              group.title === 'Bedarfsermittlung' ||
+              group.title === 'Zusammenfassung';
+
+            const entriesBlock =
+              group.entries && group.entries.length > 0 && !isFlatGuidanceSection ? (
+                <div className="guidance-group-entries guidance-collapsible-content">
+                  {group.entries.map((entry, entryIndex) => (
+                    <div
+                      key={entryIndex}
+                      className="guidance-entry-collapsible guidance-entry--static"
+                    >
+                      <div className="guidance-entry-summary">
+                        <GuidanceSideBubble
+                          className="guidance-bubble-anchor"
+                          markdownText={replaceKlientPlaceholders(entry.text)}
+                        >
+                          <span className="guidance-entry-row">
+                            {entry.title}
+                          </span>
+                        </GuidanceSideBubble>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : null;
+
+            return (
+              <div
+                key={groupIndex}
+                className={
+                  isFlatGuidanceSection
+                    ? 'guidance-tip guidance-tip--flat-tooltip'
+                    : 'guidance-tip'
+                }
               >
-                <summary
-                  className="tip-title guidance-collapsible-summary"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleGroupSummaryClick(groupIndex);
-                  }}
-                >
-                  {group.title}
-                </summary>
-                {group.items && group.items.length > 0 && (
-                  isWeiterleitenMode && group.title === 'Abschluss' ? (
-                    <div className="guidance-collapsible-content">
-                      <div
-                        className="guidance-abschluss-demo guidance-abschluss-demo--minimal"
-                        role="group"
-                        aria-label="Abschluss: Textvarianten, Volltext in Sprechblase"
+                {isFlatGuidanceSection ? (
+                  <>
+                    {group.entries && group.entries.length > 0 ? (
+                      <GuidanceSideBubble
+                        className="guidance-bubble-anchor guidance-flat-tooltip-fullcard"
+                        markdownText={group.entries
+                          .map((e) => replaceKlientPlaceholders(e.text))
+                          .join('\n\n')}
                       >
                         <div
-                          className="guidance-abschluss-variant-strip"
-                          role="list"
-                          aria-label="Textvariante wählen, Volltext erscheint in der Sprechblase"
+                          className="tip-title guidance-tip-title--static"
+                          aria-label="Gesprächstext in der Sprechblase"
                         >
-                          {ABSCHLUSS_WEITERLEITEN_VARIANTS.map((v, i) => (
-                            <GuidanceSideBubble
-                              key={i}
-                              className="guidance-bubble-anchor guidance-bubble-anchor--abschluss"
-                              markdownText={replaceKlientPlaceholders(
-                                `${v.heading} (Textvariante ${i + 1})\n\n${v.body}`
-                              )}
+                          {group.title}
+                        </div>
+                      </GuidanceSideBubble>
+                    ) : (
+                      <div className="guidance-flat-tooltip-fullcard guidance-flat-tooltip-fullcard--static-title">
+                        <div className="tip-title guidance-tip-title--static">
+                          {group.title}
+                        </div>
+                      </div>
+                    )}
+                    {group.items && group.items.length > 0 && (
+                      <div className="guidance-group-items guidance-collapsible-content">
+                        {group.items.map((item, itemIndex) => (
+                          <GuidanceSideBubble
+                            key={itemIndex}
+                            className="guidance-bubble-anchor"
+                            markdownText={replaceKlientPlaceholders(item)}
+                          >
+                            <div className="guidance-group-item guidance-group-item--tooltip-only">
+                              <span className="guidance-item-faux-label">
+                                Textvorschlag {itemIndex + 1}
+                              </span>
+                            </div>
+                          </GuidanceSideBubble>
+                        ))}
+                      </div>
+                    )}
+                    {entriesBlock}
+                  </>
+                ) : (
+                  <details
+                    className="guidance-group-collapsible"
+                    open={openGroupIndex === groupIndex}
+                  >
+                    <summary
+                      className="tip-title guidance-collapsible-summary"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleGroupSummaryClick(groupIndex);
+                      }}
+                    >
+                      {group.title}
+                    </summary>
+                    {group.items && group.items.length > 0 && (
+                      isWeiterleitenMode && group.title === 'Abschluss' ? (
+                        <div className="guidance-collapsible-content">
+                          <div
+                            className="guidance-abschluss-demo guidance-abschluss-demo--minimal"
+                            role="group"
+                            aria-label="Abschluss: Textvarianten, Volltext in Sprechblase"
+                          >
+                            <div
+                              className="guidance-abschluss-variant-strip"
+                              role="list"
+                              aria-label="Textvariante wählen, Volltext erscheint in der Sprechblase"
                             >
-                              <button
-                                type="button"
-                                aria-label={`Textvariante ${i + 1}: ${v.heading}`}
-                              >
-                                {i + 1}
-                              </button>
+                              {ABSCHLUSS_WEITERLEITEN_VARIANTS.map((v, i) => (
+                                <GuidanceSideBubble
+                                  key={i}
+                                  className="guidance-bubble-anchor guidance-bubble-anchor--abschluss"
+                                  markdownText={replaceKlientPlaceholders(
+                                    `${v.heading} (Textvariante ${i + 1})\n\n${v.body}`
+                                  )}
+                                >
+                                  <button
+                                    type="button"
+                                    aria-label={`Textvariante ${i + 1}: ${v.heading}`}
+                                  >
+                                    {i + 1}
+                                  </button>
+                                </GuidanceSideBubble>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="guidance-group-items guidance-collapsible-content">
+                          {group.items.map((item, itemIndex) => (
+                            <GuidanceSideBubble
+                              key={itemIndex}
+                              className="guidance-bubble-anchor"
+                              markdownText={replaceKlientPlaceholders(item)}
+                            >
+                              <div className="guidance-group-item guidance-group-item--tooltip-only">
+                                <span className="guidance-item-faux-label">
+                                  Textvorschlag {itemIndex + 1}
+                                </span>
+                              </div>
                             </GuidanceSideBubble>
                           ))}
                         </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="guidance-group-items guidance-collapsible-content">
-                      {group.items.map((item, itemIndex) => (
-                        <GuidanceSideBubble
-                          key={itemIndex}
-                          className="guidance-bubble-anchor"
-                          markdownText={replaceKlientPlaceholders(item)}
-                        >
-                          <div className="guidance-group-item guidance-group-item--tooltip-only">
-                            <span className="guidance-item-faux-label">
-                              Textvorschlag {itemIndex + 1}
-                            </span>
-                          </div>
-                        </GuidanceSideBubble>
-                      ))}
-                    </div>
-                  )
+                      )
+                    )}
+                    {entriesBlock}
+                  </details>
                 )}
-                {group.entries && group.entries.length > 0 && (
-                  <div className="guidance-group-entries guidance-collapsible-content">
-                    {group.entries.map((entry, entryIndex) => (
-                      <div
-                        key={entryIndex}
-                        className="guidance-entry-collapsible guidance-entry--static"
-                      >
-                        <div className="guidance-entry-summary">
-                          <GuidanceSideBubble
-                            className="guidance-bubble-anchor"
-                            markdownText={replaceKlientPlaceholders(entry.text)}
-                          >
-                            <span className="guidance-entry-row">
-                              {entry.title}
-                            </span>
-                          </GuidanceSideBubble>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </details>
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
