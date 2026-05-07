@@ -287,7 +287,7 @@ const guidanceData: GuidanceSection[] = [
           },
           {
             title: 'Zu früh',
-            text: 'Das kann ich gut nachvollziehen. Das sagen viele, solange noch alles einigermaßen gut läuft. Genau deshalb ist **Vorsorge** so wichtig. Denn falls plötzlich etwas passiert, hat man oft keine Zeit mehr, um in Ruhe zu vergleichen. Deswegen wäre jetzt das **Einholen von Angeboten** für eine gute Vorsorge wichtig. Was halten Sie davon?'
+            text: 'Das kann ich gut nachvollziehen. Das sagen viele, solange noch alles einigermaßen gut läuft. Genau deshalb ist **Vorsorge** so wichtig. Denn falls plötzlich etwas passiert, hat man oft keine Zeit mehr, um in Ruhe zu vergleichen. Deswegen ist jetzt das **Einholen von Angeboten** für eine gute Vorsorge wichtig. Was halten Sie davon?'
           },
           {
             title: 'Zeit zum Nachdenken',
@@ -373,7 +373,7 @@ interface AbschlussWeiterleitenVariant {
 const ABSCHLUSS_WEITERLEITEN_VARIANTS: readonly AbschlussWeiterleitenVariant[] = [
   {
     heading: 'Nur ein Kapa Produkt',
-    body: `Ich werde nun für Sie die aktuellen Verfügbarkeiten prüfen und Ihnen den Kontakt zu Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Dafür reserviere ich für Sie jetzt die kostenfreien Erstgespräche. Die Anbieter werden sich nun in den nächsten Minuten, spätestens im Laufe des Tages bei Ihnen melden. Bleiben Sie deshalb bitte telefonisch erreichbar, um die nächsten Schritte abzusprechen.`
+    body: `Ich werde nun für Sie die aktuellen Verfügbarkeiten prüfen und Ihnen für Sitzlift den Kontakt zu Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Dafür reserviere ich für Sie jetzt die kostenfreien Erstgespräche. Die Anbieter werden sich nun in den nächsten Minuten, spätestens im Laufe des Tages bei Ihnen melden. Bleiben Sie deshalb bitte telefonisch erreichbar, um die nächsten Schritte abzusprechen.`
   },
   {
     heading: 'Mehrere Kapa Produkte',
@@ -389,13 +389,13 @@ const ABSCHLUSS_WEITERLEITEN_VARIANTS: readonly AbschlussWeiterleitenVariant[] =
   },
   {
     heading: 'Kombi Kapa & WL',
-    body: `Ich werde nun für Sie die aktuellen Verfügbarkeiten prüfen und Ihnen den Kontakt zu Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Dafür reserviere ich für Sie jetzt die kostenfreien Erstgespräche. Die Anbieter werden sich nun in den nächsten Minuten, spätestens im Laufe des Tages bei Ihnen melden. Bleiben Sie deshalb bitte telefonisch erreichbar, um die nächsten Schritte abzusprechen.
+    body: `Ich werde nun für Sie die aktuellen Verfügbarkeiten prüfen und Ihnen für Sitzlift den Kontakt zu Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Dafür reserviere ich für Sie jetzt die kostenfreien Erstgespräche. Die Anbieter werden sich nun in den nächsten Minuten, spätestens im Laufe des Tages bei Ihnen melden. Bleiben Sie deshalb bitte telefonisch erreichbar, um die nächsten Schritte abzusprechen.
 
 Für Vollstationäre Pflege haben wir aktuell keine Verfügbarkeiten. Ich frage für Sie deshalb zusätzlich bei weiteren Dienstleistern an. Das sind Kasteler Krankenhaus-Verein, Seniorenzentrum Stockstadt und Pflegehilfe für Senioren. Diese melden sich telefonisch bei Ihnen, insofern sie aktuell freie Verfügbarkeiten haben.`
   },
   {
     heading: 'Kapa & Tools',
-    body: `Ich werde nun für Sie die aktuellen Verfügbarkeiten prüfen und Ihnen den Kontakt zu Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Dafür reserviere ich für Sie jetzt die kostenfreien Erstgespräche. Die Anbieter werden sich nun in den nächsten Minuten, spätestens im Laufe des Tages bei Ihnen melden. Bleiben Sie deshalb bitte telefonisch erreichbar, um die nächsten Schritte abzusprechen.
+    body: `Ich werde nun für Sie die aktuellen Verfügbarkeiten prüfen und Ihnen für Sitzlift den Kontakt zu Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Dafür reserviere ich für Sie jetzt die kostenfreien Erstgespräche. Die Anbieter werden sich nun in den nächsten Minuten, spätestens im Laufe des Tages bei Ihnen melden. Bleiben Sie deshalb bitte telefonisch erreichbar, um die nächsten Schritte abzusprechen.
 
 Zusätzlich sende ich Ihnen noch passende Infobroschüren zu. Dazu bleiben wir in Kontakt und schauen dann gemeinsam, wie sich Ihre Situation entwickelt und welche nächsten Schritte sinnvoll sind.`
   },
@@ -407,7 +407,7 @@ Zusätzlich sende ich Ihnen noch passende Infobroschüren zu. Dazu bleiben wir i
   },
   {
     heading: 'Alles mit T&I',
-    body: `Ich werde nun für Sie die aktuellen Verfügbarkeiten prüfen und Ihnen den Kontakt zu Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Dafür reserviere ich für Sie jetzt die kostenfreien Erstgespräche. Die Anbieter werden sich nun in den nächsten Minuten, spätestens im Laufe des Tages bei Ihnen melden. Bleiben Sie deshalb bitte telefonisch erreichbar, um die nächsten Schritte abzusprechen.
+    body: `Ich werde nun für Sie die aktuellen Verfügbarkeiten prüfen und Ihnen für Sitzlift den Kontakt zu Sonilift GmbH, SANA Treppenlifte und Expertlift GmbH herstellen. Dafür reserviere ich für Sie jetzt die kostenfreien Erstgespräche. Die Anbieter werden sich nun in den nächsten Minuten, spätestens im Laufe des Tages bei Ihnen melden. Bleiben Sie deshalb bitte telefonisch erreichbar, um die nächsten Schritte abzusprechen.
 
 Für Vollstationäre Pflege haben wir aktuell keine Verfügbarkeiten. Ich frage für Sie deshalb zusätzlich bei weiteren Dienstleistern an. Das sind Kasteler Krankenhaus-Verein, Seniorenzentrum Stockstadt und Pflegehilfe für Senioren. Diese melden sich telefonisch bei Ihnen, insofern sie aktuell freie Verfügbarkeiten haben.
 
@@ -711,18 +711,7 @@ const Gespraechsguidance: React.FC<{
 
   return (
     <div className="guidance-sidebar">
-      <header
-        className="guidance-panel-head"
-        aria-label="Gesprächshilfen und Klient"
-      >
-        <div className="guidance-panel-head__row">
-          <div className="guidance-panel-head__icon-wrap" aria-hidden="true">
-            <span className="guidance-panel-head__icon">💡</span>
-          </div>
-          <div className="guidance-panel-head__intro">
-            <h3 className="guidance-panel-head__title">Gesprächshilfen</h3>
-          </div>
-        </div>
+      <header className="guidance-panel-head" aria-label="Klient">
         <div
           className="guidance-klient-chip"
           title={`Klient: ${klientDisplayName}`}
@@ -741,7 +730,22 @@ const Gespraechsguidance: React.FC<{
           {visibleGroups.map((group, groupIndex) => {
             const isFlatGuidanceSection =
               group.title === 'Bedarfsermittlung' ||
-              group.title === 'Zusammenfassung';
+              group.title === 'Zusammenfassung' ||
+              (isWeiterleitenMode && group.title === 'Verabschiedung');
+            const shouldUseTitleTooltipFromItems =
+              isWeiterleitenMode && group.title === 'Verabschiedung';
+            const flatSectionTooltipMarkdown =
+              group.entries && group.entries.length > 0
+                ? group.entries
+                    .map((entry) => replaceKlientPlaceholders(entry.text))
+                    .join('\n\n')
+                : shouldUseTitleTooltipFromItems &&
+                    group.items &&
+                    group.items.length > 0
+                  ? group.items
+                      .map((item) => replaceKlientPlaceholders(item))
+                      .join('\n\n')
+                  : null;
 
             const entriesBlock =
               group.entries && group.entries.length > 0 && !isFlatGuidanceSection ? (
@@ -777,12 +781,10 @@ const Gespraechsguidance: React.FC<{
               >
                 {isFlatGuidanceSection ? (
                   <>
-                    {group.entries && group.entries.length > 0 ? (
+                    {flatSectionTooltipMarkdown ? (
                       <GuidanceSideBubble
                         className="guidance-bubble-anchor guidance-flat-tooltip-fullcard"
-                        markdownText={group.entries
-                          .map((e) => replaceKlientPlaceholders(e.text))
-                          .join('\n\n')}
+                        markdownText={flatSectionTooltipMarkdown}
                       >
                         <div
                           className="tip-title guidance-tip-title--static"
@@ -798,7 +800,9 @@ const Gespraechsguidance: React.FC<{
                         </div>
                       </div>
                     )}
-                    {group.items && group.items.length > 0 && (
+                    {group.items &&
+                      group.items.length > 0 &&
+                      !shouldUseTitleTooltipFromItems && (
                       <div className="guidance-group-items guidance-collapsible-content">
                         {group.items.map((item, itemIndex) => (
                           <GuidanceSideBubble
