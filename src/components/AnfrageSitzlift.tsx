@@ -918,6 +918,7 @@ const AnfrageSitzlift: React.FC = () => {
     vorname: 'Hannah',
     nachname: 'Venohr',
     email: 'demo@test.de',
+    versichertennummer: '',
     telefon: '',
     internerKommentar: '',
     
@@ -1810,10 +1811,14 @@ const AnfrageSitzlift: React.FC = () => {
             </div>
           </div>
 
-          {/* Pflegehilfe+ Info Banner */}
-          <div className="vermittlungsgarantie-info">
-            <span className="info-icon">👑</span>
-            <span>Pflegehilfe+ gebucht</span>
+          <div className="main-content-promo-toolbar">
+            <div className="vermittlungsgarantie-info">
+              <span className="info-icon">👑</span>
+              <span>Pflegehilfe+ gebucht</span>
+            </div>
+            <button type="button" className="icon-btn main-content-promo-toolbar__refresh" aria-label="Aktualisieren" title="Aktualisieren">
+              🔄
+            </button>
           </div>
 
           {/* Klient / Interessent (Persönliche Daten + Kontakt in zweiter Zeile) */}
@@ -1825,7 +1830,6 @@ const AnfrageSitzlift: React.FC = () => {
             <div className="section-header green">
               <h2>Klient / Interessent</h2>
               <div className="section-actions">
-                <button type="button" className="icon-btn">🔄</button>
                 <button type="button" className="icon-btn">🏠</button>
               </div>
             </div>
@@ -1866,15 +1870,28 @@ const AnfrageSitzlift: React.FC = () => {
                     <input type="text" name="nachname" value={formData.nachname} onChange={handleChange} placeholder="Nachname angeben" />
                   </div>
                 </div>
-                <div className="form-group klient-comment-field">
-                  <label>Interner Kommentar (Klient)</label>
-                  <input
-                    type="text"
-                    name="internerKommentar"
-                    value={formData.internerKommentar}
-                    onChange={handleChange}
-                    placeholder="Internes bitte hier eintragen"
-                  />
+                <div className="klient-comment-column">
+                  <div className="form-group klient-comment-field klient-comment-field--single-line">
+                    <label>Interner Kommentar (Klient)</label>
+                    <input
+                      type="text"
+                      name="internerKommentar"
+                      value={formData.internerKommentar}
+                      onChange={handleChange}
+                      placeholder="Internes bitte hier eintragen"
+                    />
+                  </div>
+                  <div className="form-group klient-versichertennummer-field">
+                    <label>Versichertennummer</label>
+                    <input
+                      type="text"
+                      name="versichertennummer"
+                      value={formData.versichertennummer}
+                      onChange={handleChange}
+                      placeholder="Versichertennummer angeben"
+                      autoComplete="off"
+                    />
+                  </div>
                 </div>
                 {/* Zweite Zeile: Kontaktinformationen */}
                 <div className="klient-row2-kontakt">

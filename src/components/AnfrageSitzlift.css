@@ -1028,7 +1028,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   padding-bottom: 8px;
   border-bottom: 2px solid #e0e0e0;
 }
@@ -1040,6 +1040,25 @@
   letter-spacing: -0.3px;
 }
 
+/* Eine Zeile: 👑 Pflegehilfe+ gebucht + 🔄 auf gleicher Höhe */
+.main-content-promo-toolbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 0;
+  margin-bottom: 12px;
+  min-height: 0;
+}
+
+.main-content-promo-toolbar__refresh {
+  flex-shrink: 0;
+  padding: 4px 8px;
+  font-size: 18px;
+  line-height: 1;
+}
+
 /* Pflegehilfe+ Info Banner - nicht volle Breite */
 .vermittlungsgarantie-info {
   display: flex;
@@ -1048,8 +1067,8 @@
   background-color: #e8f5e9;
   border: 1px solid #4caf50;
   border-radius: 6px;
-  padding: 8px 10px;
-  margin-bottom: 12px;
+  padding: 6px 10px;
+  margin: 0;
   color: #2e7d32;
   font-size: 14px;
   font-weight: 500;
@@ -1374,6 +1393,11 @@
   align-items: start;
 }
 
+.klient-persoenlich-container .klient-email-field input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .klient-persoenlich-container .klient-row2-kontakt .phone-input-wrapper .btn-blue {
   width: 100%;
   box-sizing: border-box;
@@ -1399,30 +1423,40 @@
   min-width: 0;
 }
 
-/* Kommentar über beide Zeilen gestreckt (rechte Spalte) */
-.klient-persoenlich-container .form-group.klient-comment-field {
+/* Rechte Spalte: Interner Kommentar (eine Zeile) + Versichertennummer */
+.klient-persoenlich-container .klient-comment-column {
   grid-column: 3;
   grid-row: 1 / -1;
-  align-self: stretch;
+  align-self: start;
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  gap: 12px;
+  min-width: 0;
   margin-left: 6px;
 }
 
-.klient-persoenlich-container .form-group.klient-comment-field label {
+.klient-persoenlich-container .klient-comment-column .klient-comment-field label,
+.klient-persoenlich-container .klient-comment-column .klient-versichertennummer-field label {
   margin-bottom: 4px;
   font-size: 13px;
   flex-shrink: 0;
 }
 
-.klient-persoenlich-container .form-group.klient-comment-field input {
-  flex: 1;
-  min-height: 0;
+.klient-persoenlich-container .klient-comment-column .klient-comment-field--single-line input {
+  flex: none;
+  height: 38px;
+  min-height: 38px;
   box-sizing: border-box;
   padding: 8px 10px;
   font-size: 13px;
-  resize: none;
+}
+
+.klient-persoenlich-container .klient-comment-column .klient-versichertennummer-field input {
+  width: 100%;
+  height: 38px;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  font-size: 13px;
 }
 
 /* Klient – Kontaktinformationen: E-Mail + Telefon in einer Zeile */
