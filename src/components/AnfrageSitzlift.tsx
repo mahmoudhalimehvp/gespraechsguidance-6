@@ -1891,9 +1891,15 @@ const AnfrageSitzlift: React.FC = () => {
               <span className="info-icon">👑</span>
               <span>Pflegehilfe+ gebucht</span>
             </div>
-            <button type="button" className="icon-btn main-content-promo-toolbar__refresh" aria-label="Aktualisieren" title="Aktualisieren">
-              🔄
-            </button>
+            <div className="main-content-promo-toolbar__end">
+              <p className="promo-toolbar-responsible-line">
+                <span className="promo-toolbar-responsible-line__label">Verantwortlicher:</span>{' '}
+                <span className="promo-toolbar-responsible-line__email">hannah.venohr@pflegehilfe.de</span>
+              </p>
+              <button type="button" className="icon-btn main-content-promo-toolbar__refresh" aria-label="Aktualisieren" title="Aktualisieren">
+                🔄
+              </button>
+            </div>
           </div>
 
           {/* Klient / Interessent (Persönliche Daten + Kontakt in zweiter Zeile) */}
@@ -2760,9 +2766,6 @@ const AnfrageSitzlift: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="responsible-person">
-                      Verantwortlicher: hannah.venohr@pflegehilfe.de
-                    </div>
                   </div>
                 </div>
               </div>

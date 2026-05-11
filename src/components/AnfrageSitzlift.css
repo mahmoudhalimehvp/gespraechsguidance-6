@@ -1028,7 +1028,7 @@
   letter-spacing: -0.3px;
 }
 
-/* Eine Zeile: 👑 Pflegehilfe+ gebucht + 🔄 auf gleicher Höhe */
+/* Eine Zeile: 👑 Pflegehilfe+ gebucht | Verantwortlicher … + 🔄 */
 .main-content-promo-toolbar {
   display: flex;
   flex-direction: row;
@@ -1038,6 +1038,39 @@
   margin-top: 0;
   margin-bottom: 12px;
   min-height: 0;
+}
+
+.main-content-promo-toolbar__end {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.promo-toolbar-responsible-line {
+  margin: 0;
+  padding: 0;
+  font-size: 9px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: #757575;
+  text-align: right;
+  max-width: min(280px, 40vw);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.promo-toolbar-responsible-line__label {
+  color: #8a8a8a;
+  font-weight: 400;
+}
+
+.promo-toolbar-responsible-line__email {
+  color: #5c5c5c;
+  font-weight: 500;
 }
 
 .main-content-promo-toolbar__refresh {
@@ -2621,12 +2654,6 @@
 .dot-icon {
   color: #333;
   font-size: 12px;
-}
-
-.responsible-person {
-  font-size: 14px;
-  color: #666;
-  margin-top: 24px;
 }
 
 .floating-save-box {
