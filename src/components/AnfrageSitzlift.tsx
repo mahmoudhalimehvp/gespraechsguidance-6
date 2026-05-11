@@ -698,17 +698,6 @@ const Gespraechsguidance: React.FC<{
     );
   }
 
-  const klientInitial =
-    (klientNachname && klientNachname.trim().charAt(0).toUpperCase()) ||
-    klientDisplayName
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)
-      .pop()
-      ?.charAt(0)
-      ?.toUpperCase() ||
-    '?';
-
   return (
     <div className="guidance-sidebar">
       <header className="guidance-panel-head" aria-label="Klient">
@@ -716,9 +705,6 @@ const Gespraechsguidance: React.FC<{
           className="guidance-klient-chip"
           title={`Klient: ${klientDisplayName}`}
         >
-          <span className="guidance-klient-chip__avatar" aria-hidden="true">
-            {klientInitial}
-          </span>
           <div className="guidance-klient-chip__text">
             <span className="guidance-klient-chip__label">Klient</span>
             <span className="guidance-klient-chip__name">{klientDisplayName}</span>
@@ -908,6 +894,34 @@ const ANRUF_LANDING_WOCHENTAGE: { id: string; label: string }[] = [
   { id: 'so', label: 'So' },
 ];
 
+/** translateY der Speichern-Leiste: 0 = unten rechts; negativ = nach oben (begrenzt). */
+const FLOATING_SAVE_BOX_VERTICAL_LS_KEY = 'anfrageSitzlift.floatingSaveBoxVertical.v1';
+const FLOATING_SAVE_BOX_LEGACY_OFFSET_LS_KEY = 'anfrageSitzlift.floatingSaveBoxOffset.v1';
+const FLOATING_SAVE_BOX_MAX_UP_PX = 200;
+
+function clampFloatingSaveTranslateY(y: number): number {
+  if (!Number.isFinite(y)) return 0;
+  return Math.min(0, Math.max(-FLOATING_SAVE_BOX_MAX_UP_PX, y));
+}
+
+function readFloatingSaveBoxTranslateY(): number {
+  try {
+    const raw = window.localStorage.getItem(FLOATING_SAVE_BOX_VERTICAL_LS_KEY);
+    if (raw) {
+      const p = JSON.parse(raw) as { translateY?: unknown };
+      if (typeof p.translateY === 'number') return clampFloatingSaveTranslateY(p.translateY);
+    }
+    const legacy = window.localStorage.getItem(FLOATING_SAVE_BOX_LEGACY_OFFSET_LS_KEY);
+    if (legacy) {
+      const p = JSON.parse(legacy) as { y?: unknown };
+      if (typeof p.y === 'number') return clampFloatingSaveTranslateY(p.y);
+    }
+  } catch {
+    /* ignorieren */
+  }
+  return 0;
+}
+
 const AnfrageSitzlift: React.FC = () => {
   const [formData, setFormData] = useState({
     // Active section for guidance
@@ -978,6 +992,15 @@ const AnfrageSitzlift: React.FC = () => {
   const [isAktionenDropdownOpen, setIsAktionenDropdownOpen] = useState(false);
   /** Oberfläche: Dashboard vs. Anfrage-Detail (Klienten) */
   const [crmMainView, setCrmMainView] = useState<'dashboard' | 'anfrage'>('anfrage');
+  /** Nur vertikal: Leiste etwas nach oben schieben (max. FLOATING_SAVE_BOX_MAX_UP_PX), sonst fix unten rechts */
+  const [floatingSaveBoxTranslateY, setFloatingSaveBoxTranslateY] = useState(readFloatingSaveBoxTranslateY);
+  const floatingSaveDragRef = useRef<{
+    pointerId: number;
+    startClientY: number;
+    startTranslateY: number;
+  } | null>(null);
+  const floatingSaveBoxTranslateYRef = useRef(floatingSaveBoxTranslateY);
+  floatingSaveBoxTranslateYRef.current = floatingSaveBoxTranslateY;
   const aktionenDropdownRef = useRef<HTMLDivElement>(null);
   const appToastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [appToast, setAppToast] = useState<{
@@ -1106,6 +1129,57 @@ const AnfrageSitzlift: React.FC = () => {
     return () => {
       if (appToastTimerRef.current) clearTimeout(appToastTimerRef.current);
     };
+  }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        FLOATING_SAVE_BOX_VERTICAL_LS_KEY,
+        JSON.stringify({ translateY: floatingSaveBoxTranslateY })
+      );
+    } catch {
+      /* ignorieren */
+    }
+  }, [floatingSaveBoxTranslateY]);
+
+  const onFloatingSaveDragHandlePointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.currentTarget.setPointerCapture(e.pointerId);
+      floatingSaveDragRef.current = {
+        pointerId: e.pointerId,
+        startClientY: e.clientY,
+        startTranslateY: floatingSaveBoxTranslateYRef.current
+      };
+    },
+    []
+  );
+
+  const onFloatingSaveDragHandlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    const d = floatingSaveDragRef.current;
+    if (!d || e.pointerId !== d.pointerId) return;
+    const next = clampFloatingSaveTranslateY(
+      d.startTranslateY + (e.clientY - d.startClientY)
+    );
+    setFloatingSaveBoxTranslateY(next);
+  }, []);
+
+  const onFloatingSaveDragHandlePointerEnd = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    const d = floatingSaveDragRef.current;
+    if (!d || e.pointerId !== d.pointerId) return;
+    floatingSaveDragRef.current = null;
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {
+      /* Capture ggf. schon entfernt */
+    }
+  }, []);
+
+  const onFloatingSaveDragHandleDoubleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setFloatingSaveBoxTranslateY(0);
   }, []);
 
   const showAppToast = (variant: 'copy' | 'email', message?: string, options?: { instant?: boolean }) => {
@@ -2703,9 +2777,24 @@ const AnfrageSitzlift: React.FC = () => {
       {crmMainView === 'anfrage' && (
         <div
           className="floating-save-box"
+          style={{
+            transform: `translate(0, ${floatingSaveBoxTranslateY}px)`
+          }}
           onMouseEnter={() => setFormData((prev) => ({ ...prev, activeGuidanceSection: 'abschluss' }))}
         >
-          <button className="btn-grey">Speichern</button>
+          <div
+            className="floating-save-box__drag-handle"
+            aria-label="Speichern-Leiste nach oben verschieben"
+            title={`Nach oben ziehen (bis ca. ${FLOATING_SAVE_BOX_MAX_UP_PX} Pixel) · Doppelklick: Standardposition`}
+            onPointerDown={onFloatingSaveDragHandlePointerDown}
+            onPointerMove={onFloatingSaveDragHandlePointerMove}
+            onPointerUp={onFloatingSaveDragHandlePointerEnd}
+            onPointerCancel={onFloatingSaveDragHandlePointerEnd}
+            onDoubleClick={onFloatingSaveDragHandleDoubleClick}
+          />
+          <button type="button" className="btn-grey">
+            Speichern
+          </button>
           <button
             type="button"
             className="btn-green"
