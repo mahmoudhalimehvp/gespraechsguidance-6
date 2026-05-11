@@ -2663,11 +2663,11 @@
   z-index: 1500;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 6px 12px 12px;
-  width: 220px;
+  gap: 5px;
+  padding: 4px 8px 8px;
+  width: 168px;
   border: 1px solid #ffc107;
-  border-radius: 10px;
+  border-radius: 7px;
   background-color: #fff9e6;
   box-shadow: none;
 }
@@ -2706,9 +2706,12 @@
 .floating-save-box .btn-green {
   width: 100%;
   justify-content: center;
-  border-radius: 6px;
-  padding: 10px 12px;
-  font-size: 14px;
+  border-radius: 5px;
+  padding: 6px 8px;
+  font-size: 11px;
+  line-height: 1.25;
+  white-space: normal;
+  text-align: center;
 }
 
 .floating-save-klient {
@@ -2778,7 +2781,7 @@
     padding: 8px 6px;
   }
   .floating-save-box {
-    width: 132px;
+    width: 136px;
   }
 }
 
