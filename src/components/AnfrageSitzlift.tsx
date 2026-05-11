@@ -897,7 +897,8 @@ const ANRUF_LANDING_WOCHENTAGE: { id: string; label: string }[] = [
 /** translateY der Speichern-Leiste: 0 = unten rechts; negativ = nach oben (begrenzt). */
 const FLOATING_SAVE_BOX_VERTICAL_LS_KEY = 'anfrageSitzlift.floatingSaveBoxVertical.v1';
 const FLOATING_SAVE_BOX_LEGACY_OFFSET_LS_KEY = 'anfrageSitzlift.floatingSaveBoxOffset.v1';
-const FLOATING_SAVE_BOX_MAX_UP_PX = 200;
+/** Max. Verschiebung nach oben (px); größer = Leiste kann höher am Bildschirm sitzen */
+const FLOATING_SAVE_BOX_MAX_UP_PX = 520;
 
 function clampFloatingSaveTranslateY(y: number): number {
   if (!Number.isFinite(y)) return 0;
